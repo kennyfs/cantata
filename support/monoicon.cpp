@@ -80,16 +80,31 @@ class MonoIconEngine : public QIconEngine {
                 if (FontAwesome::ex_one == fontAwesomeIcon) {
                     fontName = "serif";
                 } else {
-                    // Load fontawesome, if it is not already loaded
+                    // Load fontawesome, if it is not already loaded.
+                    // We do this lazily (on first draw) to avoid slowing down
+                    // app startup.
                     if (fontAwesomeFontName.isEmpty()) {
                         Q_INIT_RESOURCE(support);
 
-                        QStringList loadedFontFamilies =
-                            QFontDatabase::applicationFontFamilies(
-                                QFontDatabase::addApplicationFont(
-                                    ":/font.ttf"));
-                        if (!loadedFontFamilies.empty()) {
-                            fontAwesomeFontName = loadedFontFamilies.at(0);
+                        int fontId =
+                            QFontDatabase::addApplicationFont(":/font.ttf");
+                        if (fontId == -1) {
+                            // This should never happen since the font is
+                            // compiled into Qt resources.
+                            qWarning(
+                                "MonoIcon: Failed to load bundled FontAwesome "
+                                "font from :/font.ttf");
+                        } else {
+                            QStringList loadedFontFamilies =
+                                QFontDatabase::applicationFontFamilies(fontId);
+                            if (!loadedFontFamilies.empty()) {
+                                fontAwesomeFontName = loadedFontFamilies.at(0);
+                            } else {
+                                qWarning(
+                                    "MonoIcon: Font loaded (id=%d) but no font "
+                                    "families were registered",
+                                    fontId);
+                            }
                         }
                     }
                     fontName = fontAwesomeFontName;
@@ -119,7 +134,15 @@ class MonoIconEngine : public QIconEngine {
                 }
 
                 font.setPixelSize(pixelSize);
-                font.setStyleStrategy(QFont::PreferAntialias);
+                // NoFontMerging: prevents Qt from falling back to a system font
+                // when a glyph is not found in the requested family.  Without
+                // this flag, modern Linux systems (Ubuntu 26.04+) let Noto CJK
+                // and similar fonts claim the FontAwesome Private Use Area
+                // codepoints (U+F000–U+F2FF), rendering Chinese characters
+                // instead of icons. PreferAntialias is OR-ed in to keep smooth
+                // rendering on all DPIs.
+                font.setStyleStrategy(QFont::StyleStrategy(
+                    QFont::PreferAntialias | QFont::NoFontMerging));
                 font.setHintingPreference(QFont::PreferFullHinting);
                 p.setFont(font);
                 p.setPen(col);
