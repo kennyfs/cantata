@@ -35,11 +35,10 @@ class MultiMediaKeysInterface;
 #define CANTATA_USE_QXT_MEDIAKEYS
 #endif
 
-class MediaKeys
-{
-public:
+class MediaKeys {
+   public:
     static void enableDebug();
-    static MediaKeys * self();
+    static MediaKeys* self();
 
     MediaKeys();
     ~MediaKeys();
@@ -47,17 +46,17 @@ public:
     void start();
     void stop();
 
-private:
-    bool activate(MultiMediaKeysInterface *iface);
-    void deactivate(MultiMediaKeysInterface *iface);
+   private:
+    bool activate(MultiMediaKeysInterface* iface);
+    void deactivate(MultiMediaKeysInterface* iface);
 
-private:
-    #ifdef QT_QTDBUS_FOUND
-    GnomeMediaKeys *gnome;
-    #endif
-    #ifdef CANTATA_USE_QXT_MEDIAKEYS
-    QxtMediaKeys *qxt;
-    #endif
+   private:
+#ifdef QT_QTDBUS_FOUND
+    GnomeMediaKeys* gnome;
+#endif
+#ifdef CANTATA_USE_QXT_MEDIAKEYS
+    QxtMediaKeys* qxt;
+#endif
 };
 
 #endif

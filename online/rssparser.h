@@ -32,12 +32,10 @@
 
 class QIODevice;
 
-namespace RssParser
-{
+namespace RssParser {
 
-struct Episode
-{
-    Episode() : duration(0), video(false) { }
+struct Episode {
+    Episode() : duration(0), video(false) {}
     QString name;
     QString description;
     QDateTime publicationDate;
@@ -46,9 +44,8 @@ struct Episode
     bool video;
 };
 
-struct Channel
-{
-    Channel() : video(false) { }
+struct Channel {
+    Channel() : video(false) {}
     QString name;
     QUrl image;
     QList<Episode> episodes;
@@ -57,8 +54,9 @@ struct Channel
     bool isValid() const { return !name.isEmpty(); }
 };
 
-Channel parse(QIODevice *dev, bool getEpisodes=true, bool getDescription=false);
+Channel parse(QIODevice* dev, bool getEpisodes = true,
+              bool getDescription = false);
 
-}
+}  // namespace RssParser
 
 #endif

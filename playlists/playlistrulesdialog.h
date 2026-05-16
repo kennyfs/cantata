@@ -34,39 +34,38 @@ class QStandardItemModel;
 class QStandardItem;
 class RulesSort;
 
-class PlaylistRulesDialog : public Dialog, Ui::PlaylistRules
-{
+class PlaylistRulesDialog : public Dialog, Ui::PlaylistRules {
     Q_OBJECT
 
-public:
-    PlaylistRulesDialog(QWidget *parent, RulesPlaylists *m);
+   public:
+    PlaylistRulesDialog(QWidget* parent, RulesPlaylists* m);
     ~PlaylistRulesDialog() override;
 
-    void edit(const QString &name);
+    void edit(const QString& name);
 
-private:
+   private:
     void slotButtonClicked(int button) override;
     bool save();
-    int indexOf(QStandardItem *item, bool diff=false);
+    int indexOf(QStandardItem* item, bool diff = false);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void saved(bool s);
     void enableOkButton();
     void controlButtons();
     void add();
-    void addRule(const RulesPlaylists::Rule &rule);
+    void addRule(const RulesPlaylists::Rule& rule);
     void edit();
     void remove();
     void showAbout();
     void setOrder();
     void ratingChanged(int value);
 
-private:
-    RulesPlaylists *rules;
-    RulesSort *proxy;
-    QStandardItemModel *model;
+   private:
+    RulesPlaylists* rules;
+    RulesSort* proxy;
+    QStandardItemModel* model;
     QString origName;
-    PlaylistRuleDialog *dlg;
+    PlaylistRuleDialog* dlg;
 };
 
 #endif

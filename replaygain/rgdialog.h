@@ -40,38 +40,39 @@ class Device;
 class TagReader;
 class Action;
 
-class RgDialog : public SongDialog
-{
+class RgDialog : public SongDialog {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    RgDialog(QWidget *parent);
+    RgDialog(QWidget* parent);
     virtual ~RgDialog();
 
-    void show(const QList<Song> &songs, const QString &udi, bool autoScan=false);
+    void show(const QList<Song>& songs, const QString& udi,
+              bool autoScan = false);
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void update();
 
-private:
+   private:
     void slotButtonClicked(int button);
     void startScanning();
     void stopScanning();
-    void createScanner(const QList<int> &indexes);
+    void createScanner(const QList<int>& indexes);
     void clearScanners();
     void startReadingTags();
     void stopReadingTags();
     bool saveTags();
     void updateView();
-    #ifdef ENABLE_DEVICES_SUPPORT
-    Device * getDevice(const QString &udi, QWidget *p);
-    #endif
-    void closeEvent(QCloseEvent *event);
+#ifdef ENABLE_DEVICES_SUPPORT
+    Device* getDevice(const QString& udi, QWidget* p);
+#endif
+    void closeEvent(QCloseEvent* event);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void scannerProgress(int p);
     void scannerDone();
     void songTags(int index, Tags::ReplayGain tags);
@@ -80,7 +81,7 @@ private Q_SLOTS:
     void controlRemoveAct();
     void removeItems();
 
-private:
+   private:
     enum State {
         State_Idle,
         State_ScanningTags,
@@ -88,21 +89,21 @@ private:
         State_Saving
     };
 
-    QComboBox *combo;
-    QTreeWidget *view;
-    QLabel *statusLabel;
-    QProgressBar *progress;
-    Action *removeAct;
+    QComboBox* combo;
+    QTreeWidget* view;
+    QLabel* statusLabel;
+    QProgressBar* progress;
+    Action* removeAct;
     State state;
     QString base;
     QList<Song> origSongs;
 
-    QMap<AlbumScanner *, int> scanners;
+    QMap<AlbumScanner*, int> scanners;
     int totalToScan;
 
     QMap<int, Tags::ReplayGain> origTags;
     QMap<int, Tags::ReplayGain> tagsToSave;
-    TagReader *tagReader;
+    TagReader* tagReader;
 
     bool autoScanTags;
 

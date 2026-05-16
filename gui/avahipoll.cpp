@@ -19,70 +19,62 @@
 #include <avahi-common/timeval.h>
 #include <QThread>
 
-static AvahiWatch * avahiWatchNew(const AvahiPoll */*ap*/, int fd, AvahiWatchEvent event, AvahiWatchCallback callback, void *userdata)
-{
+static AvahiWatch* avahiWatchNew(const AvahiPoll* /*ap*/, int fd,
+                                 AvahiWatchEvent event,
+                                 AvahiWatchCallback callback, void* userdata) {
     return new AvahiWatch(fd, event, callback, userdata);
 }
 
-static void avahiWatchUpdate(AvahiWatch *w, AvahiWatchEvent event)
-{
+static void avahiWatchUpdate(AvahiWatch* w, AvahiWatchEvent event) {
     w->setEventType(event);
 }
 
-static AvahiWatchEvent avahiWatchGetEvents(AvahiWatch *w)
-{
+static AvahiWatchEvent avahiWatchGetEvents(AvahiWatch* w) {
     return w->previousEvent();
 }
 
-static void avahiWatchFree(AvahiWatch *w)
-{
+static void avahiWatchFree(AvahiWatch* w) {
     (w->thread() == QThread::currentThread()) ? delete w : w->deleteLater();
 }
 
-static AvahiTimeout * avahiTimeoutNew(const AvahiPoll *p, const struct timeval *tv, AvahiTimeoutCallback callback, void *userdata)
-{
+static AvahiTimeout* avahiTimeoutNew(const AvahiPoll* p,
+                                     const struct timeval* tv,
+                                     AvahiTimeoutCallback callback,
+                                     void* userdata) {
     Q_UNUSED(p)
     return new AvahiTimeout(tv, callback, userdata);
 }
 
-static void avahiTimeoutUpdate(AvahiTimeout *t, const struct timeval *tv)
-{
+static void avahiTimeoutUpdate(AvahiTimeout* t, const struct timeval* tv) {
     t->updateTimeout(tv);
 }
 
-static void avahiTimeoutFree(AvahiTimeout *t)
-{
+static void avahiTimeoutFree(AvahiTimeout* t) {
     (t->thread() == QThread::currentThread()) ? delete t : t->deleteLater();
 }
 
-const AvahiPoll * getAvahiPoll(void)
-{
-    static const AvahiPoll avahiPoll =
-    {
-        nullptr,
-        avahiWatchNew,
-        avahiWatchUpdate,
-        avahiWatchGetEvents,
-        avahiWatchFree,
-        avahiTimeoutNew,
-        avahiTimeoutUpdate,
-        avahiTimeoutFree
-    };
+const AvahiPoll* getAvahiPoll(void) {
+    static const AvahiPoll avahiPoll = {nullptr,
+                                        avahiWatchNew,
+                                        avahiWatchUpdate,
+                                        avahiWatchGetEvents,
+                                        avahiWatchFree,
+                                        avahiTimeoutNew,
+                                        avahiTimeoutUpdate,
+                                        avahiTimeoutFree};
 
     return &avahiPoll;
 }
 
-AvahiTimeout::AvahiTimeout(const struct timeval *tv, AvahiTimeoutCallback cb, void *ud)
-    : callback(cb)
-    , userData(ud)
-{
+AvahiTimeout::AvahiTimeout(const struct timeval* tv, AvahiTimeoutCallback cb,
+                           void* ud)
+    : callback(cb), userData(ud) {
     connect(&timer, &QTimer::timeout, this, &AvahiTimeout::timeout);
     updateTimeout(tv);
 }
 
-void AvahiTimeout::updateTimeout(const struct timeval *tv)
-{
-    if (nullptr==tv) {
+void AvahiTimeout::updateTimeout(const struct timeval* tv) {
+    if (nullptr == tv) {
         timer.stop();
         return;
     }
@@ -95,46 +87,47 @@ void AvahiTimeout::updateTimeout(const struct timeval *tv)
     timer.start();
 }
 
-void AvahiTimeout::timeout()
-{
+void AvahiTimeout::timeout() {
     timer.stop();
     callback(this, userData);
 }
 
-AvahiWatch::AvahiWatch(int f, AvahiWatchEvent ev, AvahiWatchCallback cb, void *ud)
-    : notifier(nullptr)
-    , callback(cb)
-    , event(ev)
-    , prevEvent(static_cast<AvahiWatchEvent>(0))
-    , userData(ud)
-    , fd(f)
-{
+AvahiWatch::AvahiWatch(int f, AvahiWatchEvent ev, AvahiWatchCallback cb,
+                       void* ud)
+    : notifier(nullptr),
+      callback(cb),
+      event(ev),
+      prevEvent(static_cast<AvahiWatchEvent>(0)),
+      userData(ud),
+      fd(f) {
     setEventType(ev);
 }
 
-void AvahiWatch::setEventType(AvahiWatchEvent event)
-{
+void AvahiWatch::setEventType(AvahiWatchEvent event) {
     this->event = event;
 
-    switch(event) {
-    case AVAHI_WATCH_IN : {
-        notifier.reset(new QSocketNotifier(fd, QSocketNotifier::Read, this));
-        connect(notifier.data(), &QSocketNotifier::activated, this, &AvahiWatch::activated);
-        break;
-    }
-    case AVAHI_WATCH_OUT : {
-        notifier.reset(new QSocketNotifier(fd, QSocketNotifier::Write, this));
-        connect(notifier.data(), &QSocketNotifier::activated, this, &AvahiWatch::activated);
-        break;
-    }
-    default:
-        // should not be reached
-        break;
+    switch (event) {
+        case AVAHI_WATCH_IN: {
+            notifier.reset(
+                new QSocketNotifier(fd, QSocketNotifier::Read, this));
+            connect(notifier.data(), &QSocketNotifier::activated, this,
+                    &AvahiWatch::activated);
+            break;
+        }
+        case AVAHI_WATCH_OUT: {
+            notifier.reset(
+                new QSocketNotifier(fd, QSocketNotifier::Write, this));
+            connect(notifier.data(), &QSocketNotifier::activated, this,
+                    &AvahiWatch::activated);
+            break;
+        }
+        default:
+            // should not be reached
+            break;
     }
 }
 
-void AvahiWatch::activated(int fd)
-{
+void AvahiWatch::activated(int fd) {
     Q_UNUSED(fd)
 
     prevEvent = event;
@@ -142,9 +135,6 @@ void AvahiWatch::activated(int fd)
     prevEvent = static_cast<AvahiWatchEvent>(0);
 }
 
-AvahiWatchEvent AvahiWatch::previousEvent()
-{
-    return prevEvent;
-}
+AvahiWatchEvent AvahiWatch::previousEvent() { return prevEvent; }
 
 #include "moc_avahipoll.cpp"

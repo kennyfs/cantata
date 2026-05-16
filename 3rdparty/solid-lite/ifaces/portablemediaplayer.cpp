@@ -20,7 +20,4 @@
 
 #include "portablemediaplayer.h"
 
-Solid::Ifaces::PortableMediaPlayer::~PortableMediaPlayer()
-{
-
-}
+Solid::Ifaces::PortableMediaPlayer::~PortableMediaPlayer() {}

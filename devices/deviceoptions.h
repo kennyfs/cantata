@@ -33,8 +33,8 @@
 struct Song;
 
 struct DeviceStorage {
-    DeviceStorage() : size(0), used(0) { }
-    qulonglong freeSpace() const { return size-used; }
+    DeviceStorage() : size(0), used(0) {}
+    qulonglong freeSpace() const { return size - used; }
     qulonglong size;
     qulonglong used;
     QString description;
@@ -42,11 +42,7 @@ struct DeviceStorage {
 };
 
 struct DeviceOptions {
-    enum TranscodeWhen {
-        TW_Always      = 0,
-        TW_IfDifferent = 1,
-        TW_IfLossess   = 2
-    };
+    enum TranscodeWhen { TW_Always = 0, TW_IfDifferent = 1, TW_IfLossess = 2 };
 
     static const QLatin1String constAlbumArtist;
     static const QLatin1String constComposer;
@@ -59,48 +55,52 @@ struct DeviceOptions {
     static const QLatin1String constGenre;
     static const QLatin1String constYear;
 
-    static bool isConfigured(const QString &group, bool isMpd=false);
+    static bool isConfigured(const QString& group, bool isMpd = false);
 
-    #ifdef ENABLE_DEVICES_SUPPORT
-    DeviceOptions(const QString &cvrName=QString());
-    #else
+#ifdef ENABLE_DEVICES_SUPPORT
+    DeviceOptions(const QString& cvrName = QString());
+#else
     DeviceOptions();
-    #endif
+#endif
 
-    void load(const QString &group, bool isMpd=false);
-    void save(const QString &group, bool isMpd=false, bool saveTrans=true, bool saveFileNameScheme=true) const;
+    void load(const QString& group, bool isMpd = false);
+    void save(const QString& group, bool isMpd = false, bool saveTrans = true,
+              bool saveFileNameScheme = true) const;
 
-    bool operator==(const DeviceOptions &o) const {
-        return vfatSafe==o.vfatSafe && asciiOnly==o.asciiOnly && ignoreThe==o.ignoreThe &&
-                replaceSpaces==o.replaceSpaces && scheme==o.scheme
-                #ifdef ENABLE_DEVICES_SUPPORT
-                && coverMaxSize==o.coverMaxSize && coverName==o.coverName && name==o.name
-                && fixVariousArtists==o.fixVariousArtists && useCache==o.useCache &&
-                transcoderCodec==o.transcoderCodec && autoScan==o.autoScan && volumeId==o.volumeId &&
-                (transcoderCodec.isEmpty() ||
-                 (transcoderValue==o.transcoderValue && transcoderWhen==o.transcoderWhen))
-                #endif
-                ;
+    bool operator==(const DeviceOptions& o) const {
+        return vfatSafe == o.vfatSafe && asciiOnly == o.asciiOnly &&
+               ignoreThe == o.ignoreThe && replaceSpaces == o.replaceSpaces &&
+               scheme == o.scheme
+#ifdef ENABLE_DEVICES_SUPPORT
+               && coverMaxSize == o.coverMaxSize && coverName == o.coverName &&
+               name == o.name && fixVariousArtists == o.fixVariousArtists &&
+               useCache == o.useCache && transcoderCodec == o.transcoderCodec &&
+               autoScan == o.autoScan && volumeId == o.volumeId &&
+               (transcoderCodec.isEmpty() ||
+                (transcoderValue == o.transcoderValue &&
+                 transcoderWhen == o.transcoderWhen))
+#endif
+            ;
     }
-    bool operator!=(const DeviceOptions &o) const { return !(*this==o); }
-    QString clean(const QString &str) const;
-    Song clean(const Song &s) const;
-    QString createFilename(const Song &s) const;
-    #ifdef ENABLE_DEVICES_SUPPORT
+    bool operator!=(const DeviceOptions& o) const { return !(*this == o); }
+    QString clean(const QString& str) const;
+    Song clean(const Song& s) const;
+    QString createFilename(const Song& s) const;
+#ifdef ENABLE_DEVICES_SUPPORT
     void checkCoverSize() {
-        if (0==coverMaxSize || coverMaxSize>400) {
-            coverMaxSize=0;
+        if (0 == coverMaxSize || coverMaxSize > 400) {
+            coverMaxSize = 0;
         } else {
-            coverMaxSize=((unsigned int)(coverMaxSize/100))*100;
+            coverMaxSize = ((unsigned int)(coverMaxSize / 100)) * 100;
         }
     }
-    #endif
+#endif
     QString scheme;
     bool vfatSafe;
     bool asciiOnly;
     bool ignoreThe;
     bool replaceSpaces;
-    #ifdef ENABLE_DEVICES_SUPPORT
+#ifdef ENABLE_DEVICES_SUPPORT
     bool fixVariousArtists;
     QString transcoderCodec;
     int transcoderValue;
@@ -111,7 +111,7 @@ struct DeviceOptions {
     QString coverName;
     unsigned int coverMaxSize;
     QString volumeId;
-    #endif
+#endif
 };
 
 #endif

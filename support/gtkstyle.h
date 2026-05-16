@@ -30,10 +30,10 @@
 class QPainter;
 class QWidget;
 
-namespace GtkStyle
-{
-    extern bool isActive();
-    extern void drawSelection(const QStyleOptionViewItem &opt, QPainter *painter, double opacity);
-}
+namespace GtkStyle {
+extern bool isActive();
+extern void drawSelection(const QStyleOptionViewItem& opt, QPainter* painter,
+                          double opacity);
+}  // namespace GtkStyle
 
 #endif

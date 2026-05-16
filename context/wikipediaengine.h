@@ -27,38 +27,40 @@
 #include "contextengine.h"
 #include <QStringList>
 
-class WikipediaEngine : public ContextEngine
-{
+class WikipediaEngine : public ContextEngine {
     Q_OBJECT
-    
-public:
+
+   public:
     static void enableDebug();
 
-    WikipediaEngine(QObject *p);
+    WikipediaEngine(QObject* p);
 
     static const QLatin1String constReadMorePlaceholder;
     static const QLatin1String constOpenInBrowserPlaceholder;
 
-    static void setPreferedLangs(const QStringList &l);
-    static const QStringList & getPreferedLangs() { return preferredLangs; }
-    static void setIntroOnly(bool v) { introOnly=v; }
+    static void setPreferedLangs(const QStringList& l);
+    static const QStringList& getPreferedLangs() { return preferredLangs; }
+    static void setIntroOnly(bool v) { introOnly = v; }
 
     QString translateLinks(QString text) const override;
     QStringList getLangs() const override { return getPreferedLangs(); }
-    QString getPrefix(const QString &key) const override { return key.split(QLatin1Char(':')).back(); }
+    QString getPrefix(const QString& key) const override {
+        return key.split(QLatin1Char(':')).back();
+    }
 
-public Q_SLOTS:
-    void search(const QStringList &query, Mode mode) override;
-    
-private:
-    void requestTitles(const QStringList &query, Mode mode, const QString &lang);
-    void getPage(const QStringList &query, Mode mode, const QString &lang);
+   public Q_SLOTS:
+    void search(const QStringList& query, Mode mode) override;
 
-private Q_SLOTS:
+   private:
+    void requestTitles(const QStringList& query, Mode mode,
+                       const QString& lang);
+    void getPage(const QStringList& query, Mode mode, const QString& lang);
+
+   private Q_SLOTS:
     void parseTitles();
     void parsePage();
 
-private:
+   private:
     static QStringList preferredLangs;
     static bool introOnly;
     QStringList titles;

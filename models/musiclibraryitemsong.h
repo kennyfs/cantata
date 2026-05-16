@@ -34,28 +34,27 @@
 
 class MusicLibraryItemAlbum;
 
-class MusicLibraryItemSong : public MusicLibraryItem
-{
-public:
-    MusicLibraryItemSong(const Song &s, MusicLibraryItemContainer *parent)
-        : MusicLibraryItem(parent), m_song(s) { }
+class MusicLibraryItemSong : public MusicLibraryItem {
+   public:
+    MusicLibraryItemSong(const Song& s, MusicLibraryItemContainer* parent)
+        : MusicLibraryItem(parent), m_song(s) {}
 
-    ~MusicLibraryItemSong() override { }
+    ~MusicLibraryItemSong() override {}
 
     QString data() const override { return m_song.displayTitle(); }
-    const QString & file() const { return m_song.file; }
-    void setSong(const Song &s) { m_song=s; }
-    void setFile(const QString &f) { m_song.file=f; }
+    const QString& file() const { return m_song.file; }
+    void setSong(const Song& s) { m_song = s; }
+    void setFile(const QString& f) { m_song.file = f; }
     quint16 track() const { return m_song.track; }
-    void setTrack(quint16 t) { m_song.track=t; }
+    void setTrack(quint16 t) { m_song.track = t; }
     void setPlayed(bool p) { m_song.setPlayed(p); }
     quint16 disc() const { return m_song.disc; }
     quint32 time() const { return m_song.time; }
     QString genre() const { return m_song.firstGenre(); }
-    const Song & song() const { return m_song; }
+    const Song& song() const { return m_song; }
     Type itemType() const override { return Type_Song; }
 
-protected:
+   protected:
     Song m_song;
 };
 

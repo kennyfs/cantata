@@ -26,15 +26,16 @@
 
 #include <QToolButton>
 
-class FlatToolButton : public QToolButton
-{
-public:
-    #ifdef Q_OS_MAC
-    explicit FlatToolButton(QWidget *parent = 0);
-    void paintEvent(QPaintEvent *e);
-    #else
-    explicit FlatToolButton(QWidget *parent = nullptr) : QToolButton(parent) { setAutoRaise(true); }
-    #endif
+class FlatToolButton : public QToolButton {
+   public:
+#ifdef Q_OS_MAC
+    explicit FlatToolButton(QWidget* parent = 0);
+    void paintEvent(QPaintEvent* e);
+#else
+    explicit FlatToolButton(QWidget* parent = nullptr) : QToolButton(parent) {
+        setAutoRaise(true);
+    }
+#endif
 };
 
-#endif // MENUBUTTON_H
+#endif  // MENUBUTTON_H

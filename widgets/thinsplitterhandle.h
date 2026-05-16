@@ -26,26 +26,24 @@
 
 #include <QSplitter>
 
-class ThinSplitterHandle : public QSplitterHandle
-{
-public:
-    ThinSplitterHandle(Qt::Orientation orientation, QSplitter *parent);
-    ~ThinSplitterHandle() override { }
+class ThinSplitterHandle : public QSplitterHandle {
+   public:
+    ThinSplitterHandle(Qt::Orientation orientation, QSplitter* parent);
+    ~ThinSplitterHandle() override {}
 
-    void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
-    bool event(QEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+    bool event(QEvent* event) override;
     QSize sizeHint() const override { return QSize(0, 0); }
-    void setHighlightUnderMouse() { highlightUnderMouse=true; }
+    void setHighlightUnderMouse() { highlightUnderMouse = true; }
 
-private:
+   private:
     void updateMask();
 
-private:
+   private:
     int sz;
     bool highlightUnderMouse;
     bool underMouse;
 };
 
 #endif
-

@@ -32,29 +32,28 @@
 
 class Thread;
 
-class MusicBrainz : public QObject
-{
+class MusicBrainz : public QObject {
     Q_OBJECT
-public:
-    MusicBrainz(const QString &device);
+   public:
+    MusicBrainz(const QString& device);
     ~MusicBrainz();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void lookup(bool full);
 
-Q_SIGNALS:
-    void error(const QString &error);
-    void initialDetails(const CdAlbum &);
-    void matches(const QList<CdAlbum> &);
+   Q_SIGNALS:
+    void error(const QString& error);
+    void initialDetails(const CdAlbum&);
+    void matches(const QList<CdAlbum>&);
 
-private:
+   private:
     void readDisc();
 
-private:
-    Thread *thread;
+   private:
+    Thread* thread;
     QString dev;
     QString discId;
     CdAlbum initial;
 };
 
-#endif // MUSICBRAINZ_H
+#endif  // MUSICBRAINZ_H

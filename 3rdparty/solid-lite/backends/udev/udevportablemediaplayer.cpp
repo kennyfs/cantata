@@ -39,56 +39,49 @@ using namespace Solid::Backends::UDev;
  * @param key key name, e.g. "AccessProtocol"
  * @return value as a string or an empty string
  */
-static QString readMpiValue(QIODevice &file, const QString &group, const QString &key)
-{
+static QString readMpiValue(QIODevice& file, const QString& group,
+                            const QString& key) {
     QTextStream mpiStream(&file);
     QString line;
     QString currGroup;
 
     while (!mpiStream.atEnd()) {
-        line = mpiStream.readLine().trimmed();  // trimmed is needed for possible indentation
+        line = mpiStream.readLine()
+                   .trimmed();  // trimmed is needed for possible indentation
         if (line.isEmpty() || line.startsWith(QChar(';'))) {
             // skip empty and comment lines
-        }
-        else if (line.startsWith(QChar('[')) && line.endsWith(QChar(']'))) {
+        } else if (line.startsWith(QChar('[')) && line.endsWith(QChar(']'))) {
             currGroup = line.mid(1, line.length() - 2);  // strip [ and ]
-        }
-        else if (line.indexOf(QChar('=') != -1)) {
+        } else if (line.indexOf(QChar('=') != -1)) {
             int index = line.indexOf(QChar('='));
             if (currGroup == group && line.left(index) == key) {
                 line = line.right(line.length() - index - 1);
                 if (line.startsWith(QChar('"')) && line.endsWith(QChar('"'))) {
-                    line = line.mid(1, line.length() - 2);  // strip enclosing double quotes
+                    line = line.mid(
+                        1, line.length() - 2);  // strip enclosing double quotes
                 }
                 return line;
             }
-        }
-        else {
+        } else {
             qWarning() << "readMpiValue: cannot parse line:" << line;
         }
     }
     return QString();
 }
 
-PortableMediaPlayer::PortableMediaPlayer(UDevDevice *device)
-    : DeviceInterface(device)
-{
+PortableMediaPlayer::PortableMediaPlayer(UDevDevice* device)
+    : DeviceInterface(device) {}
 
-}
+PortableMediaPlayer::~PortableMediaPlayer() {}
 
-PortableMediaPlayer::~PortableMediaPlayer()
-{
-
-}
-
-QStringList PortableMediaPlayer::supportedProtocols() const
-{
+QStringList PortableMediaPlayer::supportedProtocols() const {
     /* There are multiple packages that set ID_MEDIA_PLAYER:
-     *  * gphoto2 sets it to numeric 1 (for _some_ cameras it supports) and it hopefully
-     *    means MTP-compatible device.
-     *  * libmtp >= 1.0.4 sets it to numeric 1 and this always denotes MTP-compatible player.
-     *  * media-player-info sets it to a string that denotes a name of the .mpi file with
-     *    additional info.
+     *  * gphoto2 sets it to numeric 1 (for _some_ cameras it supports) and it
+     * hopefully means MTP-compatible device.
+     *  * libmtp >= 1.0.4 sets it to numeric 1 and this always denotes
+     * MTP-compatible player.
+     *  * media-player-info sets it to a string that denotes a name of the .mpi
+     * file with additional info.
      */
     if (m_device->property("ID_MEDIA_PLAYER").toInt() == 1) {
         return QStringList() << "mtp";
@@ -98,23 +91,24 @@ QStringList PortableMediaPlayer::supportedProtocols() const
     if (mpiFileName.isEmpty()) {
         return QStringList();
     }
-    // we unfornutately cannot use QSettings as it cannot read unquoted valued with semicolons in it
+    // we unfornutately cannot use QSettings as it cannot read unquoted valued
+    // with semicolons in it
     QFile mpiFile(mpiFileName);
     if (!mpiFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Cannot open" << mpiFileName << "for reading."
                    << "Check your media-player-info installation.";
         return QStringList();
     }
-    QString value = readMpiValue(mpiFile, QString("Device"), QString("AccessProtocol"));
-    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QString value =
+        readMpiValue(mpiFile, QString("Device"), QString("AccessProtocol"));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return value.split(QChar(';'), Qt::SkipEmptyParts);
-    #else
+#else
     return value.split(QChar(';'), QString::SkipEmptyParts);
-    #endif
+#endif
 }
 
-QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const
-{
+QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const {
     Q_UNUSED(protocol)
     QStringList res;
 
@@ -127,28 +121,30 @@ QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const
     return res;
 }
 
-QVariant PortableMediaPlayer::driverHandle(const QString &driver) const
-{
+QVariant PortableMediaPlayer::driverHandle(const QString& driver) const {
     if (driver == "mtp" || driver == "usbmux")
         return m_device->property("ID_SERIAL_SHORT");
 
     return QVariant();
 }
 
-QString PortableMediaPlayer::mediaPlayerInfoFilePath() const
-{
+QString PortableMediaPlayer::mediaPlayerInfoFilePath() const {
     QString relativeFilename = m_device->property("ID_MEDIA_PLAYER").toString();
     if (relativeFilename.isEmpty()) {
-        qWarning() << "We attached PortableMediaPlayer interface to device" << m_device->udi()
+        qWarning() << "We attached PortableMediaPlayer interface to device"
+                   << m_device->udi()
                    << "but m_device->property(\"ID_MEDIA_PLAYER\") is empty???";
         return QString();
     }
     relativeFilename.prepend("media-player-info/");
     relativeFilename.append(".mpi");
-    QString filename = Solid::XdgBaseDirs::findResourceFile("data", relativeFilename);
+    QString filename =
+        Solid::XdgBaseDirs::findResourceFile("data", relativeFilename);
     if (filename.isEmpty()) {
-        qWarning() << "media player info file" << relativeFilename << "not found under user and"
-                   << "system XDG data directories. Do you have media-player-info installed?";
+        qWarning() << "media player info file" << relativeFilename
+                   << "not found under user and"
+                   << "system XDG data directories. Do you have "
+                      "media-player-info installed?";
     }
     return filename;
 }

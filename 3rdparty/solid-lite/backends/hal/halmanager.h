@@ -27,42 +27,38 @@
 #include <QVariant>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
 class HalManagerPrivate;
 
-class HalManager : public Solid::Ifaces::DeviceManager
-{
+class HalManager : public Solid::Ifaces::DeviceManager {
     Q_OBJECT
 
-public:
-    HalManager(QObject *parent);
+   public:
+    HalManager(QObject* parent);
     ~HalManager() override;
 
-    QString udiPrefix() const override ;
+    QString udiPrefix() const override;
     QSet<Solid::DeviceInterface::Type> supportedInterfaces() const override;
 
-    bool deviceExists(const QString &udi);
+    bool deviceExists(const QString& udi);
     QStringList allDevices() override;
 
-    QStringList devicesFromQuery(const QString &parentUdi,
-                                         Solid::DeviceInterface::Type type) override;
+    QStringList devicesFromQuery(const QString& parentUdi,
+                                 Solid::DeviceInterface::Type type) override;
 
-    QObject *createDevice(const QString &udi) override;
+    QObject* createDevice(const QString& udi) override;
 
-private Q_SLOTS:
-    void slotDeviceAdded(const QString &udi);
-    void slotDeviceRemoved(const QString &udi);
+   private Q_SLOTS:
+    void slotDeviceAdded(const QString& udi);
+    void slotDeviceRemoved(const QString& udi);
 
-private:
-    HalManagerPrivate *d;
+   private:
+    HalManagerPrivate* d;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_HALMANAGER_H
+#endif  // SOLID_BACKENDS_HAL_HALMANAGER_H

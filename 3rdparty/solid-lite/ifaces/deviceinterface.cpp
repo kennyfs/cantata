@@ -20,7 +20,4 @@
 
 #include "deviceinterface.h"
 
-Solid::Ifaces::DeviceInterface::~DeviceInterface()
-{
-}
-
+Solid::Ifaces::DeviceInterface::~DeviceInterface() {}

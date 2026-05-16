@@ -30,16 +30,15 @@
 class Action;
 class QLabel;
 
-class DynamicPlaylistsPage : public SinglePageWidget
-{
+class DynamicPlaylistsPage : public SinglePageWidget {
     Q_OBJECT
 
-public:
-    DynamicPlaylistsPage(QWidget *p);
+   public:
+    DynamicPlaylistsPage(QWidget* p);
     ~DynamicPlaylistsPage() override;
-    void setView(int) override { }
+    void setView(int) override {}
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void remoteDynamicSupport(bool s);
     void add();
     void edit();
@@ -50,24 +49,24 @@ private Q_SLOTS:
     void running(bool status);
     void headerClicked(int level);
 
-private:
+   private:
     void doSearch() override;
     void controlActions() override;
     void enableWidgets(bool enable);
-    void showEvent(QShowEvent *e) override;
-    void hideEvent(QHideEvent *e) override;
+    void showEvent(QShowEvent* e) override;
+    void hideEvent(QHideEvent* e) override;
 
-private:
+   private:
     PlaylistProxyModel proxy;
-    Action *addAction;
-    Action *editAction;
-    Action *removeAction;
-    Action *toggleAction;
-    QList<QWidget *> controls;
-    #ifdef Q_OS_WIN
+    Action* addAction;
+    Action* editAction;
+    Action* removeAction;
+    Action* toggleAction;
+    QList<QWidget*> controls;
+#ifdef Q_OS_WIN
     QString infoStr;
-    QLabel *remoteRunningLabel;
-    #endif
+    QLabel* remoteRunningLabel;
+#endif
     QIcon server;
 };
 

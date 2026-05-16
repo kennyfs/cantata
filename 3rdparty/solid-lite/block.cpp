@@ -24,32 +24,24 @@
 #include "soliddefs_p.h"
 #include <solid-lite/ifaces/block.h>
 
-Solid::Block::Block(QObject *backendObject)
-    : DeviceInterface(*new BlockPrivate(), backendObject)
-{
-}
+Solid::Block::Block(QObject* backendObject)
+    : DeviceInterface(*new BlockPrivate(), backendObject) {}
 
-Solid::Block::~Block()
-{
+Solid::Block::~Block() {}
 
-}
-
-int Solid::Block::deviceMajor() const
-{
+int Solid::Block::deviceMajor() const {
     Q_D(const Block);
-    return_SOLID_CALL(Ifaces::Block *, d->backendObject(), 0, deviceMajor());
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), 0, deviceMajor());
 }
 
-int Solid::Block::deviceMinor() const
-{
+int Solid::Block::deviceMinor() const {
     Q_D(const Block);
-    return_SOLID_CALL(Ifaces::Block *, d->backendObject(), 0, deviceMinor());
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), 0, deviceMinor());
 }
 
-QString Solid::Block::device() const
-{
+QString Solid::Block::device() const {
     Q_D(const Block);
-    return_SOLID_CALL(Ifaces::Block *, d->backendObject(), QString(), device());
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), QString(), device());
 }
 
 #include "moc_block.cpp"

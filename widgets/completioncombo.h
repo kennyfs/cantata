@@ -28,27 +28,27 @@
 #include "support/lineedit.h"
 #include <QAbstractItemView>
 
-class CompletionCombo : public ComboBox
-{
-public:
-    CompletionCombo(QWidget *p)
-        : ComboBox(p) {
+class CompletionCombo : public ComboBox {
+   public:
+    CompletionCombo(QWidget* p) : ComboBox(p) {
         setEditable(true);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
         view()->setTextElideMode(Qt::ElideRight);
     }
 
-    void setText(const QString &text) {
+    void setText(const QString& text) {
         if (lineEdit()) qobject_cast<QLineEdit*>(lineEdit())->setText(text);
     }
 
     QString text() const {
-        return lineEdit() ? qobject_cast<QLineEdit*>(lineEdit())->text() : QString();
+        return lineEdit() ? qobject_cast<QLineEdit*>(lineEdit())->text()
+                          : QString();
     }
 
-    void setPlaceholderText(const QString &text) {
-        if (lineEdit()) qobject_cast<QLineEdit*>(lineEdit())->setPlaceholderText(text);
+    void setPlaceholderText(const QString& text) {
+        if (lineEdit())
+            qobject_cast<QLineEdit*>(lineEdit())->setPlaceholderText(text);
     }
 };
 

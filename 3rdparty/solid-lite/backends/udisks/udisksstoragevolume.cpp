@@ -23,77 +23,56 @@
 
 using namespace Solid::Backends::UDisks;
 
-UDisksStorageVolume::UDisksStorageVolume(UDisksDevice *device)
-    : Block(device)
-{
-}
+UDisksStorageVolume::UDisksStorageVolume(UDisksDevice* device)
+    : Block(device) {}
 
-UDisksStorageVolume::~UDisksStorageVolume()
-{
-}
+UDisksStorageVolume::~UDisksStorageVolume() {}
 
-QString UDisksStorageVolume::encryptedContainerUdi() const
-{
-    if ( m_device->prop( "DeviceIsLuksCleartext" ).toBool() )
-        return m_device->prop( "LuksCleartextSlave" ).value<QDBusObjectPath>().path();
+QString UDisksStorageVolume::encryptedContainerUdi() const {
+    if (m_device->prop("DeviceIsLuksCleartext").toBool())
+        return m_device->prop("LuksCleartextSlave")
+            .value<QDBusObjectPath>()
+            .path();
 
     return QString();
 }
 
-qulonglong UDisksStorageVolume::size() const
-{
+qulonglong UDisksStorageVolume::size() const {
     return m_device->prop("PartitionSize").toULongLong();
 }
 
-QString UDisksStorageVolume::uuid() const
-{
+QString UDisksStorageVolume::uuid() const {
     return m_device->prop("IdUuid").toString();
 }
 
-QString UDisksStorageVolume::label() const
-{
+QString UDisksStorageVolume::label() const {
     QString label = m_device->prop("IdLabel").toString();
-    if (label.isEmpty())
-        label = m_device->prop("PartitionLabel").toString();
+    if (label.isEmpty()) label = m_device->prop("PartitionLabel").toString();
     return label;
 }
 
-QString UDisksStorageVolume::fsType() const
-{
+QString UDisksStorageVolume::fsType() const {
     return m_device->prop("IdType").toString();
 }
 
-Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const
-{
+Solid::StorageVolume::UsageType UDisksStorageVolume::usage() const {
     QString usage = m_device->prop("IdUsage").toString();
 
-    if (usage == "filesystem")
-    {
+    if (usage == "filesystem") {
         return Solid::StorageVolume::FileSystem;
-    }
-    else if (usage == "partitiontable")
-    {
+    } else if (usage == "partitiontable") {
         return Solid::StorageVolume::PartitionTable;
-    }
-    else if (usage == "raid")
-    {
+    } else if (usage == "raid") {
         return Solid::StorageVolume::Raid;
-    }
-    else if (usage == "crypto")
-    {
+    } else if (usage == "crypto") {
         return Solid::StorageVolume::Encrypted;
-    }
-    else if (usage == "unused")
-    {
+    } else if (usage == "unused") {
         return Solid::StorageVolume::Unused;
-    }
-    else
-    {
+    } else {
         return Solid::StorageVolume::Other;
     }
 }
 
-bool UDisksStorageVolume::isIgnored() const
-{
+bool UDisksStorageVolume::isIgnored() const {
     return m_device->isDeviceBlacklisted();
 }

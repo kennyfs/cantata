@@ -25,27 +25,26 @@
 #include "gui/covers.h"
 #include "online/podcastservice.h"
 
-OnlineView::OnlineView(QWidget *p)
-    : View(p)
-{
+OnlineView::OnlineView(QWidget* p) : View(p) {
     setStandardHeader(tr("Song Information"));
-    int imageSize=fontMetrics().height()*18;
+    int imageSize = fontMetrics().height() * 18;
     setPicSize(QSize(imageSize, imageSize));
 }
 
-void OnlineView::update(const Song &song, bool force)
-{
-    if (force || song!=currentSong) {
-        currentSong=song;
+void OnlineView::update(const Song& song, bool force) {
+    if (force || song != currentSong) {
+        currentSong = song;
         if (!isVisible()) {
-            needToUpdate=true;
+            needToUpdate = true;
             return;
         }
-        setHeader(currentSong.describe().replace("<b>", "").replace("</b>", ""));
+        setHeader(
+            currentSong.describe().replace("<b>", "").replace("</b>", ""));
         QString descr = PodcastService::self()->episodeDescr(song);
         Covers::Image cImg = Covers::self()->requestImage(song, true);
         if (!cImg.img.isNull()) {
-            setHtml(createPicTag(cImg.img, cImg.fileName)+(descr.isEmpty() ? QString() : ("<br>"+descr)));
+            setHtml(createPicTag(cImg.img, cImg.fileName) +
+                    (descr.isEmpty() ? QString() : ("<br>" + descr)));
         } else {
             setHtml(descr.isEmpty() ? QString() : descr);
         }

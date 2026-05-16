@@ -35,29 +35,27 @@ class TimeLabel;
 class RatingWidget;
 struct Song;
 
-class PosSlider : public QSlider
-{
+class PosSlider : public QSlider {
     Q_OBJECT
-public:
-    PosSlider(QWidget *p);
-    ~PosSlider() override { }
+   public:
+    PosSlider(QWidget* p);
+    ~PosSlider() override {}
 
-    void updateStyleSheet(const QColor &col);
-    void mouseMoveEvent(QMouseEvent *e) override;
-    void wheelEvent(QWheelEvent *ev) override;
+    void updateStyleSheet(const QColor& col);
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void wheelEvent(QWheelEvent* ev) override;
     void setRange(int min, int max);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void positionSet();
 };
 
-class NowPlayingWidget : public QWidget
-{
+class NowPlayingWidget : public QWidget {
     Q_OBJECT
-public:
-    NowPlayingWidget(QWidget *p);
-    ~NowPlayingWidget() override { }
-    void update(const Song &song);
+   public:
+    NowPlayingWidget(QWidget* p);
+    ~NowPlayingWidget() override {}
+    void update(const Song& song);
     void startTimer();
     void stopTimer();
     void setValue(int v);
@@ -70,18 +68,18 @@ public:
     bool isEnabled() const { return slider->isEnabled(); }
     void initColors();
     QColor textColor() const { return track->palette().windowText().color(); }
-    void resizeEvent(QResizeEvent *ev) override;
+    void resizeEvent(QResizeEvent* ev) override;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void sliderReleased();
 
     void mpdPoll();
-    void setRating(const QString &file, quint8 r);
+    void setRating(const QString& file, quint8 r);
 
-public Q_SLOTS:
-    void rating(const QString &file, quint8 r);
+   public Q_SLOTS:
+    void rating(const QString& file, quint8 r);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void updateTimes();
     void updatePos();
     void pressed();
@@ -90,17 +88,17 @@ private Q_SLOTS:
     void updateInfo();
     void copyInfo();
 
-private:
+   private:
     void controlWidgets();
 
-private:
-    SqueezedTextLabel *track;
-    SqueezedTextLabel *artist;
-    QLabel *infoLabel;
-    TimeLabel *time;
-    PosSlider *slider;
-    RatingWidget *ratingWidget;
-    QTimer *timer;
+   private:
+    SqueezedTextLabel* track;
+    SqueezedTextLabel* artist;
+    QLabel* infoLabel;
+    TimeLabel* time;
+    PosSlider* slider;
+    RatingWidget* ratingWidget;
+    QTimer* timer;
     QElapsedTimer elapsedTimer;
     QString currentSongFile;
     int lastVal;

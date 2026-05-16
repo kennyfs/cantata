@@ -25,19 +25,15 @@
 #include <solid/ifaces/opticaldisc.h>
 #include "wmivolume.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Wmi
-{
-class OpticalDisc : public Volume, virtual public Solid::Ifaces::OpticalDisc
-{
+namespace Solid {
+namespace Backends {
+namespace Wmi {
+class OpticalDisc : public Volume, virtual public Solid::Ifaces::OpticalDisc {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::OpticalDisc)
 
-public:
-    OpticalDisc(WmiDevice *device);
+   public:
+    OpticalDisc(WmiDevice* device);
     virtual ~OpticalDisc();
 
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
@@ -46,12 +42,13 @@ public:
     virtual bool isBlank() const;
     virtual bool isRewritable() const;
     virtual qulonglong capacity() const;
-private:
+
+   private:
     bool isWriteable() const;
     WmiQuery::Item m_logicalDisk;
 };
-}
-}
-}
+}  // namespace Wmi
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_WMI_OPTICALDISC_H
+#endif  // SOLID_BACKENDS_WMI_OPTICALDISC_H

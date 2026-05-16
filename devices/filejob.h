@@ -33,122 +33,119 @@ class QTemporaryFile;
 class Thread;
 class FileJob;
 
-class FileThread : public QObject
-{
+class FileThread : public QObject {
     Q_OBJECT
-public:
-    static FileThread * self();
+   public:
+    static FileThread* self();
 
     FileThread();
     ~FileThread() override;
-    void addJob(FileJob *job);
+    void addJob(FileJob* job);
     void stop();
-private:
-    Thread *thread;
+
+   private:
+    Thread* thread;
 };
 
-class FileJob : public QObject
-{
+class FileJob : public QObject {
     Q_OBJECT
 
-public:
-    static void finished(QObject *obj) {
+   public:
+    static void finished(QObject* obj) {
         if (obj) {
             obj->deleteLater();
         }
     }
 
     FileJob();
-    ~FileJob() override { }
+    ~FileJob() override {}
 
     void setPercent(int pc);
-    bool wasStarted() const { return 0!=progressPercent && 100!=progressPercent; }
+    bool wasStarted() const {
+        return 0 != progressPercent && 100 != progressPercent;
+    }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void percent(int pc);
     void result(int status);
 
-public:
-    virtual void stop() { stopRequested=true; }
+   public:
+    virtual void stop() { stopRequested = true; }
     virtual void start();
 
-protected Q_SLOTS:
-    virtual void run()=0;
+   protected Q_SLOTS:
+    virtual void run() = 0;
 
-protected:
+   protected:
     bool stopRequested;
     int progressPercent;
 };
 
-class CopyJob : public FileJob
-{
+class CopyJob : public FileJob {
     Q_OBJECT
 
-public:
-    enum Options
-    {
-        OptsNone         = 0x00,
-        OptsApplyVaFix   = 0x01,
+   public:
+    enum Options {
+        OptsNone = 0x00,
+        OptsApplyVaFix = 0x01,
         OptsUnApplyVaFix = 0x02,
-        OptsFixLocal     = 0x04  // Apply any fixes to a local temp file before sending...
+        OptsFixLocal =
+            0x04  // Apply any fixes to a local temp file before sending...
     };
 
-    CopyJob(const QString &src, const QString &dest, const DeviceOptions &d, int co, const Song &s)
-        : srcFile(src)
-        , destFile(dest)
-        , deviceOpts(d)
-        , copyOpts(co)
-        , song(s)
-        , temp(nullptr)
-        , copiedCover(false) {
-    }
+    CopyJob(const QString& src, const QString& dest, const DeviceOptions& d,
+            int co, const Song& s)
+        : srcFile(src),
+          destFile(dest),
+          deviceOpts(d),
+          copyOpts(co),
+          song(s),
+          temp(nullptr),
+          copiedCover(false) {}
     ~CopyJob() override;
 
     bool coverCopied() const { return copiedCover; }
 
-protected:
+   protected:
     QString updateTagsLocal();
     void updateTagsDest();
-    void copyCover(const QString &origSrcFile);
+    void copyCover(const QString& origSrcFile);
 
-private:
+   private:
     void run() override;
 
-protected:
+   protected:
     QString srcFile;
     QString destFile;
     DeviceOptions deviceOpts;
     int copyOpts;
     Song song;
-    QTemporaryFile *temp;
+    QTemporaryFile* temp;
     bool copiedCover;
 };
 
-class DeleteJob : public FileJob
-{
-public:
-    DeleteJob(const QString &file, bool rl=false)
-        : fileName(file)
-        , remLyrics(rl) {
-    }
-private:
+class DeleteJob : public FileJob {
+   public:
+    DeleteJob(const QString& file, bool rl = false)
+        : fileName(file), remLyrics(rl) {}
+
+   private:
     void run() override;
-private:
+
+   private:
     QString fileName;
     bool remLyrics;
 };
 
-class CleanJob : public FileJob
-{
-public:
-    CleanJob(const QSet<QString> &d, const QString &b, const QString &cf)
-        : dirs(d)
-        , base(b)
-        , coverFile(cf) {
-    }
-private:
+class CleanJob : public FileJob {
+   public:
+    CleanJob(const QSet<QString>& d, const QString& b, const QString& cf)
+        : dirs(d), base(b), coverFile(cf) {}
+
+   private:
     void run() override;
-private:
+
+   private:
     QSet<QString> dirs;
     QString base;
     QString coverFile;

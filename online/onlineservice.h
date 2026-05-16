@@ -29,26 +29,25 @@
 class QString;
 struct Song;
 
-class OnlineService
-{
-public:
-    virtual ~OnlineService() { }
+class OnlineService {
+   public:
+    virtual ~OnlineService() {}
 
-    static QString iconPath(const QString &srv);
-    static bool showLogoAsCover(const Song &s);
-    static bool isPodcasts(const QString &srv);
-    static Song & encode(Song &s);
-    static bool decode(Song &song);
+    static QString iconPath(const QString& srv);
+    static bool showLogoAsCover(const Song& s);
+    static bool isPodcasts(const QString& srv);
+    static Song& encode(Song& s);
+    static bool decode(Song& song);
 
-    virtual QString name() const =0;
-    virtual QString title() const =0;
-    virtual QString descr() const =0;
-    const QIcon & icon() const { return icn; }
+    virtual QString name() const = 0;
+    virtual QString title() const = 0;
+    virtual QString descr() const = 0;
+    const QIcon& icon() const { return icn; }
 
-protected:
-    static void useCovers(const QString &name, bool onlyIfCache=false);
+   protected:
+    static void useCovers(const QString& name, bool onlyIfCache = false);
 
-protected:
+   protected:
     QIcon icn;
 };
 

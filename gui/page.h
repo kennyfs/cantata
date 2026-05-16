@@ -27,23 +27,31 @@
 #include "mpd-interface/song.h"
 #include "mpd-interface/mpdconnection.h"
 
-class Page
-{
-public:
-    Page() { }
-    virtual ~Page() { }
+class Page {
+   public:
+    Page() {}
+    virtual ~Page() {}
     virtual Song coverRequest() const { return Song(); }
-    virtual QList<Song> selectedSongs(bool allowPlaylists=false) const { Q_UNUSED(allowPlaylists) return QList<Song>(); }
-    virtual void addSelectionToPlaylist(const QString &name=QString(), int action=MPDConnection::Append, quint8 priority=0, bool decreasePriority=false) {
-        Q_UNUSED(name) Q_UNUSED(action) Q_UNUSED(priority) Q_UNUSED(decreasePriority)
+    virtual QList<Song> selectedSongs(bool allowPlaylists = false) const {
+        Q_UNUSED(allowPlaylists)
+        return QList<Song>();
     }
-    #ifdef ENABLE_DEVICES_SUPPORT
-    virtual void addSelectionToDevice(const QString &udi) { Q_UNUSED(udi) }
-    virtual void deleteSongs() { }
-    #endif
-    virtual void focusSearch() { }
-    virtual void removeItems() { }
-    virtual void controlActions() { }
+    virtual void addSelectionToPlaylist(const QString& name = QString(),
+                                        int action = MPDConnection::Append,
+                                        quint8 priority = 0,
+                                        bool decreasePriority = false) {
+        Q_UNUSED(name)
+        Q_UNUSED(action)
+        Q_UNUSED(priority)
+        Q_UNUSED(decreasePriority)
+    }
+#ifdef ENABLE_DEVICES_SUPPORT
+    virtual void addSelectionToDevice(const QString& udi) { Q_UNUSED(udi) }
+    virtual void deleteSongs() {}
+#endif
+    virtual void focusSearch() {}
+    virtual void removeItems() {}
+    virtual void controlActions() {}
 };
 
 #endif

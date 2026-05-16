@@ -27,26 +27,22 @@
 #include <QApplication>
 #include <QCursor>
 
-UrlLabel::UrlLabel(QWidget *p)
-    : QLabel(p)
-{
+UrlLabel::UrlLabel(QWidget* p) : QLabel(p) {
     setCursor(QCursor(Qt::PointingHandCursor));
     setTextInteractionFlags(Qt::TextBrowserInteraction);
     setOpenExternalLinks(false);
-    connect(this, SIGNAL(linkActivated(QString)), this, SIGNAL(leftClickedUrl()));
+    connect(this, SIGNAL(linkActivated(QString)), this,
+            SIGNAL(leftClickedUrl()));
 }
 
-void UrlLabel::setText(const QString &t)
-{
-    QLabel::setText("<a href=\".\">"+t+"</a>");
+void UrlLabel::setText(const QString& t) {
+    QLabel::setText("<a href=\".\">" + t + "</a>");
 }
 
-void UrlLabel::setProperty(const char *name, const QVariant &value)
-{
-    if (name && !strcmp(name, "text") && QVariant::String==value.type()) {
+void UrlLabel::setProperty(const char* name, const QVariant& value) {
+    if (name && !strcmp(name, "text") && QVariant::String == value.type()) {
         setText(value.toString());
     }
 }
-
 
 #include "moc_urllabel.cpp"

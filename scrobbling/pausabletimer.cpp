@@ -23,24 +23,17 @@
 
 #include "pausabletimer.h"
 
-PausableTimer::PausableTimer()
-    : QTimer()
-    , timePaused(0)
-{
-    setInterval(0);
-}
+PausableTimer::PausableTimer() : QTimer(), timePaused(0) { setInterval(0); }
 
-void PausableTimer::start()
-{
+void PausableTimer::start() {
     elapsedTimer.start();
     QTimer::start(interval());
 }
 
-void PausableTimer::pause()
-{
+void PausableTimer::pause() {
     if (isActive()) {
         stop();
-        timePaused+=elapsedTimer.elapsed();
+        timePaused += elapsedTimer.elapsed();
         setInterval(interval() - timePaused);
     }
 }

@@ -34,39 +34,29 @@
 static const QLatin1String constName("soundcloud");
 static const QLatin1String constUrl("https://api.soundcloud.com/tracks");
 
-SoundCloudService::SoundCloudService(QObject *p)
-    : OnlineSearchService(p)
-{
-    icn=MonoIcon::icon(FontAwesome::soundcloud, Utils::monoIconColor());
+SoundCloudService::SoundCloudService(QObject* p) : OnlineSearchService(p) {
+    icn = MonoIcon::icon(FontAwesome::soundcloud, Utils::monoIconColor());
 }
 
-QString SoundCloudService::name() const
-{
-    return constName;
-}
+QString SoundCloudService::name() const { return constName; }
 
-QString SoundCloudService::title() const
-{
-    return QLatin1String("SoundCloud");
-}
+QString SoundCloudService::title() const { return QLatin1String("SoundCloud"); }
 
-QString SoundCloudService::descr() const
-{
+QString SoundCloudService::descr() const {
     return tr("Search for tracks from soundcloud.com");
 }
 
-void SoundCloudService::search(const QString &key, const QString &value)
-{
+void SoundCloudService::search(const QString& key, const QString& value) {
     Q_UNUSED(key);
 
-    if (value==currentValue) {
+    if (value == currentValue) {
         return;
     }
 
     clear();
     cancel();
 
-    currentValue=value;
+    currentValue = value;
 
     if (currentValue.isEmpty()) {
         return;
@@ -81,16 +71,15 @@ void SoundCloudService::search(const QString &key, const QString &value)
 
     QNetworkRequest req(searchUrl);
     req.setRawHeader("Accept", "application/json");
-    job=NetworkAccessManager::self()->get(req);
+    job = NetworkAccessManager::self()->get(req);
     connect(job, SIGNAL(finished()), this, SLOT(jobFinished()));
     emit searching();
     emit dataChanged(QModelIndex(), QModelIndex());
 }
 
-void SoundCloudService::jobFinished()
-{
-    NetworkJob *j=dynamic_cast<NetworkJob *>(sender());
-    if (!j || j!=job) {
+void SoundCloudService::jobFinished() {
+    NetworkJob* j = dynamic_cast<NetworkJob*>(sender());
+    if (!j || j != job) {
         return;
     }
 
@@ -98,11 +87,11 @@ void SoundCloudService::jobFinished()
     QList<Song> songs;
 
     if (j->ok()) {
-        QVariant result=QJsonDocument::fromJson(j->readAll()).toVariant();
+        QVariant result = QJsonDocument::fromJson(j->readAll()).toVariant();
         if (result.isValid()) {
             QVariantList list = result.toList();
-            for (const QVariant &item: list) {
-                QVariantMap details=item.toMap();
+            for (const QVariant& item : list) {
+                QVariantMap details = item.toMap();
                 if (details["title"].toString().isEmpty()) {
                     continue;
                 }
@@ -112,16 +101,19 @@ void SoundCloudService::jobFinished()
                 ApiKeys::self()->addKey(query, ApiKeys::SoundCloud);
                 url.setQuery(query);
                 // MPD does not seem to support https :-(
-                if (QLatin1String("https")==url.scheme() && !MPDConnection::self()->urlHandlers().contains(QLatin1String("https"))) {
+                if (QLatin1String("https") == url.scheme() &&
+                    !MPDConnection::self()->urlHandlers().contains(
+                        QLatin1String("https"))) {
                     url.setScheme(QLatin1String("http"));
                 }
-                song.file=url.toString();
-                // We don't have a real artist name, but username is the most similar thing we have
-                song.artist=details["user"].toMap()["username"].toString();
-                song.title=details["title"].toString();
-                song.genres[0]=details["genre"].toString();
-                song.year=details["release_year"].toInt();
-                song.time=details["duration"].toUInt()/1000;
+                song.file = url.toString();
+                // We don't have a real artist name, but username is the most
+                // similar thing we have
+                song.artist = details["user"].toMap()["username"].toString();
+                song.title = details["title"].toString();
+                song.genres[0] = details["genre"].toString();
+                song.year = details["release_year"].toInt();
+                song.time = details["duration"].toUInt() / 1000;
                 song.fillEmptyFields();
                 songs.append(song);
             }
@@ -130,7 +122,7 @@ void SoundCloudService::jobFinished()
         ApiKeys::self()->isLimitReached(j->actualJob(), ApiKeys::SoundCloud);
     }
     results(songs);
-    job=nullptr;
+    job = nullptr;
     emit dataChanged(QModelIndex(), QModelIndex());
 }
 

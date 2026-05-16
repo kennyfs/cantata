@@ -27,29 +27,26 @@
 
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
 class HalDevice;
 
-class PortableMediaPlayer : public DeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
-{
+class PortableMediaPlayer : public DeviceInterface,
+                            virtual public Solid::Ifaces::PortableMediaPlayer {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::PortableMediaPlayer)
 
-public:
-    PortableMediaPlayer(HalDevice *device);
+   public:
+    PortableMediaPlayer(HalDevice* device);
     ~PortableMediaPlayer() override;
 
     QStringList supportedProtocols() const override;
     QStringList supportedDrivers(QString protocol = QString()) const override;
-    QVariant driverHandle(const QString &driver) const override;
+    QVariant driverHandle(const QString& driver) const override;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_PORTABLEMEDIAPLAYER_H
+#endif  // SOLID_BACKENDS_HAL_PORTABLEMEDIAPLAYER_H

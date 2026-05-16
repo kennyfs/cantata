@@ -30,43 +30,42 @@
 
 GLOBAL_STATIC(PowerManagement, instance)
 
-static void powerEventCallback(void *rootPort, io_service_t, natural_t msg, void *arg)
-{
+static void powerEventCallback(void* rootPort, io_service_t, natural_t msg,
+                               void* arg) {
     switch (msg) {
-    case kIOMessageSystemWillSleep:
-        IOAllowPowerChange(*(io_connect_t *) rootPort, (long)arg);
-        break;
-    case kIOMessageSystemHasPoweredOn:
-        PowerManagement::self()->emitResuming();
-        break;
-    case kIOMessageCanSystemSleep:
-        if (PowerManagement::self()->inhibitSuspend() && MPDState_Playing==MPDStatus::self()->state()) {
-            IOCancelPowerChange(*(io_connect_t *) rootPort, (long)arg);
-        } else {
-            IOAllowPowerChange(*(io_connect_t *) rootPort, (long)arg);
-        }
-        break;
-    default:
-        break;
+        case kIOMessageSystemWillSleep:
+            IOAllowPowerChange(*(io_connect_t*)rootPort, (long)arg);
+            break;
+        case kIOMessageSystemHasPoweredOn:
+            PowerManagement::self()->emitResuming();
+            break;
+        case kIOMessageCanSystemSleep:
+            if (PowerManagement::self()->inhibitSuspend() &&
+                MPDState_Playing == MPDStatus::self()->state()) {
+                IOCancelPowerChange(*(io_connect_t*)rootPort, (long)arg);
+            } else {
+                IOAllowPowerChange(*(io_connect_t*)rootPort, (long)arg);
+            }
+            break;
+        default:
+            break;
     }
 }
 
-PowerManagement::PowerManagement()
-    : inhibitSuspendWhilstPlaying(false)
-{
+PowerManagement::PowerManagement() : inhibitSuspendWhilstPlaying(false) {
     static io_connect_t rootPort;
     IONotificationPortRef notificationPort;
     io_object_t notifier;
 
-    rootPort = IORegisterForSystemPower(&rootPort, &notificationPort, powerEventCallback, &notifier);
+    rootPort = IORegisterForSystemPower(&rootPort, &notificationPort,
+                                        powerEventCallback, &notifier);
     if (rootPort) {
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(notificationPort), kCFRunLoopDefaultMode);
+        CFRunLoopAddSource(CFRunLoopGetCurrent(),
+                           IONotificationPortGetRunLoopSource(notificationPort),
+                           kCFRunLoopDefaultMode);
     }
 }
 
-void PowerManagement::emitResuming()
-{
-    emit resuming();
-}
+void PowerManagement::emitResuming() { emit resuming(); }
 
 #include "moc_powermanagement.cpp"

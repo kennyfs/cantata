@@ -27,25 +27,24 @@
 #include "support/combobox.h"
 #include <QSet>
 
-class GenreCombo : public ComboBox
-{
+class GenreCombo : public ComboBox {
     Q_OBJECT
-public:
-    GenreCombo(QWidget *p);
-    ~GenreCombo() override { }
+   public:
+    GenreCombo(QWidget* p);
+    ~GenreCombo() override {}
 
-    const QSet<QString> & entries() const { return genres; }
+    const QSet<QString>& entries() const { return genres; }
 
-    void paintEvent(QPaintEvent *e) override;
-    bool event(QEvent *event) override;
+    void paintEvent(QPaintEvent* e) override;
+    bool event(QEvent* event) override;
 
-public Q_SLOTS:
-    void update(const QSet<QString> &g);
+   public Q_SLOTS:
+    void update(const QSet<QString>& g);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void showEntries();
 
-private:
+   private:
     QSet<QString> genres;
 };
 

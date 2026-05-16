@@ -28,29 +28,25 @@
 #include "support/icon.h"
 #include <QListWidget>
 
-enum Roles {
-    KeyRole = Qt::UserRole,
-    ConfigurableRole
-};
+enum Roles { KeyRole = Qt::UserRole, ConfigurableRole };
 
-OnlineSettings::OnlineSettings(QWidget *p)
-    : QWidget(p)
-{
+OnlineSettings::OnlineSettings(QWidget* p) : QWidget(p) {
     setupUi(this);
     providers->setItemDelegate(new BasicItemDelegate(providers));
     providers->setSortingEnabled(true);
-    int iSize=Icon::stdSize(QApplication::fontMetrics().height()*1.25);
-    providers->setIconSize(QSize(iSize, iSize));    
-    connect(providers, SIGNAL(currentRowChanged(int)), SLOT(currentProviderChanged(int)));
+    int iSize = Icon::stdSize(QApplication::fontMetrics().height() * 1.25);
+    providers->setIconSize(QSize(iSize, iSize));
+    connect(providers, SIGNAL(currentRowChanged(int)),
+            SLOT(currentProviderChanged(int)));
     connect(configureButton, SIGNAL(clicked()), this, SLOT(configure()));
     configureButton->setEnabled(false);
 }
 
-void OnlineSettings::load()
-{
-    QList<OnlineServicesModel::Provider> provs=OnlineServicesModel::self()->getProviders();
-    for (const OnlineServicesModel::Provider &prov: provs) {
-        QListWidgetItem *item=new QListWidgetItem(prov.name, providers);
+void OnlineSettings::load() {
+    QList<OnlineServicesModel::Provider> provs =
+        OnlineServicesModel::self()->getProviders();
+    for (const OnlineServicesModel::Provider& prov : provs) {
+        QListWidgetItem* item = new QListWidgetItem(prov.name, providers);
         item->setCheckState(prov.hidden ? Qt::Unchecked : Qt::Checked);
         item->setData(KeyRole, prov.key);
         item->setData(ConfigurableRole, prov.configurable);
@@ -58,13 +54,12 @@ void OnlineSettings::load()
     }
 }
 
-void OnlineSettings::save()
-{
+void OnlineSettings::save() {
     QSet<QString> disabled;
-    for (int i=0; i<providers->count(); ++i) {
-        QListWidgetItem *item=providers->item(i);
-        if (Qt::Unchecked==item->checkState()) {
-            QString id=item->data(KeyRole).toString();
+    for (int i = 0; i < providers->count(); ++i) {
+        QListWidgetItem* item = providers->item(i);
+        if (Qt::Unchecked == item->checkState()) {
+            QString id = item->data(KeyRole).toString();
             if (OnlineServicesModel::self()->serviceIsBusy(id)) {
                 item->setCheckState(Qt::Checked);
             } else {
@@ -75,30 +70,29 @@ void OnlineSettings::save()
     OnlineServicesModel::self()->setHiddenProviders(disabled);
 }
 
-void OnlineSettings::currentProviderChanged(int row)
-{
-    bool enableConfigure=false;
+void OnlineSettings::currentProviderChanged(int row) {
+    bool enableConfigure = false;
 
-    if (row>=0) {
-        QListWidgetItem *item=providers->item(row);
-        enableConfigure=item->data(ConfigurableRole).toBool();
+    if (row >= 0) {
+        QListWidgetItem* item = providers->item(row);
+        enableConfigure = item->data(ConfigurableRole).toBool();
     }
     configureButton->setEnabled(enableConfigure);
 }
 
-void OnlineSettings::configure()
-{
-    int row=providers->currentRow();
-    if (row<0) {
+void OnlineSettings::configure() {
+    int row = providers->currentRow();
+    if (row < 0) {
         return;
     }
 
-    QListWidgetItem *item=providers->item(row);
+    QListWidgetItem* item = providers->item(row);
     if (!item->data(ConfigurableRole).toBool()) {
         return;
     }
 
-    OnlineService *srv=OnlineServicesModel::self()->service(item->data(KeyRole).toString());
+    OnlineService* srv =
+        OnlineServicesModel::self()->service(item->data(KeyRole).toString());
     if (srv && srv->canConfigure()) {
         srv->configure(this);
     }

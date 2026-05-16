@@ -27,12 +27,11 @@
 #include "fsdevice.h"
 #include "solid-lite/storageaccess.h"
 
-class UmsDevice : public FsDevice
-{
+class UmsDevice : public FsDevice {
     Q_OBJECT
 
-public:
-    UmsDevice(MusicLibraryModel *m, Solid::Device &dev);
+   public:
+    UmsDevice(MusicLibraryModel* m, Solid::Device& dev);
     ~UmsDevice() override;
 
     void connectionStateChanged() override;
@@ -43,19 +42,19 @@ public:
     qint64 freeSpace() override;
     DevType devType() const override { return Ums; }
     void saveOptions() override;
-    void configure(QWidget *parent) override;
+    void configure(QWidget* parent) override;
     bool supportsDisconnect() const override { return true; }
 
-private:
+   private:
     void setup();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void saveProperties();
-    void saveProperties(const QString &newPath, const DeviceOptions &opts);
+    void saveProperties(const QString& newPath, const DeviceOptions& opts);
 
-private:
+   private:
     QString defaultName;
-    Solid::StorageAccess *access;
+    Solid::StorageAccess* access;
     QStringList unusedParams;
 };
 

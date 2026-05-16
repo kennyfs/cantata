@@ -33,51 +33,46 @@
 class QPushButton;
 class Thread;
 
-class SpaceLabel : public SqueezedTextLabel
-{
+class SpaceLabel : public SqueezedTextLabel {
     Q_OBJECT
 
-public:
-    SpaceLabel(QWidget *p);
+   public:
+    SpaceLabel(QWidget* p);
 
     void update(int space);
-    void update(const QString &text);
+    void update(const QString& text);
 };
 
-class CacheItemCounter : public QObject
-{
+class CacheItemCounter : public QObject {
     Q_OBJECT
 
-public:
-    CacheItemCounter(const QString &name, const QString &d, const QStringList &t);
+   public:
+    CacheItemCounter(const QString& name, const QString& d,
+                     const QStringList& t);
     ~CacheItemCounter() override;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void count(int num, quint64 space);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void getCount();
     void deleteAll();
 
-private:
+   private:
     QString dir;
     QStringList types;
-    Thread *thread;
+    Thread* thread;
 };
 
-class CacheItem : public QObject, public QTreeWidgetItem
-{
+class CacheItem : public QObject, public QTreeWidgetItem {
     Q_OBJECT
 
-public:
-    enum Type {
-        Type_Covers,
-        Type_ScaledCovers,
-        Type_Other
-    };
+   public:
+    enum Type { Type_Covers, Type_ScaledCovers, Type_Other };
 
-public:
-    CacheItem(const QString &title, const QString &d, const QStringList &t, QTreeWidget *parent, Type ty=Type_Other);
+   public:
+    CacheItem(const QString& title, const QString& d, const QStringList& t,
+              QTreeWidget* parent, Type ty = Type_Other);
     ~CacheItem() override;
 
     void calculate();
@@ -86,55 +81,53 @@ public:
     QString name() const { return text(0); }
     int spaceUsed() const { return usedSpace; }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void getCount();
     void deleteAll();
     void updated();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void update(int itemCount, quint64 space);
 
-private:
-    void setStatus(const QString &str=QString());
+   private:
+    void setStatus(const QString& str = QString());
 
-private:
-    CacheItemCounter *counter;
+   private:
+    CacheItemCounter* counter;
     bool empty;
     quint64 usedSpace;
     Type type;
 };
 
-class CacheTree : public QTreeWidget
-{
+class CacheTree : public QTreeWidget {
     Q_OBJECT
 
-public:
-    CacheTree(QWidget *parent);
+   public:
+    CacheTree(QWidget* parent);
     ~CacheTree() override;
 
-    void showEvent(QShowEvent *e) override;
+    void showEvent(QShowEvent* e) override;
 
-private:
+   private:
     bool calculated;
 };
 
-class CacheSettings : public QWidget
-{
+class CacheSettings : public QWidget {
     Q_OBJECT
 
-public:
-    CacheSettings(QWidget *parent);
+   public:
+    CacheSettings(QWidget* parent);
     ~CacheSettings() override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void controlButton();
     void deleteAll();
     void updateSpace();
 
-private:
-    QTreeWidget *tree;
-    SpaceLabel *spaceLabel;
-    QPushButton *button;
+   private:
+    QTreeWidget* tree;
+    SpaceLabel* spaceLabel;
+    QPushButton* button;
 };
 
 #endif

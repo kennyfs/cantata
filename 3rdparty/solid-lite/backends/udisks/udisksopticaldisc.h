@@ -25,21 +25,17 @@
 #include <solid-lite/ifaces/opticaldisc.h>
 #include "udisksstoragevolume.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 
-class OpticalDisc : public UDisksStorageVolume, virtual public Solid::Ifaces::OpticalDisc
-{
-
+class OpticalDisc : public UDisksStorageVolume,
+                    virtual public Solid::Ifaces::OpticalDisc {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::OpticalDisc)
 
-public:
-    OpticalDisc(UDisksDevice *device);
+   public:
+    OpticalDisc(UDisksDevice* device);
     virtual ~OpticalDisc();
 
     virtual qulonglong capacity() const;
@@ -49,15 +45,15 @@ public:
     virtual Solid::OpticalDisc::DiscType discType() const;
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
 
-private slots:
+   private slots:
     void slotChanged();
 
-private:
+   private:
     mutable bool m_needsReprobe;
     mutable Solid::OpticalDisc::ContentTypes m_cachedContent;
 };
 
-}
-}
-}
-#endif // OPTICALDISC_H
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
+#endif  // OPTICALDISC_H

@@ -28,19 +28,16 @@
 #include <QDBusMessage>
 #include <QDBusError>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks2
-{
-class StorageAccess : public DeviceInterface, virtual public Solid::Ifaces::StorageAccess
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks2 {
+class StorageAccess : public DeviceInterface,
+                      virtual public Solid::Ifaces::StorageAccess {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageAccess)
 
-public:
-    StorageAccess(Device *device);
+   public:
+    StorageAccess(Device* device);
     ~StorageAccess() override;
 
     bool isAccessible() const override;
@@ -49,30 +46,32 @@ public:
     bool setup() override;
     bool teardown() override;
 
-Q_SIGNALS:
-    void accessibilityChanged(bool accessible, const QString &udi) override;
-    void setupDone(Solid::ErrorType error, QVariant errorData, const QString &udi) override;
-    void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi) override;
-    void setupRequested(const QString &udi) override;
-    void teardownRequested(const QString &udi) override;
+   Q_SIGNALS:
+    void accessibilityChanged(bool accessible, const QString& udi) override;
+    void setupDone(Solid::ErrorType error, QVariant errorData,
+                   const QString& udi) override;
+    void teardownDone(Solid::ErrorType error, QVariant errorData,
+                      const QString& udi) override;
+    void setupRequested(const QString& udi) override;
+    void teardownRequested(const QString& udi) override;
 
-public Q_SLOTS:
-    Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString & passphrase);
+   public Q_SLOTS:
+    Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString& passphrase);
 
-private Q_SLOTS:
-    void slotDBusReply(const QDBusMessage & reply);
-    void slotDBusError(const QDBusError & error);
+   private Q_SLOTS:
+    void slotDBusReply(const QDBusMessage& reply);
+    void slotDBusError(const QDBusError& error);
 
     void connectDBusSignals();
 
     void slotSetupRequested();
-    void slotSetupDone(int error, const QString &errorString);
+    void slotSetupDone(int error, const QString& errorString);
     void slotTeardownRequested();
-    void slotTeardownDone(int error, const QString &errorString);
+    void slotTeardownDone(int error, const QString& errorString);
 
     void checkAccessibility();
 
-private:
+   private:
     /// @return true if this device is luks and unlocked
     bool isLuksDevice() const;
 
@@ -82,13 +81,13 @@ private:
     bool unmount();
 
     bool requestPassphrase();
-    void callCryptoSetup( const QString & passphrase );
-    bool callCryptoTeardown( bool actOnParent=false );
+    void callCryptoSetup(const QString& passphrase);
+    bool callCryptoTeardown(bool actOnParent = false);
 
     QString generateReturnObjectPath();
     QString clearTextPath() const;
 
-private:
+   private:
     bool m_isAccessible;
     bool m_setupInProgress;
     bool m_teardownInProgress;
@@ -97,8 +96,8 @@ private:
 
     static const int s_unmountTimeout = 0x7fffffff;
 };
-}
-}
-}
+}  // namespace UDisks2
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKS2STORAGEACCESS_H
+#endif  // UDISKS2STORAGEACCESS_H

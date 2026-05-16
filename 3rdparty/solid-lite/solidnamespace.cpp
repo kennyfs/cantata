@@ -20,11 +20,10 @@
 
 #include "solidnamespace.h"
 
-static int registerSolidMetaTypes()
-{
+static int registerSolidMetaTypes() {
     qRegisterMetaType<Solid::ErrorType>();
 
-    return 0; // something
+    return 0;  // something
 }
 
 #ifdef Q_CONSTRUCTOR_FUNCTION

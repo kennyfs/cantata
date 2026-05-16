@@ -27,25 +27,22 @@
 #include <QObject>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDev
-{
-class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
-{
+namespace Solid {
+namespace Backends {
+namespace UDev {
+class DeviceInterface : public QObject,
+                        virtual public Solid::Ifaces::DeviceInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::DeviceInterface)
-public:
-    DeviceInterface(UDevDevice *device);
+   public:
+    DeviceInterface(UDevDevice* device);
     ~DeviceInterface() override;
 
-protected:
-    UDevDevice *m_device;
+   protected:
+    UDevDevice* m_device;
 };
-}
-}
-}
+}  // namespace UDev
+}  // namespace Backends
+}  // namespace Solid
 
 #endif

@@ -29,33 +29,27 @@
 #include "db/onlinedb.h"
 #include <QXmlStreamReader>
 
-OnlineXmlParser::OnlineXmlParser()
-{
-    thread=new Thread(metaObject()->className());
+OnlineXmlParser::OnlineXmlParser() {
+    thread = new Thread(metaObject()->className());
     moveToThread(thread);
     thread->start();
-    connect(this, SIGNAL(startParsing(NetworkJob*)), this, SLOT(doParsing(NetworkJob*)));
+    connect(this, SIGNAL(startParsing(NetworkJob*)), this,
+            SLOT(doParsing(NetworkJob*)));
 }
 
-OnlineXmlParser::~OnlineXmlParser()
-{
-}
+OnlineXmlParser::~OnlineXmlParser() {}
 
-void OnlineXmlParser::start(NetworkJob *job)
-{
-    emit startParsing(job);
-}
+void OnlineXmlParser::start(NetworkJob* job) { emit startParsing(job); }
 
-void OnlineXmlParser::doParsing(NetworkJob *job)
-{
+void OnlineXmlParser::doParsing(NetworkJob* job) {
     QtIOCompressor comp(job->actualJob());
     comp.setStreamFormat(QtIOCompressor::GzipFormat);
     if (comp.open(QIODevice::ReadOnly)) {
         QXmlStreamReader reader;
         reader.setDevice(&comp);
         emit startUpdate();
-        int artistCount=parse(reader);
-        if (artistCount>0) {
+        int artistCount = parse(reader);
+        if (artistCount > 0) {
             emit endUpdate();
             emit stats(artistCount);
         } else {
@@ -68,132 +62,138 @@ void OnlineXmlParser::doParsing(NetworkJob *job)
     emit complete();
 }
 
-OnlineDbService::OnlineDbService(LibraryDb *d, QObject *p)
-    : SqlLibraryModel(d, p, T_Genre)
-    , lastPc(-1)
-    , job(nullptr)
-{
-    connect(Covers::self(), SIGNAL(cover(Song,QImage,QString)), this, SLOT(cover(Song,QImage,QString)));
+OnlineDbService::OnlineDbService(LibraryDb* d, QObject* p)
+    : SqlLibraryModel(d, p, T_Genre), lastPc(-1), job(nullptr) {
+    connect(Covers::self(), SIGNAL(cover(Song, QImage, QString)), this,
+            SLOT(cover(Song, QImage, QString)));
 }
 
-QVariant OnlineDbService::data(const QModelIndex &index, int role) const
-{
+QVariant OnlineDbService::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         switch (role) {
-        case Cantata::Role_TitleText:
-            return title();
-        case Cantata::Role_SubText:
-            if (!status.isEmpty()) {
-                return status;
-            }
-            if (!stats.isEmpty()) {
-                return stats;
-            }
-            return descr();
-        case Qt::DecorationRole:
-            return icon();
+            case Cantata::Role_TitleText:
+                return title();
+            case Cantata::Role_SubText:
+                if (!status.isEmpty()) {
+                    return status;
+                }
+                if (!stats.isEmpty()) {
+                    return stats;
+                }
+                return descr();
+            case Qt::DecorationRole:
+                return icon();
         }
     }
     return SqlLibraryModel::data(index, role);
 }
 
-bool OnlineDbService::previouslyDownloaded() const
-{
+bool OnlineDbService::previouslyDownloaded() const {
     // Create DB, if it does not already exist
-    static_cast<OnlineDb *>(db)->create();
-    return 0!=db->getCurrentVersion();
+    static_cast<OnlineDb*>(db)->create();
+    return 0 != db->getCurrentVersion();
 }
 
-void OnlineDbService::open()
-{
-    if (0==rowCount(QModelIndex())) {
+void OnlineDbService::open() {
+    if (0 == rowCount(QModelIndex())) {
         // Create DB, if it does not already exist
-        static_cast<OnlineDb *>(db)->create();
+        static_cast<OnlineDb*>(db)->create();
         libraryUpdated();
         updateStats();
     }
 }
 
-void OnlineDbService::download(bool redownload)
-{
+void OnlineDbService::download(bool redownload) {
     if (job) {
         return;
     }
     if (redownload || !previouslyDownloaded()) {
-        job=NetworkAccessManager::self()->get(QUrl(listingUrl()));
-        connect(job, SIGNAL(downloadPercent(int)), this, SLOT(downloadPercent(int)));
+        job = NetworkAccessManager::self()->get(QUrl(listingUrl()));
+        connect(job, SIGNAL(downloadPercent(int)), this,
+                SLOT(downloadPercent(int)));
         connect(job, SIGNAL(finished()), this, SLOT(downloadFinished()));
-        lastPc=-1;
+        lastPc = -1;
         downloadPercent(0);
     }
 }
 
-void OnlineDbService::abort()
-{
+void OnlineDbService::abort() {
     if (job) {
         job->cancelAndDelete();
-        job=nullptr;
+        job = nullptr;
     }
     db->abortUpdate();
 }
 
-void OnlineDbService::cover(const Song &song, const QImage &img, const QString &file)
-{
-    if (file.isEmpty() || img.isNull() || !song.isFromOnlineService() || song.onlineService()!=name()) {
+void OnlineDbService::cover(const Song& song, const QImage& img,
+                            const QString& file) {
+    if (file.isEmpty() || img.isNull() || !song.isFromOnlineService() ||
+        song.onlineService() != name()) {
         return;
     }
 
-    const Item *genre=root ? root->getChild(song.genres[0]) : nullptr;
+    const Item* genre = root ? root->getChild(song.genres[0]) : nullptr;
     if (genre) {
-        const Item *artist=static_cast<const CollectionItem *>(genre)->getChild(song.albumArtistOrComposer());
+        const Item* artist =
+            static_cast<const CollectionItem*>(genre)->getChild(
+                song.albumArtistOrComposer());
         if (artist) {
-            const Item *album=static_cast<const CollectionItem *>(artist)->getChild(song.albumId());
+            const Item* album =
+                static_cast<const CollectionItem*>(artist)->getChild(
+                    song.albumId());
             if (album) {
-                QModelIndex idx=index(album->getRow(), 0, index(artist->getRow(), 0, index(genre->getRow(), 0, QModelIndex())));
+                QModelIndex idx =
+                    index(album->getRow(), 0,
+                          index(artist->getRow(), 0,
+                                index(genre->getRow(), 0, QModelIndex())));
                 emit dataChanged(idx, idx);
             }
         }
     }
 }
 
-void OnlineDbService::updateStatus(const QString &msg)
-{
-    status=msg;
+void OnlineDbService::updateStatus(const QString& msg) {
+    status = msg;
     emit dataChanged(QModelIndex(), QModelIndex());
 }
 
-void OnlineDbService::downloadPercent(int pc)
-{
-    if (lastPc!=pc) {
-        lastPc=pc;
+void OnlineDbService::downloadPercent(int pc) {
+    if (lastPc != pc) {
+        lastPc = pc;
         updateStatus(tr("Downloading...%1%").arg(pc));
     }
 }
 
-void OnlineDbService::downloadFinished()
-{
-    NetworkJob *reply=qobject_cast<NetworkJob *>(sender());
+void OnlineDbService::downloadFinished() {
+    NetworkJob* reply = qobject_cast<NetworkJob*>(sender());
     if (!reply) {
         return;
     }
 
-    if (reply!=job) {
+    if (reply != job) {
         reply->deleteLater();
         return;
     }
 
     if (reply->ok()) {
         // Ensure DB is created
-        static_cast<OnlineDb *>(db)->create();
+        static_cast<OnlineDb*>(db)->create();
         updateStatus(tr("Parsing music list...."));
-        OnlineXmlParser *parser=createParser();
+        OnlineXmlParser* parser = createParser();
         db->clear();
-        connect(parser, SIGNAL(startUpdate()), static_cast<OnlineDb *>(db), SLOT(startUpdate()));
-        connect(parser, SIGNAL(endUpdate()), static_cast<OnlineDb *>(db), SLOT(endUpdate()));
-        connect(parser, SIGNAL(abortUpdate()), static_cast<OnlineDb *>(db), SLOT(abortUpdate()));
-        connect(parser, SIGNAL(stats(int)), static_cast<OnlineDb *>(db), SLOT(insertStats(int)));
-        connect(parser, SIGNAL(coverUrl(QString,QString,QString)), static_cast<OnlineDb *>(db), SLOT(storeCoverUrl(QString,QString,QString)));
-        connect(parser, SIGNAL(songs(QList<Song>*)), static_cast<OnlineDb *>(db), SLOT(insertSongs(QList<Song>*)));
+        connect(parser, SIGNAL(startUpdate()), static_cast<OnlineDb*>(db),
+                SLOT(startUpdate()));
+        connect(parser, SIGNAL(endUpdate()), static_cast<OnlineDb*>(db),
+                SLOT(endUpdate()));
+        connect(parser, SIGNAL(abortUpdate()), static_cast<OnlineDb*>(db),
+                SLOT(abortUpdate()));
+        connect(parser, SIGNAL(stats(int)), static_cast<OnlineDb*>(db),
+                SLOT(insertStats(int)));
+        connect(parser, SIGNAL(coverUrl(QString, QString, QString)),
+                static_cast<OnlineDb*>(db),
+                SLOT(storeCoverUrl(QString, QString, QString)));
+        connect(parser, SIGNAL(songs(QList<Song>*)), static_cast<OnlineDb*>(db),
+                SLOT(insertSongs(QList<Song>*)));
         connect(parser, SIGNAL(complete()), job, SLOT(deleteLater()));
         connect(parser, SIGNAL(complete()), this, SLOT(updateStats()));
         connect(parser, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
@@ -204,16 +204,15 @@ void OnlineDbService::downloadFinished()
         updateStatus(QString());
         emit error(tr("Failed to download"));
     }
-    job=nullptr;
+    job = nullptr;
 }
 
-void OnlineDbService::updateStats()
-{
-    int numArtists=static_cast<OnlineDb *>(db)->getStats();
-    if (numArtists>0) {
-        stats=tr("%n Artist(s)", "", numArtists);
+void OnlineDbService::updateStats() {
+    int numArtists = static_cast<OnlineDb*>(db)->getStats();
+    if (numArtists > 0) {
+        stats = tr("%n Artist(s)", "", numArtists);
     } else {
-        stats=QString();
+        stats = QString();
     }
     updateStatus(QString());
 }

@@ -28,48 +28,56 @@
 #include "statelabel.h"
 #include "support/urllabel.h"
 
-class NoteLabel : public QWidget
-{
+class NoteLabel : public QWidget {
     Q_OBJECT
-public:
-    static QString formatText(const QString &text);
-    NoteLabel(QWidget *parent=nullptr);
-    void setText(const QString &text) { label->setText(formatText(text)); }
-    void appendText(const QString &text) { label->setText(label->text()+text); }
+   public:
+    static QString formatText(const QString& text);
+    NoteLabel(QWidget* parent = nullptr);
+    void setText(const QString& text) { label->setText(formatText(text)); }
+    void appendText(const QString& text) {
+        label->setText(label->text() + text);
+    }
     QString text() const { return label->text(); }
-    void setProperty(const char *name, const QVariant &value);
+    void setProperty(const char* name, const QVariant& value);
     void setOn(bool o) { label->setOn(o); }
-private:
-    StateLabel *label;
+
+   private:
+    StateLabel* label;
 };
 
-class UrlNoteLabel : public QWidget
-{
+class UrlNoteLabel : public QWidget {
     Q_OBJECT
-public:
-    UrlNoteLabel(QWidget *parent=nullptr);
-    void setText(const QString &text) { label->setText(NoteLabel::formatText(text)); }
-    void appendText(const QString &text) { label->setText(label->text()+text); }
+   public:
+    UrlNoteLabel(QWidget* parent = nullptr);
+    void setText(const QString& text) {
+        label->setText(NoteLabel::formatText(text));
+    }
+    void appendText(const QString& text) {
+        label->setText(label->text() + text);
+    }
     QString text() const { return label->text(); }
-    void setProperty(const char *name, const QVariant &value);
-Q_SIGNALS:
+    void setProperty(const char* name, const QVariant& value);
+   Q_SIGNALS:
     void leftClickedUrl();
-private:
-    UrlLabel *label;
+
+   private:
+    UrlLabel* label;
 };
 
-class PlainNoteLabel : public StateLabel
-{
-public:
-    PlainNoteLabel(QWidget *parent=nullptr);
-    void setText(const QString &text) { StateLabel::setText(NoteLabel::formatText(text)); }
+class PlainNoteLabel : public StateLabel {
+   public:
+    PlainNoteLabel(QWidget* parent = nullptr);
+    void setText(const QString& text) {
+        StateLabel::setText(NoteLabel::formatText(text));
+    }
 };
 
-class PlainUrlNoteLabel : public UrlLabel
-{
-public:
-    PlainUrlNoteLabel(QWidget *parent=nullptr);
-    void setText(const QString &text) { UrlLabel::setText(NoteLabel::formatText(text)); }
+class PlainUrlNoteLabel : public UrlLabel {
+   public:
+    PlainUrlNoteLabel(QWidget* parent = nullptr);
+    void setText(const QString& text) {
+        UrlLabel::setText(NoteLabel::formatText(text));
+    }
 };
 
 #endif

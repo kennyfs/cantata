@@ -33,49 +33,50 @@
 class QTimer;
 class Action;
 
-class SyncCollectionWidget : public QWidget, Ui::SyncCollectionWidget
-{
+class SyncCollectionWidget : public QWidget, Ui::SyncCollectionWidget {
     Q_OBJECT
 
-public:
-    SyncCollectionWidget(QWidget *parent, const QString &title);
+   public:
+    SyncCollectionWidget(QWidget* parent, const QString& title);
     ~SyncCollectionWidget() override;
 
     void clear() { model.clear(); }
-    void update(const QSet<Song> &songs);
-    void setSupportsAlbumArtistTag(bool s) { model.setSupportsAlbumArtistTag(s); }
+    void update(const QSet<Song>& songs);
+    void setSupportsAlbumArtistTag(bool s) {
+        model.setSupportsAlbumArtistTag(s);
+    }
     int numArtists() { return model.rowCount(); }
     int numCheckedSongs() const { return checked.count(); }
     QList<Song> checkedSongs() const;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void selectionChanged();
     void configure();
 
-private Q_SLOTS:
-    void dataChanged(const QModelIndex &tl, const QModelIndex &br);
+   private Q_SLOTS:
+    void dataChanged(const QModelIndex& tl, const QModelIndex& br);
     void checkItems();
     void unCheckItems();
     void delaySearchItems();
     void searchItems();
     void expandAll();
     void collapseAll();
-    void itemClicked(const QModelIndex &index);
-    void itemActivated(const QModelIndex &index);
+    void itemClicked(const QModelIndex& index);
+    void itemActivated(const QModelIndex& index);
 
-private:
+   private:
     void checkItems(bool c);
-    void songToggled(const MusicLibraryItemSong *song);
+    void songToggled(const MusicLibraryItemSong* song);
 
-private:
+   private:
     bool performedSearch;
     MusicLibraryModel model;
     MusicLibraryProxyModel proxy;
-    QTimer *searchTimer;
-    QSet<const Song *> checked;
+    QTimer* searchTimer;
+    QSet<const Song*> checked;
     quint64 spaceRequired;
-    Action *checkAction;
-    Action *unCheckAction;
+    Action* checkAction;
+    Action* unCheckAction;
 };
 
 #endif

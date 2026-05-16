@@ -38,28 +38,27 @@ enum MPDState {
 
 struct MPDStatusValues {
     MPDStatusValues()
-        : volume(0)
-        , consume(false)
-        , repeat(false)
-        , single(false)
-        , random(false)
-        , partition("")
-        , playlist(0)
-        , playlistLength(0)
-        , crossFade(0)
-        , state(MPDState_Inactive)
-        , song(-1)
-        , songId(-1)
-        , nextSong(-1)
-        , nextSongId(-1)
-        , timeElapsed(0)
-        , timeTotal(0)
-        , bitrate(0)
-        , samplerate(0)
-        , bits(0)
-        , channels(0)
-        , updatingDb(-1) {
-    }
+        : volume(0),
+          consume(false),
+          repeat(false),
+          single(false),
+          random(false),
+          partition(""),
+          playlist(0),
+          playlistLength(0),
+          crossFade(0),
+          state(MPDState_Inactive),
+          song(-1),
+          songId(-1),
+          nextSong(-1),
+          nextSongId(-1),
+          timeElapsed(0),
+          timeTotal(0),
+          bitrate(0),
+          samplerate(0),
+          bits(0),
+          channels(0),
+          updatingDb(-1) {}
     qint8 volume;
     bool consume;
     bool repeat;
@@ -84,23 +83,23 @@ struct MPDStatusValues {
     QString error;
 };
 
-class MPDStatus : public QObject
-{
+class MPDStatus : public QObject {
     Q_OBJECT
 
-public:
+   public:
     MPDStatus();
     ~MPDStatus() override {}
 
-    static MPDStatus * self();
+    static MPDStatus* self();
 
-    // NOTE: There are no read/write locks aroud these values as they are read/written only fro the GUI thread...
+    // NOTE: There are no read/write locks aroud these values as they are
+    // read/written only fro the GUI thread...
     qint8 volume() const { return values.volume; }
     bool consume() const { return values.consume; }
     bool repeat() const { return values.repeat; }
     bool single() const { return values.single; }
     bool random() const { return values.random; }
-    const QString & partition() const { return values.partition; }
+    const QString& partition() const { return values.partition; }
     quint32 playlist() const { return values.playlist; }
     quint32 playlistLength() const { return values.playlistLength; }
     qint32 crossFade() const { return values.crossFade; }
@@ -116,25 +115,25 @@ public:
     quint8 bits() const { return values.bits; }
     quint8 channels() const { return values.channels; }
     qint32 updatingDb() const { return values.updatingDb; }
-    const QString & error() const { return values.error; }
+    const QString& error() const { return values.error; }
     MPDStatusValues getValues() const { return values; }
 
     // Cantata does not poll MPD for current position, but instead used a timer
     // This timer will update its value here - so this can be used elsewhere...
-    void setGuessedElapsed(quint16 v) { guessed=v; }
+    void setGuessedElapsed(quint16 v) { guessed = v; }
     quint16 guessedElapsed() const { return guessed; }
 
-public Q_SLOTS:
-    void update(const MPDStatusValues &v);
+   public Q_SLOTS:
+    void update(const MPDStatusValues& v);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void updated();
 
-private:
+   private:
     MPDStatus(const MPDStatus&);
     MPDStatus& operator=(const MPDStatus& other);
 
-private:
+   private:
     quint16 guessed;
     MPDStatusValues values;
 };

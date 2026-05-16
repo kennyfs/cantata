@@ -24,24 +24,22 @@
 #include <assert.h>
 #include <QObject>
 
-class AvahiDiscovery : public QObject
-{
+class AvahiDiscovery : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
 
     AvahiDiscovery();
     ~AvahiDiscovery() override;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void mpdFound(QString name, QString address, int port);
     void mpdRemoved(QString name);
 
-private:
+   private:
     AvahiClient* m_client = nullptr;
     AvahiServiceBrowser* m_browser = nullptr;
 };
 
-
-#endif // AVAHIDISCOVERY_H
+#endif  // AVAHIDISCOVERY_H

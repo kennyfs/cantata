@@ -34,44 +34,40 @@ class CddbInterface;
 class MusicBrainz;
 struct CdAlbum;
 
-class AudioCdDevice : public Device
-{
+class AudioCdDevice : public Device {
     Q_OBJECT
 
-public:
-    enum Service {
-        SrvNone,
-        SrvCddb,
-        SrvMusicBrainz
-    };
+   public:
+    enum Service { SrvNone, SrvCddb, SrvMusicBrainz };
 
     static const QLatin1String constAnyDev;
 
     static QString coverUrl(QString id);
-    static QString getDevice(const QUrl &url);
+    static QString getDevice(const QUrl& url);
 
-    AudioCdDevice(MusicLibraryModel *m, Solid::Device &dev);
+    AudioCdDevice(MusicLibraryModel* m, Solid::Device& dev);
     virtual ~AudioCdDevice();
 
     void dequeue();
     QImage image() const { return cover().img; }
-    bool isAudioDevice(const QString &dev) const;
-    bool supportsDisconnect() const { return 0!=drive; }
+    bool isAudioDevice(const QString& dev) const;
+    bool supportsDisconnect() const { return 0 != drive; }
     bool isConnected() const { return !device.isEmpty(); }
     void rescan(bool useCddb);
     bool isRefreshing() const { return lookupInProcess; }
     void toggle();
     void stop();
     QString path() const { return devPath; }
-    void addSong(const Song &, bool, bool) { }
-    void copySongTo(const Song &s, const QString &musicPath, bool overwrite, bool copyCover);
-    void removeSong(const Song &) { }
-    void cleanDirs(const QSet<QString> &) { }
+    void addSong(const Song&, bool, bool) {}
+    void copySongTo(const Song& s, const QString& musicPath, bool overwrite,
+                    bool copyCover);
+    void removeSong(const Song&) {}
+    void cleanDirs(const QSet<QString>&) {}
     double usedCapacity() { return 1.0; }
     QString capacityString() { return detailsString; }
     qint64 freeSpace() { return 1.0; }
     DevType devType() const { return AudioCd; }
-    void saveOptions() { }
+    void saveOptions() {}
     QString subText() { return album; }
     quint32 totalTime();
     bool canPlaySongs() const { return HttpServer::self()->isAlive(); }
@@ -81,36 +77,36 @@ public:
     QString albumGenre() const { return genre; }
     int albumDisc() const { return disc; }
     int albumYear() const { return year; }
-    const Covers::Image & cover() const { return coverImage; }
-    void setCover(const Covers::Image &img);
-    const QPixmap & coverPix() const { return scaledCover; }
+    const Covers::Image& cover() const { return coverImage; }
+    void setCover(const Covers::Image& img);
+    const QPixmap& coverPix() const { return scaledCover; }
     void scaleCoverPix(int size) const;
     void autoplay();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void lookup(bool full);
-    void matches(const QString &u, const QList<CdAlbum> &);
+    void matches(const QString& u, const QList<CdAlbum>&);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void percent(int pc);
     void copySongToResult(int status);
-    void setDetails(const CdAlbum &a);
-    void cdMatches(const QList<CdAlbum> &albums);
-    void setCover(const Song &song, const QImage &img, const QString &file);
+    void setDetails(const CdAlbum& a);
+    void cdMatches(const QList<CdAlbum>& albums);
+    void setCover(const Song& song, const QImage& img, const QString& file);
 
-private:
+   private:
     void connectService(bool useCddb);
     void playTracks();
     void updateDetails();
 
-private:
-    Solid::OpticalDrive *drive;
-    #ifdef CDDB_FOUND
-    CddbInterface *cddb;
-    #endif
-    #ifdef MUSICBRAINZ5_FOUND
-    MusicBrainz *mb;
-    #endif
+   private:
+    Solid::OpticalDrive* drive;
+#ifdef CDDB_FOUND
+    CddbInterface* cddb;
+#endif
+#ifdef MUSICBRAINZ5_FOUND
+    MusicBrainz* mb;
+#endif
     QString detailsString;
     QString album;
     QString artist;

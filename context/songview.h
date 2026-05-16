@@ -35,57 +35,49 @@ class NetworkJob;
 class QTimer;
 class ContextEngine;
 
-class SongView : public View
-{
+class SongView : public View {
     Q_OBJECT
 
-    enum Mode {
-        Mode_Blank,
-        Mode_Display
-    };
+    enum Mode { Mode_Blank, Mode_Display };
 
-    enum Pages {
-        Page_Lyrics,
-        Page_Information,
-        Page_Metadata
-    };
+    enum Pages { Page_Lyrics, Page_Information, Page_Metadata };
 
-public:
+   public:
     static const QLatin1String constLyricsDir;
     static const QLatin1String constExtension;
     static const QLatin1String constCacheDir;
     static const QLatin1String constInfoExt;
 
-    SongView(QWidget *p);
+    SongView(QWidget* p);
     ~SongView() override;
 
-    void update(const Song &s, bool force=false) override;
+    void update(const Song& s, bool force = false) override;
     void saveConfig();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void providersUpdated();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void downloadFinished();
     void lyricsReady(int, QString lyrics);
     void update();
     void search();
     void edit();
     void del();
-    void showContextMenu(const QPoint &pos);
-    void showInfoContextMenu(const QPoint &pos);
+    void showContextMenu(const QPoint& pos);
+    void showInfoContextMenu(const QPoint& pos);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void toggleScroll();
     void songPosition();
     void scroll();
     void curentViewChanged();
     void refreshInfo();
-    void infoSearchResponse(const QString &resp, const QString &lang);
+    void infoSearchResponse(const QString& resp, const QString& lang);
     void abortInfoSearch();
-    void showMoreInfo(const QUrl &url);
+    void showMoreInfo(const QUrl& url);
 
-private:
+   private:
     void loadLyrics();
     void loadLyricsFromFile();
     void loadInfo();
@@ -97,7 +89,7 @@ private:
     QString cacheFileName() const;
     void getLyrics();
     void setMode(Mode m);
-    bool saveFile(const QString &fileName);
+    bool saveFile(const QString& fileName);
 
     /**
      * Reads the lyrics from the given filePath and updates
@@ -107,29 +99,29 @@ private:
      *
      * @return Returns true if the file could be read; otherwise false.
      */
-    bool setLyricsFromFile(const QString &filePath);
+    bool setLyricsFromFile(const QString& filePath);
 
-private:
-    QTimer *scrollTimer;
+   private:
+    QTimer* scrollTimer;
     qint32 songPos;
     int currentProvider;
     int currentRequest;
-    Action *scrollAction;
-    Action *refreshAction;
-    Action *editAction;
-    Action *delAction;
+    Action* scrollAction;
+    Action* refreshAction;
+    Action* editAction;
+    Action* delAction;
     Mode mode;
     QString lyricsFile;
     QString preEdit;
-    NetworkJob *job;
-    UltimateLyricsProvider *currentProv;
+    NetworkJob* job;
+    UltimateLyricsProvider* currentProv;
 
     bool lyricsNeedsUpdating;
     bool infoNeedsUpdating;
     bool metadataNeedsUpdating;
-    Action *refreshInfoAction;
-    Action *cancelInfoJobAction;
-    ContextEngine *engine;
+    Action* refreshInfoAction;
+    Action* cancelInfoJobAction;
+    ContextEngine* engine;
 };
 
 #endif

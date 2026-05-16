@@ -32,33 +32,33 @@
 #include <QApplication>
 #include <QPainter>
 
-ToolButton::ToolButton(QWidget *parent)
-    : QToolButton(parent)
-{
+ToolButton::ToolButton(QWidget* parent) : QToolButton(parent) {
     Icon::init(this);
-    #ifdef Q_OS_MAC
+#ifdef Q_OS_MAC
     setStyleSheet("QToolButton {border: 0}");
-    allowMouseOver=parent && parent->objectName()!=QLatin1String("toolbar");
-    #endif
+    allowMouseOver = parent && parent->objectName() != QLatin1String("toolbar");
+#endif
     setFocusPolicy(Qt::NoFocus);
 }
 
-void ToolButton::paintEvent(QPaintEvent *e)
-{
-    #ifdef Q_OS_MAC
-    bool down=isDown() || isChecked();
-    bool mo=false;
+void ToolButton::paintEvent(QPaintEvent* e) {
+#ifdef Q_OS_MAC
+    bool down = isDown() || isChecked();
+    bool mo = false;
 
     if (allowMouseOver && !down && isEnabled()) {
         QStyleOptionToolButton opt;
         initStyleOption(&opt);
-        mo=opt.state&QStyle::State_MouseOver && this==QApplication::widgetAt(QCursor::pos());
+        mo = opt.state & QStyle::State_MouseOver &&
+             this == QApplication::widgetAt(QCursor::pos());
     }
     if (down || mo) {
         QPainter p(this);
         QColor col(palette().color(QPalette::WindowText));
         QRect r(rect());
-        QPainterPath path=Utils::buildPath(QRectF(r.x()+1.5, r.y()+1.5, r.width()-3, r.height()-3), 2.5);
+        QPainterPath path = Utils::buildPath(
+            QRectF(r.x() + 1.5, r.y() + 1.5, r.width() - 3, r.height() - 3),
+            2.5);
         p.setRenderHint(QPainter::Antialiasing, true);
         col.setAlphaF(0.4);
         p.setPen(col);
@@ -68,40 +68,40 @@ void ToolButton::paintEvent(QPaintEvent *e)
             p.fillPath(path, col);
         }
     }
-    #endif
+#endif
     Q_UNUSED(e)
     // Hack to work-around Qt5 sometimes leaving toolbutton in 'raised' state.
     QStylePainter p(this);
     QStyleOptionToolButton opt;
     initStyleOption(&opt);
-    opt.features=QStyleOptionToolButton::None;
-    if (opt.state&QStyle::State_MouseOver && this!=QApplication::widgetAt(QCursor::pos())) {
-        opt.state&=~QStyle::State_MouseOver;
+    opt.features = QStyleOptionToolButton::None;
+    if (opt.state & QStyle::State_MouseOver &&
+        this != QApplication::widgetAt(QCursor::pos())) {
+        opt.state &= ~QStyle::State_MouseOver;
     }
     p.drawComplexControl(QStyle::CC_ToolButton, opt);
 }
 
-QSize ToolButton::sizeHint() const
-{
+QSize ToolButton::sizeHint() const {
     if (!sh.isValid()) {
         ensurePolished();
         sh = QToolButton::sizeHint();
 
-        if (sh.width()>sh.height()) {
+        if (sh.width() > sh.height()) {
             sh.setWidth(sh.height());
         }
 
-        sh=QSize(qMax(sh.width(), sh.height()), qMax(sh.width(), sh.height()));
-        #ifdef Q_OS_MAC
-        sh=QSize(qMax(sh.width(), 22), qMax(sh.height(), 20));
-        #endif
+        sh =
+            QSize(qMax(sh.width(), sh.height()), qMax(sh.width(), sh.height()));
+#ifdef Q_OS_MAC
+        sh = QSize(qMax(sh.width(), 22), qMax(sh.height(), 20));
+#endif
     }
     return sh;
 }
 
-void ToolButton::setMenu(QMenu *m)
-{
+void ToolButton::setMenu(QMenu* m) {
     QToolButton::setMenu(m);
-    sh=QSize();
+    sh = QSize();
     setPopupMode(InstantPopup);
 }

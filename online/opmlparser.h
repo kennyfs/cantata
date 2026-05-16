@@ -30,12 +30,10 @@
 
 class QIODevice;
 
-namespace OpmlParser
-{
+namespace OpmlParser {
 
-struct Podcast
-{
-    Podcast() { }
+struct Podcast {
+    Podcast() {}
     QString name;
     QString description;
     QString htmlUrl;
@@ -43,17 +41,16 @@ struct Podcast
     QUrl image;
 };
 
-struct Category
-{
+struct Category {
     QString name;
     QList<Podcast> podcasts;
     QList<Category> categories;
     bool isValid() const { return !name.isEmpty(); }
 };
 
-Category parse(QIODevice *dev);
-Category parse(const QByteArray &data);
+Category parse(QIODevice* dev);
+Category parse(const QByteArray& data);
 
-}
+}  // namespace OpmlParser
 
 #endif

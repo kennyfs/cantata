@@ -23,54 +23,44 @@
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-Solid::Ifaces::Device::Device(QObject *parent)
-    : QObject(parent)
-{
+Solid::Ifaces::Device::Device(QObject* parent) : QObject(parent) {}
 
-}
+Solid::Ifaces::Device::~Device() {}
 
-Solid::Ifaces::Device::~Device()
-{
+QString Solid::Ifaces::Device::parentUdi() const { return QString(); }
 
-}
-
-QString Solid::Ifaces::Device::parentUdi() const
-{
-    return QString();
-}
-
-void Solid::Ifaces::Device::registerAction(const QString &actionName,
-                                           QObject *dest,
-                                           const char *requestSlot,
-                                           const char *doneSlot) const
-{
-    QDBusConnection::sessionBus().connect(QString(), deviceDBusPath(),
-                                          "org.kde.Solid.Device", actionName+"Requested",
-                                          dest, requestSlot);
+void Solid::Ifaces::Device::registerAction(const QString& actionName,
+                                           QObject* dest,
+                                           const char* requestSlot,
+                                           const char* doneSlot) const {
+    QDBusConnection::sessionBus().connect(
+        QString(), deviceDBusPath(), "org.kde.Solid.Device",
+        actionName + "Requested", dest, requestSlot);
 
     QDBusConnection::sessionBus().connect(QString(), deviceDBusPath(),
-                                          "org.kde.Solid.Device", actionName+"Done",
-                                          dest, doneSlot);
+                                          "org.kde.Solid.Device",
+                                          actionName + "Done", dest, doneSlot);
 }
 
-void Solid::Ifaces::Device::broadcastActionDone(const QString &actionName,
-                                                int error, const QString &errorString) const
-{
-    QDBusMessage signal = QDBusMessage::createSignal(deviceDBusPath(), "org.kde.Solid.Device", actionName+"Done");
+void Solid::Ifaces::Device::broadcastActionDone(
+    const QString& actionName, int error, const QString& errorString) const {
+    QDBusMessage signal = QDBusMessage::createSignal(
+        deviceDBusPath(), "org.kde.Solid.Device", actionName + "Done");
     signal << error << errorString;
 
     QDBusConnection::sessionBus().send(signal);
 }
 
-void Solid::Ifaces::Device::broadcastActionRequested(const QString &actionName) const
-{
-    QDBusMessage signal = QDBusMessage::createSignal(deviceDBusPath(), "org.kde.Solid.Device", actionName+"Requested");
+void Solid::Ifaces::Device::broadcastActionRequested(
+    const QString& actionName) const {
+    QDBusMessage signal = QDBusMessage::createSignal(
+        deviceDBusPath(), "org.kde.Solid.Device", actionName + "Requested");
     QDBusConnection::sessionBus().send(signal);
 }
 
-QString Solid::Ifaces::Device::deviceDBusPath() const
-{
-    const QByteArray encodedUdi = udi().toUtf8().toPercentEncoding(QByteArray(), ".~", '_');
+QString Solid::Ifaces::Device::deviceDBusPath() const {
+    const QByteArray encodedUdi =
+        udi().toUtf8().toPercentEncoding(QByteArray(), ".~", '_');
     return QString("/org/kde/solid/Device_") + QString::fromLatin1(encodedUdi);
 }
 

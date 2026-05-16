@@ -26,11 +26,10 @@
 
 #include <QWidget>
 
-class SpacerWidget : public QWidget
-{
-public:
-    SpacerWidget(QWidget *parent = nullptr);
-    ~SpacerWidget() override { }
+class SpacerWidget : public QWidget {
+   public:
+    SpacerWidget(QWidget* parent = nullptr);
+    ~SpacerWidget() override {}
 };
 
-#endif // SPACER_WIDGET_H
+#endif  // SPACER_WIDGET_H

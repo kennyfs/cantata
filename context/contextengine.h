@@ -29,41 +29,35 @@
 
 class NetworkJob;
 
-class ContextEngine : public QObject
-{
+class ContextEngine : public QObject {
     Q_OBJECT
-    
-public:
-    enum Mode {
-        Artist,
-        Album,
-        Track
-    };
-    
-    static ContextEngine * create(QObject *parent);
 
-    ContextEngine(QObject *p);
+   public:
+    enum Mode { Artist, Album, Track };
+
+    static ContextEngine* create(QObject* parent);
+
+    ContextEngine(QObject* p);
     ~ContextEngine() override;
-    
-    virtual QString translateLinks(QString text) const =0;
-    virtual QStringList getLangs() const =0;
-    virtual QString getPrefix(const QString &key) const =0;
-    QStringList fixQuery(const QStringList &query) const;
+
+    virtual QString translateLinks(QString text) const = 0;
+    virtual QStringList getLangs() const = 0;
+    virtual QString getPrefix(const QString& key) const = 0;
+    QStringList fixQuery(const QStringList& query) const;
 
     void cancel();
 
-public Q_SLOTS:
-    virtual void search(const QStringList &query, Mode mode)=0;
-    
-Q_SIGNALS:
-    void searchResult(const QString &html, const QString &lang);
+   public Q_SLOTS:
+    virtual void search(const QStringList& query, Mode mode) = 0;
 
-protected:
-    NetworkJob * getReply(QObject *obj);
+   Q_SIGNALS:
+    void searchResult(const QString& html, const QString& lang);
 
-protected:
-    NetworkJob *job;
+   protected:
+    NetworkJob* getReply(QObject* obj);
+
+   protected:
+    NetworkJob* job;
 };
 
 #endif
-

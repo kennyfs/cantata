@@ -26,22 +26,19 @@
 
 #include <QLabel>
 
-class StateLabel : public QLabel
-{
-public:
-    StateLabel(QWidget *parent=nullptr)
-        : QLabel(parent)
-        , on(false) {
-    }
+class StateLabel : public QLabel {
+   public:
+    StateLabel(QWidget* parent = nullptr) : QLabel(parent), on(false) {}
 
     void setOn(bool o) {
-        if (o!=on) {
-            setStyleSheet(o ? QLatin1String("QLabel { color : red; }") : QString());
-            on=o;
+        if (o != on) {
+            setStyleSheet(o ? QLatin1String("QLabel { color : red; }")
+                            : QString());
+            on = o;
         }
     }
 
-private:
+   private:
     bool on;
 };
 

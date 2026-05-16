@@ -32,67 +32,70 @@
 #include <QSet>
 
 class MusicLibraryItemContainer;
-class MusicLibraryItem
-{
-public:
-    enum Type {
-        Type_Root,
-        Type_Artist,
-        Type_Album,
-        Type_Song
-    };
+class MusicLibraryItem {
+   public:
+    enum Type { Type_Root, Type_Artist, Type_Album, Type_Song };
 
-    MusicLibraryItem(MusicLibraryItemContainer *parent);
-    virtual ~MusicLibraryItem() { }
+    MusicLibraryItem(MusicLibraryItemContainer* parent);
+    virtual ~MusicLibraryItem() {}
 
-    MusicLibraryItemContainer * parentItem() const { return m_parentItem; }
-    virtual MusicLibraryItem * childItem(int) const { return nullptr; }
+    MusicLibraryItemContainer* parentItem() const { return m_parentItem; }
+    virtual MusicLibraryItem* childItem(int) const { return nullptr; }
     virtual int childCount() const { return 0; }
     int row() const;
-    void setRow(int r) const { m_row=r+1; }
+    void setRow(int r) const { m_row = r + 1; }
     int columnCount() const { return 1; }
     virtual QString data() const = 0;
-    virtual QString displayData(bool full=false) const { Q_UNUSED(full) return data(); }
-    void setParent(MusicLibraryItemContainer *p);
+    virtual QString displayData(bool full = false) const {
+        Q_UNUSED(full)
+        return data();
+    }
+    void setParent(MusicLibraryItemContainer* p);
     Qt::CheckState checkState() const { return m_checkState; }
-    void setCheckState(Qt::CheckState s) { m_checkState=s; }
+    void setCheckState(Qt::CheckState s) { m_checkState = s; }
 
-    virtual Type itemType() const=0;
+    virtual Type itemType() const = 0;
 
-protected:
+   protected:
     friend class MusicLibraryItemContainer;
-    MusicLibraryItemContainer *m_parentItem;
+    MusicLibraryItemContainer* m_parentItem;
     Qt::CheckState m_checkState;
     mutable quint32 m_row;
 };
 
-class MusicLibraryItemContainer : public MusicLibraryItem
-{
-public:
-    MusicLibraryItemContainer(const QString &data, MusicLibraryItemContainer *parent) : MusicLibraryItem(parent), m_itemData(data), m_isNew(false), m_rowsSet(false) { }
+class MusicLibraryItemContainer : public MusicLibraryItem {
+   public:
+    MusicLibraryItemContainer(const QString& data,
+                              MusicLibraryItemContainer* parent)
+        : MusicLibraryItem(parent),
+          m_itemData(data),
+          m_isNew(false),
+          m_rowsSet(false) {}
     ~MusicLibraryItemContainer() override { clear(); }
 
-    virtual void append(MusicLibraryItem *i) { m_childItems.append(i); }
-    MusicLibraryItem * childItem(int row) const override { return m_childItems.value(row); }
-    MusicLibraryItem * childItem(const QString &name) const;
+    virtual void append(MusicLibraryItem* i) { m_childItems.append(i); }
+    MusicLibraryItem* childItem(int row) const override {
+        return m_childItems.value(row);
+    }
+    MusicLibraryItem* childItem(const QString& name) const;
 
     QString data() const override { return m_itemData; }
-    void setData(const QString &d) { m_itemData=d; }
+    void setData(const QString& d) { m_itemData = d; }
     int childCount() const override { return m_childItems.count(); }
-    const QList<MusicLibraryItem *> & childItems() const { return m_childItems; }
+    const QList<MusicLibraryItem*>& childItems() const { return m_childItems; }
 
     void resetRows();
     void clear();
-    int indexOf(MusicLibraryItem *c) const { return m_childItems.indexOf(c); }
-    void setIsNew(quint32 v) { m_isNew=v; }
+    int indexOf(MusicLibraryItem* c) const { return m_childItems.indexOf(c); }
+    void setIsNew(quint32 v) { m_isNew = v; }
     bool isNew() const { return m_isNew; }
 
-protected:
+   protected:
     friend class MusicLibraryItem;
     QString m_itemData;
-    QList<MusicLibraryItem *> m_childItems;
-    bool m_isNew:1;
-    bool m_rowsSet:1;
+    QList<MusicLibraryItem*> m_childItems;
+    bool m_isNew : 1;
+    bool m_rowsSet : 1;
 };
 
 #endif

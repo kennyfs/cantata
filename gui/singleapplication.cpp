@@ -25,15 +25,15 @@
 #include "mainwindow.h"
 #include "mpd-interface/mpdconnection.h"
 
-SingleApplication::SingleApplication(int &argc, char **argv)
-    : QtSingleApplication(argc, argv)
-{
-    connect(this, SIGNAL(messageReceived(const QString &)), SLOT(message(const QString &)));
-    connect(this, SIGNAL(reconnect()), MPDConnection::self(), SLOT(reconnect()));
+SingleApplication::SingleApplication(int& argc, char** argv)
+    : QtSingleApplication(argc, argv) {
+    connect(this, SIGNAL(messageReceived(const QString&)),
+            SLOT(message(const QString&)));
+    connect(this, SIGNAL(reconnect()), MPDConnection::self(),
+            SLOT(reconnect()));
 }
 
-bool SingleApplication::start(const QStringList &files)
-{
+bool SingleApplication::start(const QStringList& files) {
     if (isRunning()) {
         sendMessage(files.join("\n"));
         return false;
@@ -42,34 +42,31 @@ bool SingleApplication::start(const QStringList &files)
     return true;
 }
 
-void SingleApplication::message(const QString &msg)
-{
+void SingleApplication::message(const QString& msg) {
     if (!msg.isEmpty()) {
         loadFiles(msg.split("\n"));
     }
-    MainWindow *mw=qobject_cast<MainWindow *>(activationWindow());
+    MainWindow* mw = qobject_cast<MainWindow*>(activationWindow());
     if (mw) {
         mw->restoreWindow();
     }
 }
 
-void SingleApplication::loadFiles(const QStringList &files)
-{
+void SingleApplication::loadFiles(const QStringList& files) {
     if (files.isEmpty()) {
         return;
     }
 
     QStringList urls;
-    for (const QString &f: files) {
+    for (const QString& f : files) {
         urls.append(f);
     }
     if (!urls.isEmpty()) {
-        MainWindow *mw=qobject_cast<MainWindow *>(activationWindow());
+        MainWindow* mw = qobject_cast<MainWindow*>(activationWindow());
         if (mw) {
             mw->load(urls);
         }
     }
 }
-
 
 #include "moc_singleapplication.cpp"

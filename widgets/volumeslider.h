@@ -32,49 +32,48 @@ class QMenu;
 class Action;
 class QAction;
 
-class VolumeSlider : public QSlider
-{
+class VolumeSlider : public QSlider {
     Q_OBJECT
 
-public:
-    static QColor clampColor(const QColor &col);
+   public:
+    static QColor clampColor(const QColor& col);
 
-    VolumeSlider(bool isMpd, QWidget *p=nullptr);
-    ~VolumeSlider() override { }
+    VolumeSlider(bool isMpd, QWidget* p = nullptr);
+    ~VolumeSlider() override {}
 
-    void setActive(bool a) { isActive=a; }
+    void setActive(bool a) { isActive = a; }
     void initActions();
-    void setColor(const QColor &col);
-    void paintEvent(QPaintEvent *ev) override;
-    void mousePressEvent(QMouseEvent *ev) override;
-    void mouseReleaseEvent(QMouseEvent *ev) override;
-    void contextMenuEvent(QContextMenuEvent *ev) override;
-    void wheelEvent(QWheelEvent *ev) override;
+    void setColor(const QColor& col);
+    void paintEvent(QPaintEvent* ev) override;
+    void mousePressEvent(QMouseEvent* ev) override;
+    void mouseReleaseEvent(QMouseEvent* ev) override;
+    void contextMenuEvent(QContextMenuEvent* ev) override;
+    void wheelEvent(QWheelEvent* ev) override;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void stateChanged();
     void toggleMute();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void muteToggled();
     void updateStatus();
     void increaseVolume();
     void decreaseVolume();
 
-private:
+   private:
     void generatePixmaps();
     QPixmap generatePixmap(bool filled);
 
-private:
+   private:
     bool isMpdVol;
     bool isActive;
     int lineWidth;
     bool down;
     QColor textCol;
     QPixmap pixmaps[2];
-    Action *muteAction;
-    QAction *muteMenuAction;
-    QMenu *menu;
+    Action* muteAction;
+    QAction* muteMenuAction;
+    QMenu* menu;
 };
 
 #endif

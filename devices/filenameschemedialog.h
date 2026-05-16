@@ -29,27 +29,26 @@
 #include "mpd-interface/song.h"
 #include "deviceoptions.h"
 
-class FilenameSchemeDialog : public Dialog, Ui::FilenameSchemeDialog
-{
+class FilenameSchemeDialog : public Dialog, Ui::FilenameSchemeDialog {
     Q_OBJECT
 
-public:
-    FilenameSchemeDialog(QWidget *parent);
-    void show(const DeviceOptions &opts);
+   public:
+    FilenameSchemeDialog(QWidget* parent);
+    void show(const DeviceOptions& opts);
 
-Q_SIGNALS:
-    void scheme(const QString &text);
+   Q_SIGNALS:
+    void scheme(const QString& text);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void showHelp();
     void enableOkButton();
     void insertVariable();
     void updateExample();
 
-private:
+   private:
     void slotButtonClicked(int button) override;
 
-private:
+   private:
     DeviceOptions origOpts;
     Song exampleSong;
 };

@@ -34,11 +34,9 @@
 #include <QAction>
 #include <algorithm>
 
-SyncCollectionWidget::SyncCollectionWidget(QWidget *parent, const QString &title)
-    : QWidget(parent)
-    , performedSearch(false)
-    , searchTimer(nullptr)
-{
+SyncCollectionWidget::SyncCollectionWidget(QWidget* parent,
+                                           const QString& title)
+    : QWidget(parent), performedSearch(false), searchTimer(nullptr) {
     setupUi(this);
     titleLabel->setText(title);
     cfgButton->setIcon(Icons::self()->configureIcon);
@@ -50,20 +48,22 @@ SyncCollectionWidget::SyncCollectionWidget(QWidget *parent, const QString &title
     tree->setUseSimpleDelegate();
     search->setText(QString());
     search->setPlaceholderText(tr("Search"));
-    connect(&proxy, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(dataChanged(QModelIndex,QModelIndex)));
+    connect(&proxy, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this,
+            SLOT(dataChanged(QModelIndex, QModelIndex)));
     connect(search, SIGNAL(returnPressed()), this, SLOT(delaySearchItems()));
-    connect(search, SIGNAL(textChanged(const QString)), this, SLOT(delaySearchItems()));
+    connect(search, SIGNAL(textChanged(const QString)), this,
+            SLOT(delaySearchItems()));
 
-    checkAction=new Action(tr("Check Items"), this);
+    checkAction = new Action(tr("Check Items"), this);
     connect(checkAction, SIGNAL(triggered()), SLOT(checkItems()));
-    unCheckAction=new Action(tr("Uncheck Items"), this);
+    unCheckAction = new Action(tr("Uncheck Items"), this);
     connect(unCheckAction, SIGNAL(triggered()), SLOT(unCheckItems()));
     tree->addAction(checkAction);
     tree->addAction(unCheckAction);
     tree->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    QAction *expand=ActionCollection::get()->action("expandall");
-    QAction *collapse=ActionCollection::get()->action("collapseall");
+    QAction* expand = ActionCollection::get()->action("expandall");
+    QAction* collapse = ActionCollection::get()->action("collapseall");
     if (expand && collapse) {
         tree->addAction(expand);
         tree->addAction(collapse);
@@ -73,109 +73,110 @@ SyncCollectionWidget::SyncCollectionWidget(QWidget *parent, const QString &title
         connect(collapse, SIGNAL(triggered()), this, SLOT(collapseAll()));
     }
 
-    connect(tree, SIGNAL(itemsSelected(bool)), checkAction, SLOT(setEnabled(bool)));
-    connect(tree, SIGNAL(itemsSelected(bool)), unCheckAction, SLOT(setEnabled(bool)));
-    connect(tree, SIGNAL(itemActivated(const QModelIndex &)), this, SLOT(itemActivated(const QModelIndex &)));
-    connect(tree, SIGNAL(clicked(const QModelIndex &)),  this, SLOT(itemClicked(const QModelIndex &)));
+    connect(tree, SIGNAL(itemsSelected(bool)), checkAction,
+            SLOT(setEnabled(bool)));
+    connect(tree, SIGNAL(itemsSelected(bool)), unCheckAction,
+            SLOT(setEnabled(bool)));
+    connect(tree, SIGNAL(itemActivated(const QModelIndex&)), this,
+            SLOT(itemActivated(const QModelIndex&)));
+    connect(tree, SIGNAL(clicked(const QModelIndex&)), this,
+            SLOT(itemClicked(const QModelIndex&)));
 }
 
-SyncCollectionWidget::~SyncCollectionWidget()
-{
-}
+SyncCollectionWidget::~SyncCollectionWidget() {}
 
-void SyncCollectionWidget::update(const QSet<Song> &songs)
-{
+void SyncCollectionWidget::update(const QSet<Song>& songs) {
     model.setSongs(songs);
 }
 
-QList<Song> SyncCollectionWidget::checkedSongs() const
-{
+QList<Song> SyncCollectionWidget::checkedSongs() const {
     QList<Song> songs;
-    for (const Song *s: checked) {
+    for (const Song* s : checked) {
         songs.append(*s);
     }
     std::sort(songs.begin(), songs.end());
     return songs;
 }
 
-void SyncCollectionWidget::dataChanged(const QModelIndex &tl, const QModelIndex &br)
-{
-    bool haveChecked=numCheckedSongs()>0;
+void SyncCollectionWidget::dataChanged(const QModelIndex& tl,
+                                       const QModelIndex& br) {
+    bool haveChecked = numCheckedSongs() > 0;
     QModelIndex firstIndex = proxy.mapToSource(tl);
     QModelIndex lastIndex = proxy.mapToSource(br);
-    const MusicLibraryItem *item=static_cast<const MusicLibraryItem *>(firstIndex.internalPointer());
+    const MusicLibraryItem* item =
+        static_cast<const MusicLibraryItem*>(firstIndex.internalPointer());
     switch (item->itemType()) {
-    case MusicLibraryItem::Type_Artist:
-        for (int i=firstIndex.row(); i<=lastIndex.row(); ++i) {
-            QModelIndex index=model.index(i, 0, firstIndex.parent());
-            const MusicLibraryItemArtist *artist=static_cast<const MusicLibraryItemArtist *>(index.internalPointer());
-            for (const MusicLibraryItem *alItem: artist->childItems()) {
-                for (const MusicLibraryItem *sItem: static_cast<const MusicLibraryItemContainer *>(alItem)->childItems()) {
-                    songToggled(static_cast<const MusicLibraryItemSong *>(sItem));
+        case MusicLibraryItem::Type_Artist:
+            for (int i = firstIndex.row(); i <= lastIndex.row(); ++i) {
+                QModelIndex index = model.index(i, 0, firstIndex.parent());
+                const MusicLibraryItemArtist* artist =
+                    static_cast<const MusicLibraryItemArtist*>(
+                        index.internalPointer());
+                for (const MusicLibraryItem* alItem : artist->childItems()) {
+                    for (const MusicLibraryItem* sItem :
+                         static_cast<const MusicLibraryItemContainer*>(alItem)
+                             ->childItems()) {
+                        songToggled(
+                            static_cast<const MusicLibraryItemSong*>(sItem));
+                    }
                 }
             }
-        }
-        break;
-    case MusicLibraryItem::Type_Album:
-        for (int i=firstIndex.row(); i<=lastIndex.row(); ++i) {
-            QModelIndex index=model.index(i, 0, firstIndex.parent());
-            const MusicLibraryItemAlbum *album=static_cast<const MusicLibraryItemAlbum *>(index.internalPointer());
-            for (const MusicLibraryItem *sItem: album->childItems()) {
-                songToggled(static_cast<const MusicLibraryItemSong *>(sItem));
+            break;
+        case MusicLibraryItem::Type_Album:
+            for (int i = firstIndex.row(); i <= lastIndex.row(); ++i) {
+                QModelIndex index = model.index(i, 0, firstIndex.parent());
+                const MusicLibraryItemAlbum* album =
+                    static_cast<const MusicLibraryItemAlbum*>(
+                        index.internalPointer());
+                for (const MusicLibraryItem* sItem : album->childItems()) {
+                    songToggled(
+                        static_cast<const MusicLibraryItemSong*>(sItem));
+                }
             }
-        }
-        break;
-    case MusicLibraryItem::Type_Song:
-        for (int i=firstIndex.row(); i<=lastIndex.row(); ++i) {
-            QModelIndex index=model.index(i, 0, firstIndex.parent());
-            songToggled(static_cast<MusicLibraryItemSong *>(index.internalPointer()));
-        }
-    default:
-        break;
+            break;
+        case MusicLibraryItem::Type_Song:
+            for (int i = firstIndex.row(); i <= lastIndex.row(); ++i) {
+                QModelIndex index = model.index(i, 0, firstIndex.parent());
+                songToggled(static_cast<MusicLibraryItemSong*>(
+                    index.internalPointer()));
+            }
+        default:
+            break;
     }
 
-    if (haveChecked!=(numCheckedSongs()>0)) {
+    if (haveChecked != (numCheckedSongs() > 0)) {
         emit selectionChanged();
     }
 }
 
-void SyncCollectionWidget::songToggled(const MusicLibraryItemSong *song)
-{
-    const Song &s=song->song();
-    if (Qt::Checked==song->checkState()) {
+void SyncCollectionWidget::songToggled(const MusicLibraryItemSong* song) {
+    const Song& s = song->song();
+    if (Qt::Checked == song->checkState()) {
         checked.insert(&s);
-        spaceRequired+=s.size;
+        spaceRequired += s.size;
     } else {
         checked.remove(&s);
-        spaceRequired-=s.size;
+        spaceRequired -= s.size;
     }
 }
 
-void SyncCollectionWidget::checkItems()
-{
-    checkItems(true);
-}
+void SyncCollectionWidget::checkItems() { checkItems(true); }
 
-void SyncCollectionWidget::unCheckItems()
-{
-    checkItems(false);
-}
+void SyncCollectionWidget::unCheckItems() { checkItems(false); }
 
-void SyncCollectionWidget::checkItems(bool c)
-{
+void SyncCollectionWidget::checkItems(bool c) {
     const QModelIndexList selected = tree->selectedIndexes();
 
-    if (0==selected.size()) {
+    if (0 == selected.size()) {
         return;
     }
 
-    for (const QModelIndex &idx: selected) {
+    for (const QModelIndex& idx : selected) {
         model.setData(proxy.mapToSource(idx), c, Qt::CheckStateRole);
     }
 }
 
-void SyncCollectionWidget::delaySearchItems()
-{
+void SyncCollectionWidget::delaySearchItems() {
     if (search->text().trimmed().isEmpty()) {
         if (searchTimer) {
             searchTimer->stop();
@@ -184,10 +185,10 @@ void SyncCollectionWidget::delaySearchItems()
             tree->collapseToLevel(0);
         }
         searchItems();
-        performedSearch=false;
+        performedSearch = false;
     } else {
         if (!searchTimer) {
-            searchTimer=new QTimer(this);
+            searchTimer = new QTimer(this);
             searchTimer->setSingleShot(true);
             connect(searchTimer, SIGNAL(timeout()), SLOT(searchItems()));
         }
@@ -195,41 +196,36 @@ void SyncCollectionWidget::delaySearchItems()
     }
 }
 
-void SyncCollectionWidget::searchItems()
-{
-    QString text=search->text().trimmed();
+void SyncCollectionWidget::searchItems() {
+    QString text = search->text().trimmed();
     proxy.update(text);
     if (proxy.enabled() && !text.isEmpty()) {
         tree->expandAll();
     }
-    performedSearch=true;
+    performedSearch = true;
 }
 
-void SyncCollectionWidget::expandAll()
-{
-    QWidget *f=QApplication::focusWidget();
-    if (f && qobject_cast<QTreeView *>(f)) {
-        static_cast<QTreeView *>(f)->expandAll();
+void SyncCollectionWidget::expandAll() {
+    QWidget* f = QApplication::focusWidget();
+    if (f && qobject_cast<QTreeView*>(f)) {
+        static_cast<QTreeView*>(f)->expandAll();
     }
 }
 
-void SyncCollectionWidget::collapseAll()
-{
-    QWidget *f=QApplication::focusWidget();
-    if (f && qobject_cast<QTreeView *>(f)) {
-        static_cast<QTreeView *>(f)->collapseAll();
+void SyncCollectionWidget::collapseAll() {
+    QWidget* f = QApplication::focusWidget();
+    if (f && qobject_cast<QTreeView*>(f)) {
+        static_cast<QTreeView*>(f)->collapseAll();
     }
 }
 
-void SyncCollectionWidget::itemClicked(const QModelIndex &index)
-{
+void SyncCollectionWidget::itemClicked(const QModelIndex& index) {
     if (TreeView::getForceSingleClick() && !tree->checkBoxClicked(index)) {
         tree->setExpanded(index, !tree->isExpanded(index));
     }
 }
 
-void SyncCollectionWidget::itemActivated(const QModelIndex &index)
-{
+void SyncCollectionWidget::itemActivated(const QModelIndex& index) {
     if (!TreeView::getForceSingleClick()) {
         tree->setExpanded(index, !tree->isExpanded(index));
     }

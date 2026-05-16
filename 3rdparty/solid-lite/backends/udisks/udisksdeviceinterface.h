@@ -27,105 +27,100 @@
 #include <QObject>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 
-class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
-{
+class DeviceInterface : public QObject,
+                        virtual public Solid::Ifaces::DeviceInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::DeviceInterface)
-public:
-    DeviceInterface(UDisksDevice *device);
+   public:
+    DeviceInterface(UDisksDevice* device);
     virtual ~DeviceInterface();
 
-protected:
-    UDisksDevice *m_device;
+   protected:
+    UDisksDevice* m_device;
 
-public:
-    inline static QStringList toStringList(Solid::DeviceInterface::Type type)
-    {
+   public:
+    inline static QStringList toStringList(Solid::DeviceInterface::Type type) {
         QStringList list;
 
-        switch(type)
-        {
-        case Solid::DeviceInterface::GenericInterface:
-            list << "generic";
-            break;
-        //case Solid::DeviceInterface::Processor:
-            // Doesn't exist with UDisks
-        //    break;
-        case Solid::DeviceInterface::Block:
-            list << "block";
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-            list << "volume";
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            list << "storage";
-            break;
-        case Solid::DeviceInterface::OpticalDrive:
-            list << "storage.cdrom";
-            break;
-        case Solid::DeviceInterface::StorageVolume:
-            list << "volume";
-            break;
-        case Solid::DeviceInterface::OpticalDisc:
-            list << "volume.disc";
-            break;
-        //case Solid::DeviceInterface::Camera:
-            // Doesn't exist with UDisks
-        //    break;
-        case Solid::DeviceInterface::PortableMediaPlayer:
-            // Doesn't exist with UDisks
-            break;
-        /*
-        case Solid::DeviceInterface::NetworkInterface:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::AcAdapter:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::Battery:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::Button:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::AudioInterface:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::DvbInterface:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::Video:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::SerialInterface:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::InternetGateway:
-            break;
-        case Solid::DeviceInterface::SmartCardReader:
-            // Doesn't exist with UDisks
-        case Solid::DeviceInterface::NetworkShare:
-            // Doesn't exist with UDisks
-            break;
-        */
-        case Solid::DeviceInterface::Unknown:
-            break;
-        case Solid::DeviceInterface::Last:
-            break;
+        switch (type) {
+            case Solid::DeviceInterface::GenericInterface:
+                list << "generic";
+                break;
+            // case Solid::DeviceInterface::Processor:
+            //  Doesn't exist with UDisks
+            //    break;
+            case Solid::DeviceInterface::Block:
+                list << "block";
+                break;
+            case Solid::DeviceInterface::StorageAccess:
+                list << "volume";
+                break;
+            case Solid::DeviceInterface::StorageDrive:
+                list << "storage";
+                break;
+            case Solid::DeviceInterface::OpticalDrive:
+                list << "storage.cdrom";
+                break;
+            case Solid::DeviceInterface::StorageVolume:
+                list << "volume";
+                break;
+            case Solid::DeviceInterface::OpticalDisc:
+                list << "volume.disc";
+                break;
+            // case Solid::DeviceInterface::Camera:
+            //  Doesn't exist with UDisks
+            //    break;
+            case Solid::DeviceInterface::PortableMediaPlayer:
+                // Doesn't exist with UDisks
+                break;
+            /*
+            case Solid::DeviceInterface::NetworkInterface:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::AcAdapter:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::Battery:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::Button:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::AudioInterface:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::DvbInterface:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::Video:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::SerialInterface:
+                // Doesn't exist with UDisks
+                break;
+            case Solid::DeviceInterface::InternetGateway:
+                break;
+            case Solid::DeviceInterface::SmartCardReader:
+                // Doesn't exist with UDisks
+            case Solid::DeviceInterface::NetworkShare:
+                // Doesn't exist with UDisks
+                break;
+            */
+            case Solid::DeviceInterface::Unknown:
+                break;
+            case Solid::DeviceInterface::Last:
+                break;
         }
 
         return list;
     }
 
-    inline static Solid::DeviceInterface::Type fromString(const QString &capability)
-    {
+    inline static Solid::DeviceInterface::Type fromString(
+        const QString& capability) {
         if (capability == "generic")
             return Solid::DeviceInterface::GenericInterface;
         /*else if (capability == "processor")
@@ -169,8 +164,8 @@ public:
     }
 };
 
-}
-}
-}
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKSDEVICEINTERFACE_H
+#endif  // UDISKSDEVICEINTERFACE_H

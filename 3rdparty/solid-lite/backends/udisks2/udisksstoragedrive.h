@@ -28,20 +28,16 @@
 
 #include "udisksblock.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks2
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks2 {
 
-class StorageDrive: public Block, virtual public Solid::Ifaces::StorageDrive
-{
+class StorageDrive : public Block, virtual public Solid::Ifaces::StorageDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
-public:
-    StorageDrive(Device *dev);
+   public:
+    StorageDrive(Device* dev);
     ~StorageDrive() override;
 
     qulonglong size() const override;
@@ -50,12 +46,12 @@ public:
     Solid::StorageDrive::DriveType driveType() const override;
     Solid::StorageDrive::Bus bus() const override;
 
-private:
+   private:
     UdevQt::Device m_udevDevice;
 };
 
-}
-}
-}
+}  // namespace UDisks2
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISK2SSTORAGEDRIVE_H
+#endif  // UDISK2SSTORAGEDRIVE_H

@@ -20,7 +20,4 @@
 
 #include "storagedrive.h"
 
-Solid::Ifaces::StorageDrive::~StorageDrive()
-{
-}
-
+Solid::Ifaces::StorageDrive::~StorageDrive() {}

@@ -24,19 +24,15 @@
 #include <solid-lite/ifaces/storagedrive.h>
 #include "halblock.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
-class Storage : public Block, virtual public Solid::Ifaces::StorageDrive
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
+class Storage : public Block, virtual public Solid::Ifaces::StorageDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
-public:
-    Storage(HalDevice *device);
+   public:
+    Storage(HalDevice* device);
     ~Storage() override;
 
     Solid::StorageDrive::Bus bus() const override;
@@ -46,8 +42,8 @@ public:
     bool isHotpluggable() const override;
     qulonglong size() const override;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_STORAGE_H
+#endif  // SOLID_BACKENDS_HAL_STORAGE_H

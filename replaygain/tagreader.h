@@ -28,23 +28,22 @@
 #include "mpd-interface/song.h"
 #include "tags/tags.h"
 
-class TagReader : public StandardJob
-{
+class TagReader : public StandardJob {
     Q_OBJECT
 
-public:
-    TagReader() { }
-    virtual ~TagReader() { }
+   public:
+    TagReader() {}
+    virtual ~TagReader() {}
 
-    void setDetails(const QList<Song> &s, const QString &dir);
+    void setDetails(const QList<Song>& s, const QString& dir);
 
-private:
+   private:
     void run();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void progress(int index, Tags::ReplayGain);
 
-private:
+   private:
     QList<Song> songs;
     QString baseDir;
 };

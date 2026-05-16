@@ -25,19 +25,16 @@
 
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Shared
-{
+namespace Solid {
+namespace Backends {
+namespace Shared {
 
-class RootDevice : public Solid::Ifaces::Device
-{
+class RootDevice : public Solid::Ifaces::Device {
     Q_OBJECT
 
-public:
-    explicit RootDevice(const QString &udi, const QString &parentUdi = QString());
+   public:
+    explicit RootDevice(const QString& udi,
+                        const QString& parentUdi = QString());
 
     ~RootDevice() override;
 
@@ -45,24 +42,27 @@ public:
     QString parentUdi() const override;
 
     QString vendor() const override;
-    void setVendor(const QString &vendor);
+    void setVendor(const QString& vendor);
 
     QString product() const override;
-    void setProduct(const QString &product);
+    void setProduct(const QString& product);
 
     QString icon() const override;
-    void setIcon(const QString &icon);
+    void setIcon(const QString& icon);
 
     QStringList emblems() const override;
-    void setEmblems(const QStringList &emblems);
+    void setEmblems(const QStringList& emblems);
 
     QString description() const override;
-    void setDescription(const QString &description);
+    void setDescription(const QString& description);
 
-    bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const override;
+    bool queryDeviceInterface(
+        const Solid::DeviceInterface::Type& type) const override;
 
-    QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type) override;
-private:
+    QObject* createDeviceInterface(
+        const Solid::DeviceInterface::Type& type) override;
+
+   private:
     QString m_udi;
     QString m_parentUdi;
     QString m_vendor;
@@ -72,7 +72,7 @@ private:
     QString m_description;
 };
 
-}
-}
-}
+}  // namespace Shared
+}  // namespace Backends
+}  // namespace Solid
 #endif

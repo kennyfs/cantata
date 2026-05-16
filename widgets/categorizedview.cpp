@@ -38,19 +38,20 @@
 #include <QLinearGradient>
 #include <algorithm>
 
-class CategoryDrawer : public KCategoryDrawer
-{
-public:
-    CategoryDrawer(KCategorizedView *view)
-        : KCategoryDrawer(view) {
-    }
+class CategoryDrawer : public KCategoryDrawer {
+   public:
+    CategoryDrawer(KCategorizedView* view) : KCategoryDrawer(view) {}
 
-    ~CategoryDrawer() override {
-    }
+    ~CategoryDrawer() override {}
 
-    void drawCategory(const QModelIndex &index, int /*sortRole*/, const QStyleOption &option, QPainter *painter) const override
-    {
-        const QString category = index.model()->data(index, KCategorizedSortFilterProxyModel::CategoryDisplayRole).toString();
+    void drawCategory(const QModelIndex& index, int /*sortRole*/,
+                      const QStyleOption& option,
+                      QPainter* painter) const override {
+        const QString category =
+            index.model()
+                ->data(index,
+                       KCategorizedSortFilterProxyModel::CategoryDisplayRole)
+                .toString();
         QFont font(QApplication::font());
         font.setBold(true);
         const QFontMetrics fontMetrics = QFontMetrics(font);
@@ -69,17 +70,17 @@ public:
 
         r.adjust(0, 4, 0, 4);
 
-        double alpha=0.5;
-        double fadeSize=64.0;
-        double fadePos=fadeSize/r.width();
+        double alpha = 0.5;
+        double fadeSize = 64.0;
+        double fadePos = fadeSize / r.width();
         QLinearGradient grad(r.bottomLeft(), r.bottomRight());
 
-        col.setAlphaF(Qt::RightToLeft==option.direction ? 0.0 : alpha);
+        col.setAlphaF(Qt::RightToLeft == option.direction ? 0.0 : alpha);
         grad.setColorAt(0, col);
         col.setAlphaF(alpha);
         grad.setColorAt(fadePos, col);
-        grad.setColorAt(1.0-fadePos, col);
-        col.setAlphaF(Qt::LeftToRight==option.direction ? 0.0 : alpha);
+        grad.setColorAt(1.0 - fadePos, col);
+        col.setAlphaF(Qt::LeftToRight == option.direction ? 0.0 : alpha);
         grad.setColorAt(1, col);
         painter->setPen(QPen(grad, 1));
 
@@ -88,13 +89,12 @@ public:
     }
 };
 
-CategorizedView::CategorizedView(QWidget *parent)
-    : KCategorizedView(parent)
-    , eventFilter(nullptr)
-    , menu(nullptr)
-    , zoomLevel(1.0)
-{
-    proxy=new KCategorizedSortFilterProxyModel(this);
+CategorizedView::CategorizedView(QWidget* parent)
+    : KCategorizedView(parent),
+      eventFilter(nullptr),
+      menu(nullptr),
+      zoomLevel(1.0) {
+    proxy = new KCategorizedSortFilterProxyModel(this);
     proxy->setCategorizedModel(true);
     setCategoryDrawer(new CategoryDrawer(this));
     setDragEnabled(true);
@@ -105,54 +105,58 @@ CategorizedView::CategorizedView(QWidget *parent)
     setUniformItemSizes(true);
     setAttribute(Qt::WA_MouseTracking);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showCustomContextMenu(const QPoint &)));
-    connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(checkDoubleClick(const QModelIndex &)));
-    connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(checkClicked(const QModelIndex &)));
-    connect(this, SIGNAL(activated(const QModelIndex &)), this, SLOT(checkActivated(const QModelIndex &)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+            SLOT(showCustomContextMenu(const QPoint&)));
+    connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this,
+            SLOT(checkDoubleClick(const QModelIndex&)));
+    connect(this, SIGNAL(clicked(const QModelIndex&)), this,
+            SLOT(checkClicked(const QModelIndex&)));
+    connect(this, SIGNAL(activated(const QModelIndex&)), this,
+            SLOT(checkActivated(const QModelIndex&)));
 
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
     setWordWrap(true);
 }
 
-CategorizedView::~CategorizedView()
-{
-}
+CategorizedView::~CategorizedView() {}
 
-void CategorizedView::selectionChanged(const QItemSelection &/*selected*/, const QItemSelection &/*deselected*/)
-{
-    //KCategorizedView::selectionChanged(selected, deselected);
-    bool haveSelection=haveSelectedItems();
+void CategorizedView::selectionChanged(const QItemSelection& /*selected*/,
+                                       const QItemSelection& /*deselected*/) {
+    // KCategorizedView::selectionChanged(selected, deselected);
+    bool haveSelection = haveSelectedItems();
 
-    setContextMenuPolicy(haveSelection ? Qt::ActionsContextMenu : (menu ? Qt::CustomContextMenu : Qt::NoContextMenu));
+    setContextMenuPolicy(
+        haveSelection ? Qt::ActionsContextMenu
+                      : (menu ? Qt::CustomContextMenu : Qt::NoContextMenu));
     emit itemsSelected(haveSelection);
 }
 
-bool CategorizedView::haveSelectedItems() const
-{
+bool CategorizedView::haveSelectedItems() const {
     // Dont need the sorted type of 'selectedIndexes' here...
-    return selectionModel() && selectionModel()->selectedIndexes().count()>0;
+    return selectionModel() && selectionModel()->selectedIndexes().count() > 0;
 }
 
-bool CategorizedView::haveUnSelectedItems() const
-{
+bool CategorizedView::haveUnSelectedItems() const {
     // Dont need the sorted type of 'selectedIndexes' here...
-    return selectionModel() && model() && selectionModel()->selectedIndexes().count()!=model()->rowCount();
+    return selectionModel() && model() &&
+           selectionModel()->selectedIndexes().count() != model()->rowCount();
 }
 
-void CategorizedView::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (Qt::NoModifier==event->modifiers() && Qt::LeftButton==event->button()) {
+void CategorizedView::mouseReleaseEvent(QMouseEvent* event) {
+    if (Qt::NoModifier == event->modifiers() &&
+        Qt::LeftButton == event->button()) {
         KCategorizedView::mouseReleaseEvent(event);
     }
 }
 
-QModelIndexList CategorizedView::selectedIndexes(bool sorted) const
-{
-    QModelIndexList indexes=selectionModel() ? selectionModel()->selectedIndexes() : QModelIndexList();
+QModelIndexList CategorizedView::selectedIndexes(bool sorted) const {
+    QModelIndexList indexes = selectionModel()
+                                  ? selectionModel()->selectedIndexes()
+                                  : QModelIndexList();
     QModelIndexList actual;
 
-    for (const auto &idx: indexes) {
+    for (const auto& idx : indexes) {
         actual.append(proxy->mapToSource(idx));
     }
 
@@ -162,16 +166,16 @@ QModelIndexList CategorizedView::selectedIndexes(bool sorted) const
     return actual;
 }
 
-void CategorizedView::setModel(QAbstractItemModel *m)
-{
-    QAbstractItemModel *old=proxy->sourceModel();
+void CategorizedView::setModel(QAbstractItemModel* m) {
+    QAbstractItemModel* old = proxy->sourceModel();
     proxy->setSourceModel(m);
 
     if (old) {
-        disconnect(old, SIGNAL(layoutChanged()), this, SLOT(correctSelection()));
+        disconnect(old, SIGNAL(layoutChanged()), this,
+                   SLOT(correctSelection()));
     }
 
-    if (m && old!=m) {
+    if (m && old != m) {
         connect(m, SIGNAL(layoutChanged()), this, SLOT(correctSelection()));
     }
     if (m) {
@@ -181,36 +185,35 @@ void CategorizedView::setModel(QAbstractItemModel *m)
     }
 }
 
-void CategorizedView::addDefaultAction(QAction *act)
-{
+void CategorizedView::addDefaultAction(QAction* act) {
     if (!menu) {
-        menu=new QMenu(this);
+        menu = new QMenu(this);
     }
     menu->addAction(act);
 }
 
-void CategorizedView::setBackgroundImage(const QIcon &icon)
-{
-    QPalette pal=parentWidget()->palette();
-//    if (!icon.isNull()) {
-//        pal.setColor(QPalette::Base, Qt::transparent);
-//    }
-    #ifndef Q_OS_MAC
+void CategorizedView::setBackgroundImage(const QIcon& icon) {
+    QPalette pal = parentWidget()->palette();
+    //    if (!icon.isNull()) {
+    //        pal.setColor(QPalette::Base, Qt::transparent);
+    //    }
+#ifndef Q_OS_MAC
     setPalette(pal);
-    #endif
+#endif
     viewport()->setPalette(pal);
-    bgnd=TreeView::createBgndPixmap(icon);
+    bgnd = TreeView::createBgndPixmap(icon);
 }
 
-void CategorizedView::paintEvent(QPaintEvent *e)
-{
+void CategorizedView::paintEvent(QPaintEvent* e) {
     if (!bgnd.isNull()) {
         QPainter p(viewport());
-        QSize sz=size();
-        p.fillRect(0, 0, sz.width(), sz.height(), QApplication::palette().color(QPalette::Base));
-        p.drawPixmap((sz.width()-bgnd.width())/2, (sz.height()-bgnd.height())/2, bgnd);
+        QSize sz = size();
+        p.fillRect(0, 0, sz.width(), sz.height(),
+                   QApplication::palette().color(QPalette::Base));
+        p.drawPixmap((sz.width() - bgnd.width()) / 2,
+                     (sz.height() - bgnd.height()) / 2, bgnd);
     }
-    if (!info.isEmpty() && model() && 0==model()->rowCount()) {
+    if (!info.isEmpty() && model() && 0 == model()->rowCount()) {
         QPainter p(viewport());
         QColor col(palette().text().color());
         col.setAlphaF(0.5);
@@ -218,42 +221,41 @@ void CategorizedView::paintEvent(QPaintEvent *e)
         f.setItalic(true);
         p.setPen(col);
         p.setFont(f);
-        p.drawText(rect().adjusted(8, 8, -16, -16), Qt::AlignCenter|Qt::TextWordWrap, info);
+        p.drawText(rect().adjusted(8, 8, -16, -16),
+                   Qt::AlignCenter | Qt::TextWordWrap, info);
     }
     KCategorizedView::paintEvent(e);
 }
 
-void CategorizedView::setRootIndex(const QModelIndex &idx)
-{
-    KCategorizedView::setRootIndex(idx.model()==proxy->sourceModel() ? proxy->mapFromSource(idx) : idx);
+void CategorizedView::setRootIndex(const QModelIndex& idx) {
+    KCategorizedView::setRootIndex(
+        idx.model() == proxy->sourceModel() ? proxy->mapFromSource(idx) : idx);
 }
 
-QModelIndex CategorizedView::rootIndex() const
-{
-    QModelIndex idx=KCategorizedView::rootIndex();
-    return idx.model()==proxy ? proxy->mapToSource(idx) : idx;
+QModelIndex CategorizedView::rootIndex() const {
+    QModelIndex idx = KCategorizedView::rootIndex();
+    return idx.model() == proxy ? proxy->mapToSource(idx) : idx;
 }
 
-QModelIndex CategorizedView::indexAt(const QPoint &point, bool ensureFromSource) const
-{
-    QModelIndex idx=KCategorizedView::indexAt(point);
-    return ensureFromSource && idx.model()==proxy ? proxy->mapToSource(idx) : idx;
+QModelIndex CategorizedView::indexAt(const QPoint& point,
+                                     bool ensureFromSource) const {
+    QModelIndex idx = KCategorizedView::indexAt(point);
+    return ensureFromSource && idx.model() == proxy ? proxy->mapToSource(idx)
+                                                    : idx;
 }
 
-QModelIndex CategorizedView::mapFromSource(const QModelIndex &idx) const
-{
-    return idx.model()==proxy->sourceModel() ? proxy->mapFromSource(idx) : idx;
+QModelIndex CategorizedView::mapFromSource(const QModelIndex& idx) const {
+    return idx.model() == proxy->sourceModel() ? proxy->mapFromSource(idx)
+                                               : idx;
 }
 
-void CategorizedView::setPlain(bool plain)
-{
+void CategorizedView::setPlain(bool plain) {
     proxy->setCategorizedModel(!plain);
     setViewMode(plain ? QListView::ListMode : QListView::IconMode);
 }
 
 // Workaround for https://bugreports.qt-project.org/browse/QTBUG-18009
-void CategorizedView::correctSelection()
-{
+void CategorizedView::correctSelection() {
     if (!selectionModel()) {
         return;
     }
@@ -263,34 +265,32 @@ void CategorizedView::correctSelection()
     selectionModel()->select(s, QItemSelectionModel::SelectCurrent);
 }
 
-void CategorizedView::showCustomContextMenu(const QPoint &pos)
-{
+void CategorizedView::showCustomContextMenu(const QPoint& pos) {
     if (menu) {
         menu->popup(mapToGlobal(pos));
     }
 }
 
-void CategorizedView::checkDoubleClick(const QModelIndex &idx)
-{
-    if (!TreeView::getForceSingleClick() && idx.model() && idx.model()->rowCount(idx)) {
+void CategorizedView::checkDoubleClick(const QModelIndex& idx) {
+    if (!TreeView::getForceSingleClick() && idx.model() &&
+        idx.model()->rowCount(idx)) {
         return;
     }
-    emit itemDoubleClicked(idx.model()==proxy ? proxy->mapToSource(idx) : idx);
+    emit itemDoubleClicked(idx.model() == proxy ? proxy->mapToSource(idx)
+                                                : idx);
 }
 
-void CategorizedView::checkClicked(const QModelIndex &idx)
-{
-    emit itemClicked(idx.model()==proxy ? proxy->mapToSource(idx) : idx);
+void CategorizedView::checkClicked(const QModelIndex& idx) {
+    emit itemClicked(idx.model() == proxy ? proxy->mapToSource(idx) : idx);
 }
 
-void CategorizedView::checkActivated(const QModelIndex &idx)
-{
-    emit itemActivated(idx.model()==proxy ? proxy->mapToSource(idx) : idx);
+void CategorizedView::checkActivated(const QModelIndex& idx) {
+    emit itemActivated(idx.model() == proxy ? proxy->mapToSource(idx) : idx);
 }
 
-void CategorizedView::rowsInserted(const QModelIndex &parent, int start, int end)
-{
-    if (parent==KCategorizedView::rootIndex()) {
+void CategorizedView::rowsInserted(const QModelIndex& parent, int start,
+                                   int end) {
+    if (parent == KCategorizedView::rootIndex()) {
         KCategorizedView::rowsInserted(parent, start, end);
     }
 }

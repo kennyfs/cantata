@@ -30,29 +30,28 @@
 
 class BuddyLabel;
 
-class MagnatuneSettingsDialog : public Dialog
-{
+class MagnatuneSettingsDialog : public Dialog {
     Q_OBJECT
 
-public:
-    MagnatuneSettingsDialog(QWidget *parent);
+   public:
+    MagnatuneSettingsDialog(QWidget* parent);
 
-    bool run(int m, int d, const QString &u, const QString &p);
+    bool run(int m, int d, const QString& u, const QString& p);
     int membership() const { return member->currentIndex(); }
     int download() const { return dl->currentIndex(); }
     QString username() const { return user->text().trimmed(); }
     QString password() const { return pass->text().trimmed(); }
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void membershipChanged(int i);
 
-private:
-    QComboBox *member;
-    QComboBox *dl;
-    LineEdit *user;
-    LineEdit *pass;
-    BuddyLabel *userLabel;
-    BuddyLabel *passLabel;
+   private:
+    QComboBox* member;
+    QComboBox* dl;
+    LineEdit* user;
+    LineEdit* pass;
+    BuddyLabel* userLabel;
+    BuddyLabel* passLabel;
 };
 
 #endif

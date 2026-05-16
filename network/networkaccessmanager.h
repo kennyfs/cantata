@@ -31,32 +31,39 @@
 class QTimerEvent;
 class NetworkAccessManager;
 
-class NetworkJob : public QObject
-{
+class NetworkJob : public QObject {
     Q_OBJECT
 
-public:
-    NetworkJob(QNetworkReply *j);
+   public:
+    NetworkJob(QNetworkReply* j);
     ~NetworkJob() override;
 
-    QNetworkReply * actualJob() const { return job; }
+    QNetworkReply* actualJob() const { return job; }
 
     void cancelAndDelete();
     bool open(QIODevice::OpenMode mode) { return job && job->open(mode); }
-    void close() { if (job) job->close(); }
+    void close() {
+        if (job) job->close();
+    }
 
     QUrl url() const { return job ? job->url() : origU; }
     QUrl origUrl() const { return origU; }
-    void setOrigUrl(const QUrl &u) { origU=u; }
-    QNetworkReply::NetworkError error() const { return job ? job->error() : QNetworkReply::UnknownNetworkError; }
+    void setOrigUrl(const QUrl& u) { origU = u; }
+    QNetworkReply::NetworkError error() const {
+        return job ? job->error() : QNetworkReply::UnknownNetworkError;
+    }
     QString errorString() const { return job ? job->errorString() : QString(); }
     QByteArray readAll() { return job ? job->readAll() : QByteArray(); }
-    bool ok() const { return job && QNetworkReply::NoError==job->error(); }
-    QVariant attribute(QNetworkRequest::Attribute code) const { return job ? job->attribute(code) : QVariant(); }
+    bool ok() const { return job && QNetworkReply::NoError == job->error(); }
+    QVariant attribute(QNetworkRequest::Attribute code) const {
+        return job ? job->attribute(code) : QVariant();
+    }
     qint64 bytesAvailable() const { return job ? job->bytesAvailable() : -1; }
-    QByteArray read(qint64 maxlen) { return job ? job->read(maxlen) : QByteArray(); }
+    QByteArray read(qint64 maxlen) {
+        return job ? job->read(maxlen) : QByteArray();
+    }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void finished();
     void error(QNetworkReply::NetworkError);
     void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
@@ -64,53 +71,56 @@ Q_SIGNALS:
     void downloadPercent(int pc);
     void readyRead();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void jobFinished();
-    void jobDestroyed(QObject *o);
+    void jobDestroyed(QObject* o);
     void downloadProg(qint64 bytesReceived, qint64 bytesTotal);
     void handleReadyRead();
 
-private:
-    NetworkJob(NetworkAccessManager *p, const QUrl &u);
+   private:
+    NetworkJob(NetworkAccessManager* p, const QUrl& u);
     void connectJob();
     void cancelJob();
     void abortJob();
 
-private:
+   private:
     int numRedirects;
     int lastDownloadPc;
-    QNetworkReply *job;
+    QNetworkReply* job;
     QUrl origU;
 
     friend class NetworkAccessManager;
 };
 
-class NetworkAccessManager : public QNetworkAccessManager
-{
+class NetworkAccessManager : public QNetworkAccessManager {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
     static void disableNetworkAccess();
-    static NetworkAccessManager * self();
+    static NetworkAccessManager* self();
 
-    NetworkAccessManager(QObject *parent=nullptr);
-    ~NetworkAccessManager() override { }
+    NetworkAccessManager(QObject* parent = nullptr);
+    ~NetworkAccessManager() override {}
 
-    NetworkJob * get(const QNetworkRequest &req, int timeout=0);
-    NetworkJob * get(const QUrl &url, int timeout=0) { return get(QNetworkRequest(url), timeout); }
-    QNetworkReply * postFormData(QNetworkRequest req, const QByteArray &data);
-    QNetworkReply * postFormData(const QUrl &url, const QByteArray &data) { return postFormData(QNetworkRequest(url), data); }
+    NetworkJob* get(const QNetworkRequest& req, int timeout = 0);
+    NetworkJob* get(const QUrl& url, int timeout = 0) {
+        return get(QNetworkRequest(url), timeout);
+    }
+    QNetworkReply* postFormData(QNetworkRequest req, const QByteArray& data);
+    QNetworkReply* postFormData(const QUrl& url, const QByteArray& data) {
+        return postFormData(QNetworkRequest(url), data);
+    }
 
-protected:
-    void timerEvent(QTimerEvent *e) override;
+   protected:
+    void timerEvent(QTimerEvent* e) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void replyFinished();
 
-private:
-    QMap<NetworkJob *, int> timers;
+   private:
+    QMap<NetworkJob*, int> timers;
     friend class NetworkJob;
 };
 
-#endif // NETWORK_ACCESS_MANAGER_H
+#endif  // NETWORK_ACCESS_MANAGER_H

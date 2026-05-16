@@ -37,18 +37,18 @@
 #include <taglib/tstring.h>
 #include <taglib/id3v1genres.h>
 #include <QTextCodec>
-static QString id3Genre(int id)
-{
-    static QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+static QString id3Genre(int id) {
+    static QTextCodec* codec = QTextCodec::codecForName("UTF-8");
     // Clementine: In theory, genre 0 is "blues"; in practice it's invalid.
-    return 0==id ? QString() : codec->toUnicode(TagLib::ID3v1::genre(id).toCString(true)).trimmed();
+    return 0 == id ? QString()
+                   : codec->toUnicode(TagLib::ID3v1::genre(id).toCString(true))
+                         .trimmed();
 }
 
-#else // TAGLIB_FOUND
-static QString id3Genre(int id)
-{
+#else  // TAGLIB_FOUND
+static QString id3Genre(int id) {
     // Clementine: In theory, genre 0 is "blues"; in practice it's invalid.
-    if (0==id) {
+    if (0 == id) {
         return QString();
     }
 
@@ -187,22 +187,24 @@ static QString id3Genre(int id)
 }
 #endif
 
-static const QLatin1String constStreamUrl("http://api.jamendo.com/get2/stream/track/redirect/?id=%1&streamencoding=");
-static const QLatin1String constListingUrl("http://imgjam.com/data/dbdump_artistalbumtrack.xml.gz");
+static const QLatin1String constStreamUrl(
+    "http://api.jamendo.com/get2/stream/track/redirect/?id=%1&streamencoding=");
+static const QLatin1String constListingUrl(
+    "http://imgjam.com/data/dbdump_artistalbumtrack.xml.gz");
 static const QLatin1String constName("jamendo");
 
-int JamendoXmlParser::parse(QXmlStreamReader &xml)
-{
-    int artistCount=0;
-    QList<Song> *songList=new QList<Song>();
+int JamendoXmlParser::parse(QXmlStreamReader& xml) {
+    int artistCount = 0;
+    QList<Song>* songList = new QList<Song>();
     while (!xml.atEnd()) {
         xml.readNext();
-        if (QXmlStreamReader::StartElement==xml.tokenType() && QLatin1String("artist")==xml.name()) {
+        if (QXmlStreamReader::StartElement == xml.tokenType() &&
+            QLatin1String("artist") == xml.name()) {
             parseArtist(songList, xml);
             artistCount++;
-            if (songList->count()>500) {
+            if (songList->count() > 500) {
                 emit songs(songList);
-                songList=new QList<Song>();
+                songList = new QList<Song>();
             }
         }
     }
@@ -214,57 +216,58 @@ int JamendoXmlParser::parse(QXmlStreamReader &xml)
     return artistCount;
 }
 
-void JamendoXmlParser::parseArtist(QList<Song> *songList, QXmlStreamReader &xml)
-{
+void JamendoXmlParser::parseArtist(QList<Song>* songList,
+                                   QXmlStreamReader& xml) {
     Song song;
 
     while (!xml.atEnd()) {
         xml.readNext();
 
-        if (QXmlStreamReader::StartElement==xml.tokenType()) {
+        if (QXmlStreamReader::StartElement == xml.tokenType()) {
             QStringRef name = xml.name();
 
-            if (QLatin1String("name")==name) {
-                song.artist=xml.readElementText().trimmed();
-            } else if (QLatin1String("album")==name) {
+            if (QLatin1String("name") == name) {
+                song.artist = xml.readElementText().trimmed();
+            } else if (QLatin1String("album") == name) {
                 parseAlbum(song, songList, xml);
             } /*else if (artist && QLatin1String("image")==name) {
                 artist->setImageUrl(xml.readElementText().trimmed());
             }*/
-        } else if (xml.isEndElement() && QLatin1String("artist")==xml.name()) {
+        } else if (xml.isEndElement() &&
+                   QLatin1String("artist") == xml.name()) {
             break;
         }
     }
 }
 
-void JamendoXmlParser::parseAlbum(Song &song, QList<Song> *songList, QXmlStreamReader &xml)
-{
+void JamendoXmlParser::parseAlbum(Song& song, QList<Song>* songList,
+                                  QXmlStreamReader& xml) {
     QString id;
     QString genre;
-    song.track=0;
-    song.album=QString();
+    song.track = 0;
+    song.album = QString();
 
     while (!xml.atEnd()) {
         xml.readNext();
 
-        if (QXmlStreamReader::StartElement==xml.tokenType()) {
+        if (QXmlStreamReader::StartElement == xml.tokenType()) {
             QStringRef name = xml.name();
 
-            if (QLatin1String("name")==name) {
-                song.album=xml.readElementText().trimmed();
-            } else if (QLatin1String("track")==name) {
+            if (QLatin1String("name") == name) {
+                song.album = xml.readElementText().trimmed();
+            } else if (QLatin1String("track") == name) {
                 song.track++;
                 parseSong(song, genre, xml);
                 songList->append(song);
-            } else if (QLatin1String("id")==name) {
-                id=xml.readElementText().trimmed();
-            } else if (QLatin1String("id3genre")==name) {
-                int g=xml.readElementText().toInt();
-                if (0!=g) {
-                    genre=id3Genre(g);
+            } else if (QLatin1String("id") == name) {
+                id = xml.readElementText().trimmed();
+            } else if (QLatin1String("id3genre") == name) {
+                int g = xml.readElementText().toInt();
+                if (0 != g) {
+                    genre = id3Genre(g);
                 }
             }
-        } else if (xml.isEndElement() && QLatin1String("album")==xml.name()) {
+        } else if (xml.isEndElement() && QLatin1String("album") == xml.name()) {
             break;
         }
     }
@@ -274,130 +277,124 @@ void JamendoXmlParser::parseAlbum(Song &song, QList<Song> *songList, QXmlStreamR
     }
 }
 
-void JamendoXmlParser::parseSong(Song &song, const QString &albumGenre, QXmlStreamReader &xml)
-{
-    song.time=0;
-    song.title=QString();
-    song.genres[0]=albumGenre;
+void JamendoXmlParser::parseSong(Song& song, const QString& albumGenre,
+                                 QXmlStreamReader& xml) {
+    song.time = 0;
+    song.title = QString();
+    song.genres[0] = albumGenre;
 
     while (!xml.atEnd()) {
         xml.readNext();
 
-        if (QXmlStreamReader::StartElement==xml.tokenType()) {
+        if (QXmlStreamReader::StartElement == xml.tokenType()) {
             QStringRef name = xml.name();
 
-            if (QLatin1String("name")==name) {
-                song.title=xml.readElementText().trimmed();
-            } else if (QLatin1String("duration")==name) {
-                song.time=xml.readElementText().toFloat();
-            } else if (QLatin1String("id3genre")==name && albumGenre.isEmpty()) {
-                int g=xml.readElementText().toInt();
-                if (0!=g) {
-                    song.genres[0]=id3Genre(g);
+            if (QLatin1String("name") == name) {
+                song.title = xml.readElementText().trimmed();
+            } else if (QLatin1String("duration") == name) {
+                song.time = xml.readElementText().toFloat();
+            } else if (QLatin1String("id3genre") == name &&
+                       albumGenre.isEmpty()) {
+                int g = xml.readElementText().toInt();
+                if (0 != g) {
+                    song.genres[0] = id3Genre(g);
                 }
-            } else if (QLatin1String("id")==name) {
-                song.file=xml.readElementText().trimmed();
+            } else if (QLatin1String("id") == name) {
+                song.file = xml.readElementText().trimmed();
             }
-        } else if (xml.isEndElement() && QLatin1String("track")==xml.name()) {
+        } else if (xml.isEndElement() && QLatin1String("track") == xml.name()) {
             break;
         }
     }
     song.fillEmptyFields();
 }
 
-static QString formatStr(JamendoService::Format f)
-{
-    return JamendoService::FMT_MP3==f ? "mp3" : "ogg";
+static QString formatStr(JamendoService::Format f) {
+    return JamendoService::FMT_MP3 == f ? "mp3" : "ogg";
 }
 
-static JamendoService::Format toFormat(const QString &f)
-{
-    return f=="ogg" ? JamendoService::FMT_Ogg : JamendoService::FMT_MP3;
+static JamendoService::Format toFormat(const QString& f) {
+    return f == "ogg" ? JamendoService::FMT_Ogg : JamendoService::FMT_MP3;
 }
 
-JamendoService::JamendoService(QObject *p)
-    : OnlineDbService(new OnlineDb(constName, p), p)
-{
-    icn=MonoIcon::icon(FontAwesome::playcircleo, Utils::monoIconColor());
+JamendoService::JamendoService(QObject* p)
+    : OnlineDbService(new OnlineDb(constName, p), p) {
+    icn = MonoIcon::icon(FontAwesome::playcircleo, Utils::monoIconColor());
     useCovers(name());
     Configuration cfg(constName);
-    format=toFormat(cfg.get("format", formatStr(FMT_MP3)));
+    format = toFormat(cfg.get("format", formatStr(FMT_MP3)));
 }
 
-QVariant JamendoService::data(const QModelIndex &index, int role) const
-{
+QVariant JamendoService::data(const QModelIndex& index, int role) const {
     if (index.isValid()) {
         switch (role) {
-        case Cantata::Role_CoverSong: {
-            QVariant v;
-            Item *item = static_cast<Item *>(index.internalPointer());
-            switch (item->getType()) {
-            case T_Album:
-                if (item->getSong().isEmpty()) {
-                    Song song;
-                    song.artist=item->getParent()->getId();
-                    song.album=item->getId();
-                    song.setIsFromOnlineService(constName);
-                    song.file=constName; // Just so that isEmpty() is false!
-                    QString id=static_cast<OnlineDb *>(db)->getCoverUrl(/*T_Album==topLevel() ? static_cast<AlbumItem *>(item)->getArtistId() : */item->getParent()->getId(), item->getId());
-                    song.setExtraField(Song::OnlineImageUrl, QString("http://api.jamendo.com/get2/image/album/redirect/?id=%1&imagesize=300").arg(id));
-                    item->setSong(song);
+            case Cantata::Role_CoverSong: {
+                QVariant v;
+                Item* item = static_cast<Item*>(index.internalPointer());
+                switch (item->getType()) {
+                    case T_Album:
+                        if (item->getSong().isEmpty()) {
+                            Song song;
+                            song.artist = item->getParent()->getId();
+                            song.album = item->getId();
+                            song.setIsFromOnlineService(constName);
+                            song.file =
+                                constName;  // Just so that isEmpty() is false!
+                            QString id =
+                                static_cast<OnlineDb*>(db)->getCoverUrl(
+                                    /*T_Album==topLevel() ?
+                                       static_cast<AlbumItem
+                                       *>(item)->getArtistId() : */
+                                    item->getParent()->getId(), item->getId());
+                            song.setExtraField(
+                                Song::OnlineImageUrl,
+                                QString("http://api.jamendo.com/get2/image/"
+                                        "album/redirect/?id=%1&imagesize=300")
+                                    .arg(id));
+                            item->setSong(song);
+                        }
+                        v.setValue<Song>(item->getSong());
+                        break;
+                    case T_Artist:
+                        break;
+                    default:
+                        break;
                 }
-                v.setValue<Song>(item->getSong());
-                break;
-            case T_Artist:
-                break;
-            default:
-                break;
+                return v;
             }
-            return v;
-        }
         }
     }
     return OnlineDbService::data(index, role);
 }
 
-QString JamendoService::name() const
-{
-    return constName;
-}
+QString JamendoService::name() const { return constName; }
 
-QString JamendoService::title() const
-{
-    return QLatin1String("Jamendo");
-}
+QString JamendoService::title() const { return QLatin1String("Jamendo"); }
 
-QString JamendoService::descr() const
-{
+QString JamendoService::descr() const {
     return tr("The world's largest digital service for free music");
 }
 
-OnlineXmlParser * JamendoService::createParser()
-{
+OnlineXmlParser* JamendoService::createParser() {
     return new JamendoXmlParser();
 }
 
-QUrl JamendoService::listingUrl() const
-{
-    return QUrl(constListingUrl);
-}
+QUrl JamendoService::listingUrl() const { return QUrl(constListingUrl); }
 
-Song & JamendoService::fixPath(Song &s) const
-{
-    s.file=QString(constStreamUrl).replace("id=%1", "id="+s.file);
-    s.file+=FMT_MP3==format ? QLatin1String("mp31") : QLatin1String("ogg2");
-    s.type=Song::OnlineSvrTrack;
+Song& JamendoService::fixPath(Song& s) const {
+    s.file = QString(constStreamUrl).replace("id=%1", "id=" + s.file);
+    s.file += FMT_MP3 == format ? QLatin1String("mp31") : QLatin1String("ogg2");
+    s.type = Song::OnlineSvrTrack;
     s.setIsFromOnlineService(name());
     return encode(s);
 }
 
-void JamendoService::configure(QWidget *p)
-{
+void JamendoService::configure(QWidget* p) {
     JamendoSettingsDialog dlg(p);
-    if (dlg.run(FMT_MP3==format)) {
-        Format f=0==dlg.format() ? FMT_MP3 : FMT_Ogg;
-        if (f!=format) {
-            format=f;
+    if (dlg.run(FMT_MP3 == format)) {
+        Format f = 0 == dlg.format() ? FMT_MP3 : FMT_Ogg;
+        if (f != format) {
+            format = f;
             Configuration cfg(constName);
             cfg.set("format", formatStr(format));
         }

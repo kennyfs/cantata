@@ -29,20 +29,19 @@
 
 class NetworkJob;
 
-class OnlineSearchService : public SearchModel, public OnlineService
-{
+class OnlineSearchService : public SearchModel, public OnlineService {
     Q_OBJECT
-public:
-    OnlineSearchService(QObject *p);
+   public:
+    OnlineSearchService(QObject* p);
     ~OnlineSearchService() override { cancel(); }
 
-    QVariant data(const QModelIndex &index, int role) const override;
-    Song & fixPath(Song &s) const override;
-    void search(const QString &key, const QString &value) override =0;
+    QVariant data(const QModelIndex& index, int role) const override;
+    Song& fixPath(Song& s) const override;
+    void search(const QString& key, const QString& value) override = 0;
     virtual void cancel();
 
-protected:
-    NetworkJob *job;
+   protected:
+    NetworkJob* job;
 };
 
 #endif

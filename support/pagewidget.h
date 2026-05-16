@@ -32,40 +32,40 @@ class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
 
-class PageWidgetItem : public QWidget
-{
-public:
-    PageWidgetItem(QWidget *p, const QString &header, const QIcon &icon, QWidget *cfg, bool showHeader);
-    ~PageWidgetItem() override { }
-    QWidget * widget() const { return wid; }
+class PageWidgetItem : public QWidget {
+   public:
+    PageWidgetItem(QWidget* p, const QString& header, const QIcon& icon,
+                   QWidget* cfg, bool showHeader);
+    ~PageWidgetItem() override {}
+    QWidget* widget() const { return wid; }
 
-private:
-    QWidget *wid;
+   private:
+    QWidget* wid;
 };
 
-class PageWidget : public QWidget
-{
+class PageWidget : public QWidget {
     Q_OBJECT
 
-public:
-    PageWidget(QWidget *p, bool listView=false, bool headers=true);
-    ~PageWidget() override { }
-    PageWidgetItem * addPage(QWidget *widget, const QString &name, const QIcon &icon, const QString &header);
+   public:
+    PageWidget(QWidget* p, bool listView = false, bool headers = true);
+    ~PageWidget() override {}
+    PageWidgetItem* addPage(QWidget* widget, const QString& name,
+                            const QIcon& icon, const QString& header);
     int count();
-    PageWidgetItem * currentPage() const;
-    void setCurrentPage(PageWidgetItem *item);
+    PageWidgetItem* currentPage() const;
+    void setCurrentPage(PageWidgetItem* item);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void setFocus();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void currentPageChanged();
 
-private:
+   private:
     bool showHeaders;
-    QListWidget *list;
-    QStackedWidget *stack;
-    QMap<QListWidgetItem *, PageWidgetItem*> pages;
+    QListWidget* list;
+    QStackedWidget* stack;
+    QMap<QListWidgetItem*, PageWidgetItem*> pages;
 };
 
 #endif

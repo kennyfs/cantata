@@ -36,23 +36,24 @@
 class FilenameSchemeDialog;
 class Action;
 
-class TrackOrganiser : public SongDialog, Ui::TrackOrganiser
-{
+class TrackOrganiser : public SongDialog, Ui::TrackOrganiser {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    TrackOrganiser(QWidget *parent);
+    TrackOrganiser(QWidget* parent);
     ~TrackOrganiser() override;
 
-    void show(const QList<Song> &songs, const QString &udi, bool forceUpdate=false);
+    void show(const QList<Song>& songs, const QString& udi,
+              bool forceUpdate = false);
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void update();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void configureFilenameScheme();
     void updateView();
     void startRename();
@@ -60,23 +61,23 @@ private Q_SLOTS:
     void controlRemoveAct();
     void removeItems();
     void showRatingsMessage();
-    void setFilenameScheme(const QString &text);
+    void setFilenameScheme(const QString& text);
 
-private:
+   private:
     void saveOptions();
     void slotButtonClicked(int button) override;
     void readOptions();
-    #ifdef ENABLE_DEVICES_SUPPORT
-    Device * getDevice(QWidget *p=nullptr);
-    #endif
+#ifdef ENABLE_DEVICES_SUPPORT
+    Device* getDevice(QWidget* p = nullptr);
+#endif
     void doUpdate();
     void finish(bool ok);
 
-private:
-    FilenameSchemeDialog *schemeDlg;
+   private:
+    FilenameSchemeDialog* schemeDlg;
     QList<Song> origSongs;
     QString deviceUdi;
-    Action *removeAct;
+    Action* removeAct;
     int index;
     bool autoSkip;
     bool paused;

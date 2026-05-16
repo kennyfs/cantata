@@ -30,37 +30,35 @@
 
 static QIcon icon;
 
-PathRequester::PathRequester(QWidget *parent)
-    : QWidget(parent)
-    , dirMode(true)
-{
+PathRequester::PathRequester(QWidget* parent) : QWidget(parent), dirMode(true) {
     if (icon.isNull()) {
         icon = MonoIcon::icon(FontAwesome::foldero, Utils::monoIconColor());
     }
-    QHBoxLayout *layout=new QHBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    edit=new LineEdit(this);
-    btn=new FlatToolButton(this);
+    edit = new LineEdit(this);
+    btn = new FlatToolButton(this);
     layout->addWidget(edit);
     layout->addWidget(btn);
     btn->setAutoRaise(true);
     btn->setIcon(icon);
     connect(btn, SIGNAL(clicked(bool)), SLOT(choose()));
-    connect(edit, SIGNAL(textChanged(const QString &)), SIGNAL(textChanged(const QString &)));
+    connect(edit, SIGNAL(textChanged(const QString&)),
+            SIGNAL(textChanged(const QString&)));
 }
 
-void PathRequester::choose()
-{
-    QString item=dirMode
-                    ? QFileDialog::getExistingDirectory(this, tr("Select Folder"), text())
-                    : QFileDialog::getOpenFileName(this, tr("Select File"), Utils::getDir(text()), filter);
+void PathRequester::choose() {
+    QString item =
+        dirMode ? QFileDialog::getExistingDirectory(this, tr("Select Folder"),
+                                                    text())
+                : QFileDialog::getOpenFileName(this, tr("Select File"),
+                                               Utils::getDir(text()), filter);
     if (!item.isEmpty()) {
         setText(item);
     }
 }
 
-void PathRequester::setEnabled(bool e)
-{
+void PathRequester::setEnabled(bool e) {
     edit->setEnabled(e);
     btn->setEnabled(e);
 }

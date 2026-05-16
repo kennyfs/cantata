@@ -29,30 +29,26 @@ static QString variousText;
 
 QString TagSpinBox::variousStr() { return variousText; }
 
-TagSpinBox::TagSpinBox(QWidget *parent)
-    : EmptySpinBox(parent)
-    , isVarious(false)
-{
+TagSpinBox::TagSpinBox(QWidget* parent)
+    : EmptySpinBox(parent), isVarious(false) {
     if (variousText.isEmpty()) {
-        variousText=tr("(Various)");
+        variousText = tr("(Various)");
     }
 }
 
-QSize TagSpinBox::sizeHint() const
-{
-    TagSpinBox *that=const_cast<TagSpinBox *>(this);
+QSize TagSpinBox::sizeHint() const {
+    TagSpinBox* that = const_cast<TagSpinBox*>(this);
     that->setSpecialValueText(variousText);
-    QSize sz=EmptySpinBox::sizeHint();
+    QSize sz = EmptySpinBox::sizeHint();
     that->setSpecialValueText(QString());
     return sz;
 }
 
-void TagSpinBox::setVarious(bool v)
-{
-    if (v==isVarious) {
+void TagSpinBox::setVarious(bool v) {
+    if (v == isVarious) {
         return;
     }
-    isVarious=v;
+    isVarious = v;
     lineEdit()->setPlaceholderText(isVarious ? variousText : QString());
 }
 

@@ -50,140 +50,149 @@ const QLatin1String AlbumView::constInfoExt(".html.gz");
 
 static const QLatin1String constScheme("cantata");
 
-static QString cacheFileName(const QString &artist, const QString &album, const QString &lang, bool createDir)
-{
-    return Utils::cacheDir(AlbumView::constCacheDir, createDir)+Covers::encodeName(artist)+QLatin1String(" - ")+Covers::encodeName(album)+"."+lang+AlbumView::constInfoExt;
+static QString cacheFileName(const QString& artist, const QString& album,
+                             const QString& lang, bool createDir) {
+    return Utils::cacheDir(AlbumView::constCacheDir, createDir) +
+           Covers::encodeName(artist) + QLatin1String(" - ") +
+           Covers::encodeName(album) + "." + lang + AlbumView::constInfoExt;
 }
 
-enum Parts {
-    Cover = 0x01,
-    Details = 0x02,
-    All = Cover+Details
-};
+enum Parts { Cover = 0x01, Details = 0x02, All = Cover + Details };
 
-AlbumView::AlbumView(QWidget *p)
-    : View(p)
-    , detailsReceived(0)
-{
-    engine=ContextEngine::create(this);
-    #ifndef Q_OS_WIN
+AlbumView::AlbumView(QWidget* p) : View(p), detailsReceived(0) {
+    engine = ContextEngine::create(this);
+#ifndef Q_OS_WIN
     // Full width covers not working under windows. Issue #1252
     fullWidthCoverAction = new Action(tr("Full Width Cover"), this);
     fullWidthCoverAction->setCheckable(true);
-    connect(fullWidthCoverAction, SIGNAL(toggled(bool)), this, SLOT(setScaleImage(bool)));
-    fullWidthCoverAction->setChecked(Configuration(metaObject()->className()).get("fullWidthCover", false));
-    #endif
-    refreshAction = ActionCollection::get()->createAction("refreshalbum", tr("Refresh Album Information"), Icons::self()->refreshIcon);
+    connect(fullWidthCoverAction, SIGNAL(toggled(bool)), this,
+            SLOT(setScaleImage(bool)));
+    fullWidthCoverAction->setChecked(
+        Configuration(metaObject()->className()).get("fullWidthCover", false));
+#endif
+    refreshAction = ActionCollection::get()->createAction(
+        "refreshalbum", tr("Refresh Album Information"),
+        Icons::self()->refreshIcon);
     connect(refreshAction, SIGNAL(triggered()), this, SLOT(refresh()));
-    connect(engine, SIGNAL(searchResult(QString,QString)), this, SLOT(searchResponse(QString,QString)));
-    connect(Covers::self(), SIGNAL(cover(Song,QImage,QString)), SLOT(coverRetrieved(Song,QImage,QString)));
-    connect(Covers::self(), SIGNAL(coverUpdated(Song,QImage,QString)), SLOT(coverUpdated(Song,QImage,QString)));
+    connect(engine, SIGNAL(searchResult(QString, QString)), this,
+            SLOT(searchResponse(QString, QString)));
+    connect(Covers::self(), SIGNAL(cover(Song, QImage, QString)),
+            SLOT(coverRetrieved(Song, QImage, QString)));
+    connect(Covers::self(), SIGNAL(coverUpdated(Song, QImage, QString)),
+            SLOT(coverUpdated(Song, QImage, QString)));
     connect(text, SIGNAL(anchorClicked(QUrl)), SLOT(playSong(QUrl)));
     text->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(text, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(text, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(showContextMenu(QPoint)));
     setStandardHeader(tr("Album"));
-    int imageSize=fontMetrics().height()*18;
+    int imageSize = fontMetrics().height() * 18;
     setPicSize(QSize(imageSize, imageSize));
     clear();
-    if (ArtistView::constCacheAge>0) {
+    if (ArtistView::constCacheAge > 0) {
         clearCache();
-        QTimer *timer=new QTimer(this);
+        QTimer* timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(clearCache()));
-        timer->start((int)((ArtistView::constCacheAge/2.0)*1000*24*60*60));
+        timer->start(
+            (int)((ArtistView::constCacheAge / 2.0) * 1000 * 24 * 60 * 60));
     }
 }
 
-AlbumView::~AlbumView()
-{
-    #ifndef Q_OS_WIN
-    Configuration(metaObject()->className()).set("fullWidthCover", fullWidthCoverAction->isChecked());
-    #endif
+AlbumView::~AlbumView() {
+#ifndef Q_OS_WIN
+    Configuration(metaObject()->className())
+        .set("fullWidthCover", fullWidthCoverAction->isChecked());
+#endif
 }
 
-void AlbumView::showContextMenu(const QPoint &pos)
-{
-    QMenu *menu = text->createStandardContextMenu();
+void AlbumView::showContextMenu(const QPoint& pos) {
+    QMenu* menu = text->createStandardContextMenu();
     menu->addSeparator();
     if (cancelJobAction->isEnabled()) {
         menu->addAction(cancelJobAction);
     } else {
         menu->addAction(refreshAction);
     }
-    #ifndef Q_OS_WIN
+#ifndef Q_OS_WIN
     menu->addAction(fullWidthCoverAction);
-    #endif
+#endif
     menu->exec(text->mapToGlobal(pos));
     delete menu;
 }
 
-void AlbumView::refresh()
-{
+void AlbumView::refresh() {
     if (currentSong.isEmpty()) {
         return;
     }
-    for (const QString &lang: engine->getLangs()) {
-        QFile::remove(cacheFileName(Covers::fixArtist(currentSong.albumArtistOrComposer()), currentSong.album, engine->getPrefix(lang), false));
+    for (const QString& lang : engine->getLangs()) {
+        QFile::remove(cacheFileName(
+            Covers::fixArtist(currentSong.albumArtistOrComposer()),
+            currentSong.album, engine->getPrefix(lang), false));
     }
     update(currentSong, true);
 }
 
-void AlbumView::update(const Song &song, bool force)
-{
-    QString streamName=song.isStandardStream() && song.album.isEmpty() ? song.name() : QString();
-    if (!streamName.isEmpty() && streamName!=currentSong.name()) {
+void AlbumView::update(const Song& song, bool force) {
+    QString streamName = song.isStandardStream() && song.album.isEmpty()
+                             ? song.name()
+                             : QString();
+    if (!streamName.isEmpty() && streamName != currentSong.name()) {
         abort();
-        currentSong=song;
+        currentSong = song;
         clearDetails();
         setHeader(streamName);
-        needToUpdate=false;
-        detailsReceived=All;
-        pic=createPicTag(QImage(), CANTATA_SYS_ICONS_DIR+QLatin1String("stream.png"));
+        needToUpdate = false;
+        detailsReceived = All;
+        pic = createPicTag(QImage(),
+                           CANTATA_SYS_ICONS_DIR + QLatin1String("stream.png"));
         updateDetails();
         return;
     }
 
-    if (song.isEmpty() || song.albumArtistOrComposer().isEmpty() || song.album.isEmpty()) {
-        currentSong=song;
+    if (song.isEmpty() || song.albumArtistOrComposer().isEmpty() ||
+        song.album.isEmpty()) {
+        currentSong = song;
         clearDetails();
         abort();
         return;
     }
 
-    if (force || song.albumArtistOrComposer()!=currentSong.albumArtistOrComposer() || song.album!=currentSong.album) {
-        currentSong=song;
-        currentArtist=currentSong.basicArtist();
+    if (force ||
+        song.albumArtistOrComposer() != currentSong.albumArtistOrComposer() ||
+        song.album != currentSong.album) {
+        currentSong = song;
+        currentArtist = currentSong.basicArtist();
         abort();
         if (!isVisible()) {
-            needToUpdate=true;
+            needToUpdate = true;
             return;
         }
         clearDetails();
         setHeader(song.album.isEmpty() ? stdHeader : song.album);
-        Covers::Image cImg=Covers::self()->requestImage(song, true);
-        detailsReceived|=Cover; // Sometimes cover download fails, and no error?
+        Covers::Image cImg = Covers::self()->requestImage(song, true);
+        detailsReceived |=
+            Cover;  // Sometimes cover download fails, and no error?
         if (!cImg.img.isNull()) {
-            detailsReceived|=Cover;
-            pic=createPicTag(cImg.img, cImg.fileName);
+            detailsReceived |= Cover;
+            pic = createPicTag(cImg.img, cImg.fileName);
         }
         getTrackListing();
         getDetails();
 
-        if (All==detailsReceived) {
+        if (All == detailsReceived) {
             hideSpinner();
         } else {
             showSpinner();
         }
-    } else if (song.title!=currentSong.title) {
-        currentSong=song;
+    } else if (song.title != currentSong.title) {
+        currentSong = song;
         getTrackListing();
         updateDetails(true);
     }
 }
 
-void AlbumView::playSong(const QUrl &url)
-{
+void AlbumView::playSong(const QUrl& url) {
     if (url.scheme() == constScheme) {
-        emit playSong(url.path().mid(1)); // Remove leading /
+        emit playSong(url.path().mid(1));  // Remove leading /
     } else if (CueFile::isCue(url.toString())) {
         emit playSong(url.toString());
     } else {
@@ -191,8 +200,7 @@ void AlbumView::playSong(const QUrl &url)
     }
 }
 
-void AlbumView::getTrackListing()
-{
+void AlbumView::getTrackListing() {
     if (currentSong.isNonMPD()) {
         if (!pic.isEmpty()) {
             updateDetails();
@@ -201,12 +209,12 @@ void AlbumView::getTrackListing()
     }
 
     if (songs.isEmpty()) {
-        songs=MpdLibraryModel::self()->getAlbumTracks(currentSong, 500);
+        songs = MpdLibraryModel::self()->getAlbumTracks(currentSong, 500);
     }
 
     if (!songs.isEmpty()) {
-        trackList=View::subHeader(tr("Tracks"))+QLatin1String("<p><table>");
-        for (const Song &s: songs) {
+        trackList = View::subHeader(tr("Tracks")) + QLatin1String("<p><table>");
+        for (const Song& s : songs) {
             if (CueFile::isCue(s.file)) {
                 QUrl u(s.file);
                 QUrlQuery q(u);
@@ -222,35 +230,47 @@ void AlbumView::getTrackListing()
                 q.addQueryItem("origYear", QString::number(s.origYear));
                 u.setQuery(q);
 
-                trackList+=QLatin1String("<tr><td align='right'>")+QString::number(s.track)+
-                           QLatin1String("</td><td><a href=\"")+u.toString()+QLatin1String("\">") +
-                           ((s.albumartist==currentSong.albumartist && s.album==currentSong.album && s.title==currentSong.title) ? "<b>"+s.displayTitle()+"</b>" : s.displayTitle())+
-                           QLatin1String("</a></td></tr>");
+                trackList += QLatin1String("<tr><td align='right'>") +
+                             QString::number(s.track) +
+                             QLatin1String("</td><td><a href=\"") +
+                             u.toString() + QLatin1String("\">") +
+                             ((s.albumartist == currentSong.albumartist &&
+                               s.album == currentSong.album &&
+                               s.title == currentSong.title)
+                                  ? "<b>" + s.displayTitle() + "</b>"
+                                  : s.displayTitle()) +
+                             QLatin1String("</a></td></tr>");
             } else {
-                trackList+=QLatin1String("<tr><td align='right'>")+QString::number(s.track)+
-                           QLatin1String("</td><td><a href=\"")+constScheme+QLatin1String(":///")+s.file+QLatin1String("\">") +
-                           (s.file==currentSong.file ? "<b>"+s.displayTitle()+"</b>" : s.displayTitle())+
-                           QLatin1String("</a></td></tr>");
+                trackList += QLatin1String("<tr><td align='right'>") +
+                             QString::number(s.track) +
+                             QLatin1String("</td><td><a href=\"") +
+                             constScheme + QLatin1String(":///") + s.file +
+                             QLatin1String("\">") +
+                             (s.file == currentSong.file
+                                  ? "<b>" + s.displayTitle() + "</b>"
+                                  : s.displayTitle()) +
+                             QLatin1String("</a></td></tr>");
             }
         }
 
-        trackList+=QLatin1String("</table></p>");
+        trackList += QLatin1String("</table></p>");
         updateDetails();
     }
 }
 
-void AlbumView::getDetails()
-{
+void AlbumView::getDetails() {
     engine->cancel();
-    for (const QString &lang: engine->getLangs()) {
-        QString prefix=engine->getPrefix(lang);
-        QString cachedFile=cacheFileName(Covers::fixArtist(currentSong.albumArtistOrComposer()), currentSong.album, prefix, false);
+    for (const QString& lang : engine->getLangs()) {
+        QString prefix = engine->getPrefix(lang);
+        QString cachedFile = cacheFileName(
+            Covers::fixArtist(currentSong.albumArtistOrComposer()),
+            currentSong.album, prefix, false);
         if (QFile::exists(cachedFile)) {
             QFile f(cachedFile);
             QtIOCompressor compressor(&f);
             compressor.setStreamFormat(QtIOCompressor::GzipFormat);
             if (compressor.open(QIODevice::ReadOnly)) {
-                QByteArray data=compressor.readAll();
+                QByteArray data = compressor.readAll();
 
                 if (!data.isEmpty()) {
                     searchResponse(QString::fromUtf8(data), QString());
@@ -260,48 +280,51 @@ void AlbumView::getDetails()
             }
         }
     }
-    engine->search(QStringList() << currentSong.albumArtistOrComposer() << currentSong.album, ContextEngine::Album);
+    engine->search(QStringList() << currentSong.albumArtistOrComposer()
+                                 << currentSong.album,
+                   ContextEngine::Album);
 }
 
-void AlbumView::coverRetrieved(const Song &s, const QImage &img, const QString &file)
-{
-    if (!s.isArtistImageRequest() && (s==currentSong && pic.isEmpty())) {
-        detailsReceived|=Cover;
-        if (All==detailsReceived) {
+void AlbumView::coverRetrieved(const Song& s, const QImage& img,
+                               const QString& file) {
+    if (!s.isArtistImageRequest() && (s == currentSong && pic.isEmpty())) {
+        detailsReceived |= Cover;
+        if (All == detailsReceived) {
             hideSpinner();
         }
-        pic=createPicTag(img, file);
+        pic = createPicTag(img, file);
         if (!pic.isEmpty()) {
             updateDetails();
         }
     }
 }
 
-void AlbumView::coverUpdated(const Song &s, const QImage &img, const QString &file)
-{
-    if (!s.isArtistImageRequest() && s==currentSong) {
-        detailsReceived|=Cover;
-        if (All==detailsReceived) {
+void AlbumView::coverUpdated(const Song& s, const QImage& img,
+                             const QString& file) {
+    if (!s.isArtistImageRequest() && s == currentSong) {
+        detailsReceived |= Cover;
+        if (All == detailsReceived) {
             hideSpinner();
         }
-        pic=createPicTag(img, file);
+        pic = createPicTag(img, file);
         if (!pic.isEmpty()) {
             updateDetails();
         }
     }
 }
 
-void AlbumView::searchResponse(const QString &resp, const QString &lang)
-{
-    detailsReceived|=Details;
-    if (All==detailsReceived) {
+void AlbumView::searchResponse(const QString& resp, const QString& lang) {
+    detailsReceived |= Details;
+    if (All == detailsReceived) {
         hideSpinner();
     }
 
     if (!resp.isEmpty()) {
-        details=engine->translateLinks(resp);
+        details = engine->translateLinks(resp);
         if (!lang.isEmpty()) {
-            QFile f(cacheFileName(Covers::fixArtist(currentSong.albumArtistOrComposer()), currentSong.album, lang, true));
+            QFile f(cacheFileName(
+                Covers::fixArtist(currentSong.albumArtistOrComposer()),
+                currentSong.album, lang, true));
             QtIOCompressor compressor(&f);
             compressor.setStreamFormat(QtIOCompressor::GzipFormat);
             if (compressor.open(QIODevice::WriteOnly)) {
@@ -312,32 +335,28 @@ void AlbumView::searchResponse(const QString &resp, const QString &lang)
     }
 }
 
-void AlbumView::updateDetails(bool preservePos)
-{
-    int pos=preservePos ? text->verticalScrollBar()->value() : 0;
+void AlbumView::updateDetails(bool preservePos) {
+    int pos = preservePos ? text->verticalScrollBar()->value() : 0;
     if (!details.isEmpty()) {
-        setHtml(pic+"<br>"+details+"<br>"+trackList);
+        setHtml(pic + "<br>" + details + "<br>" + trackList);
     } else {
-        setHtml(pic+trackList);
+        setHtml(pic + trackList);
     }
     if (preservePos) {
         text->verticalScrollBar()->setValue(pos);
     }
 }
 
-void AlbumView::abort()
-{
+void AlbumView::abort() {
     engine->cancel();
     hideSpinner();
 }
 
-void AlbumView::clearCache()
-{
+void AlbumView::clearCache() {
     Utils::clearOldCache(constCacheDir, ArtistView::constCacheAge);
 }
 
-void AlbumView::clearDetails()
-{
+void AlbumView::clearDetails() {
     details.clear();
     trackList.clear();
     bio.clear();
@@ -345,7 +364,7 @@ void AlbumView::clearDetails()
     songs.clear();
     clear();
     engine->cancel();
-    detailsReceived=0;
+    detailsReceived = 0;
 }
 
 #include "moc_albumview.cpp"

@@ -31,16 +31,15 @@
 class Action;
 class ProxyModel;
 
-class PodcastWidget : public SinglePageWidget
-{
+class PodcastWidget : public SinglePageWidget {
     Q_OBJECT
-public:
-    PodcastWidget(PodcastService *s, QWidget *p);
+   public:
+    PodcastWidget(PodcastService* s, QWidget* p);
     ~PodcastWidget() override;
     QStringList selectedFiles(bool allowPlaylists) const override;
     QList<Song> selectedSongs(bool allowPlaylists) const override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void headerClicked(int level);
     void subscribe();
     void unSubscribe();
@@ -49,29 +48,29 @@ private Q_SLOTS:
     void deleteDownload();
     void markAsNew();
     void markAsListened();
-    //void showUnplayedOnly(bool on);
+    // void showUnplayedOnly(bool on);
     void configure();
     void exportSubscriptions();
     void refreshPodcast();
 
-private:
+   private:
     void doSearch() override;
     void refresh() override;
     void doRefresh(bool singleOnly);
     void controlActions() override;
 
-private:
-    PodcastService *srv;
+   private:
+    PodcastService* srv;
     PodcastService::Proxy proxy;
-    Action *subscribeAction;
-    Action *unSubscribeAction;
-    Action *downloadAction;
-    Action *deleteAction;
-    Action *cancelDownloadAction;
-    Action *markAsNewAction;
-    Action *markAsListenedAction;
-    //Action *unplayedOnlyAction;
-    Action *exportAction;
+    Action* subscribeAction;
+    Action* unSubscribeAction;
+    Action* downloadAction;
+    Action* deleteAction;
+    Action* cancelDownloadAction;
+    Action* markAsNewAction;
+    Action* markAsListenedAction;
+    // Action *unplayedOnlyAction;
+    Action* exportAction;
 };
 
 #endif

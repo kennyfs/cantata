@@ -24,27 +24,23 @@
 #include <solid-lite/ifaces/block.h>
 #include "haldeviceinterface.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
-class Block : public DeviceInterface, virtual public Solid::Ifaces::Block
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
+class Block : public DeviceInterface, virtual public Solid::Ifaces::Block {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::Block)
 
-public:
-    Block(HalDevice *device);
+   public:
+    Block(HalDevice* device);
     ~Block() override;
 
     int deviceMajor() const override;
     int deviceMinor() const override;
     QString device() const override;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_BLOCK_H
+#endif  // SOLID_BACKENDS_HAL_BLOCK_H

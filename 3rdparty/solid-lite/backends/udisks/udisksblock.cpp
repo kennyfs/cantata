@@ -22,29 +22,14 @@
 
 using namespace Solid::Backends::UDisks;
 
-Block::Block(UDisksDevice *device)
-    : DeviceInterface(device)
-{
+Block::Block(UDisksDevice* device) : DeviceInterface(device) {}
 
-}
+Block::~Block() {}
 
-Block::~Block()
-{
-
-}
-
-QString Block::device() const
-{
+QString Block::device() const {
     return m_device->prop("DeviceFile").toString();
 }
 
-int Block::deviceMinor() const
-{
-    return m_device->prop("DeviceMinor").toInt();
-}
+int Block::deviceMinor() const { return m_device->prop("DeviceMinor").toInt(); }
 
-int Block::deviceMajor() const
-{
-    return m_device->prop("DeviceMajor").toInt();
-}
-
+int Block::deviceMajor() const { return m_device->prop("DeviceMajor").toInt(); }

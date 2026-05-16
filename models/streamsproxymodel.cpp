@@ -23,9 +23,7 @@
 #include "streamsproxymodel.h"
 #include "streamsmodel.h"
 
-StreamsProxyModel::StreamsProxyModel(QObject *parent)
-    : ProxyModel(parent)
-{
+StreamsProxyModel::StreamsProxyModel(QObject* parent) : ProxyModel(parent) {
     setDynamicSortFilter(true);
     setFilterCaseSensitivity(Qt::CaseInsensitive);
     setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -33,17 +31,18 @@ StreamsProxyModel::StreamsProxyModel(QObject *parent)
     sort(0);
 }
 
-bool StreamsProxyModel::filterAcceptsItem(const void *i, QStringList strings) const
-{
-    const StreamsModel::Item *item=static_cast<const StreamsModel::Item *>(i);
+bool StreamsProxyModel::filterAcceptsItem(const void* i,
+                                          QStringList strings) const {
+    const StreamsModel::Item* item = static_cast<const StreamsModel::Item*>(i);
     strings << item->name;
     if (matchesFilter(strings)) {
         return true;
     }
 
     if (item->isCategory()) {
-        const StreamsModel::CategoryItem *cat=static_cast<const StreamsModel::CategoryItem *>(item);
-        for (const StreamsModel::Item *c: cat->children) {
+        const StreamsModel::CategoryItem* cat =
+            static_cast<const StreamsModel::CategoryItem*>(item);
+        for (const StreamsModel::Item* c : cat->children) {
             if (filterAcceptsItem(c, strings)) {
                 return true;
             }
@@ -53,8 +52,8 @@ bool StreamsProxyModel::filterAcceptsItem(const void *i, QStringList strings) co
     return false;
 }
 
-bool StreamsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-{
+bool StreamsProxyModel::filterAcceptsRow(
+    int sourceRow, const QModelIndex& sourceParent) const {
     if (!filterEnabled) {
         return true;
     }
@@ -63,26 +62,32 @@ bool StreamsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
     }
 
     const QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    StreamsModel::Item *item = static_cast<StreamsModel::Item *>(index.internalPointer());
-    QModelIndex idx=index.parent();
+    StreamsModel::Item* item =
+        static_cast<StreamsModel::Item*>(index.internalPointer());
+    QModelIndex idx = index.parent();
     QStringList strings;
 
-    if (filter && item==filter) { // Accept top-level item!
+    if (filter && item == filter) {  // Accept top-level item!
         return true;
     }
-    if (filter && !idx.isValid() && item!=filter) { // Accept all items that are not children of top-level item!
+    if (filter && !idx.isValid() &&
+        item != filter) {  // Accept all items that are not children of
+                           // top-level item!
         return true;
     }
 
     // Traverse back up tree, so we get parent strings...
     while (idx.isValid()) {
-        StreamsModel::Item *i = static_cast<StreamsModel::Item *>(idx.internalPointer());
+        StreamsModel::Item* i =
+            static_cast<StreamsModel::Item*>(idx.internalPointer());
         if (!i->isCategory()) {
             break;
         }
         strings << i->name;
-        idx=idx.parent();
-        if (filter && !idx.isValid() && i!=filter) { // Accept all items that are not children of top-level item!
+        idx = idx.parent();
+        if (filter && !idx.isValid() &&
+            i != filter) {  // Accept all items that are not children of
+                            // top-level item!
             return true;
         }
     }
@@ -100,10 +105,12 @@ bool StreamsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
     return false;
 }
 
-bool StreamsProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
-{
-    const StreamsModel::Item * leftItem = static_cast<const StreamsModel::Item *>(left.internalPointer());
-    const StreamsModel::Item * rightItem = static_cast<const StreamsModel::Item *>(right.internalPointer());
+bool StreamsProxyModel::lessThan(const QModelIndex& left,
+                                 const QModelIndex& right) const {
+    const StreamsModel::Item* leftItem =
+        static_cast<const StreamsModel::Item*>(left.internalPointer());
+    const StreamsModel::Item* rightItem =
+        static_cast<const StreamsModel::Item*>(right.internalPointer());
 
     if (leftItem->isCategory() && !rightItem->isCategory()) {
         return true;
@@ -113,8 +120,10 @@ bool StreamsProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
     }
 
     if (leftItem->isCategory() && rightItem->isCategory()) {
-        const StreamsModel::CategoryItem * leftCat = static_cast<const StreamsModel::CategoryItem *>(leftItem);
-        const StreamsModel::CategoryItem * rightCat = static_cast<const StreamsModel::CategoryItem *>(rightItem);
+        const StreamsModel::CategoryItem* leftCat =
+            static_cast<const StreamsModel::CategoryItem*>(leftItem);
+        const StreamsModel::CategoryItem* rightCat =
+            static_cast<const StreamsModel::CategoryItem*>(rightItem);
 
         if (leftCat->isFavourites() && !rightCat->isFavourites()) {
             return true;

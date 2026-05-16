@@ -30,56 +30,69 @@
 
 class QIcon;
 
-class TreeView : public QTreeView
-{
+class TreeView : public QTreeView {
     Q_OBJECT
 
-public:
-    static QImage setOpacity(const QImage &orig, double opacity=0.15);
-    static QPixmap createBgndPixmap(const QIcon &icon);
+   public:
+    static QImage setOpacity(const QImage& orig, double opacity = 0.15);
+    static QPixmap createBgndPixmap(const QIcon& icon);
     static void setForceSingleClick(bool v);
     static bool getForceSingleClick();
-    static QModelIndexList sortIndexes(const QModelIndexList &list);
-    static void drag(Qt::DropActions supportedActions, QAbstractItemView *view, const QModelIndexList &items);
+    static QModelIndexList sortIndexes(const QModelIndexList& list);
+    static void drag(Qt::DropActions supportedActions, QAbstractItemView* view,
+                     const QModelIndexList& items);
 
-    TreeView(QWidget *parent=nullptr, bool menuAlwaysAllowed=false);
+    TreeView(QWidget* parent = nullptr, bool menuAlwaysAllowed = false);
     ~TreeView() override;
 
     void setPageDefaults();
     void setExpandOnClick();
-    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
+    void selectionChanged(const QItemSelection& selected,
+                          const QItemSelection& deselected) override;
     bool haveSelectedItems() const;
     bool haveUnSelectedItems() const;
-    void startDrag(Qt::DropActions supportedActions) override { drag(supportedActions, this, selectedIndexes()); }
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    QModelIndexList selectedIndexes() const override { return selectedIndexes(true); }
+    void startDrag(Qt::DropActions supportedActions) override {
+        drag(supportedActions, this, selectedIndexes());
+    }
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    QModelIndexList selectedIndexes() const override {
+        return selectedIndexes(true);
+    }
     QModelIndexList selectedIndexes(bool sorted) const;
-    void expandAll(const QModelIndex &idx=QModelIndex(), bool singleLevelOnly=false);
-    void collapseToLevel(int level, const QModelIndex &idx=QModelIndex());
-    virtual void expand(const QModelIndex &idx, bool singleOnly=false);
-    virtual void collapse(const QModelIndex &idx, bool singleOnly=false);
-    void setModel(QAbstractItemModel *m) override;
-    bool checkBoxClicked(const QModelIndex &idx) const;
+    void expandAll(const QModelIndex& idx = QModelIndex(),
+                   bool singleLevelOnly = false);
+    void collapseToLevel(int level, const QModelIndex& idx = QModelIndex());
+    virtual void expand(const QModelIndex& idx, bool singleOnly = false);
+    virtual void collapse(const QModelIndex& idx, bool singleOnly = false);
+    void setModel(QAbstractItemModel* m) override;
+    bool checkBoxClicked(const QModelIndex& idx) const;
     void setUseSimpleDelegate();
-    void setBackgroundImage(const QIcon &icon);
-    void paintEvent(QPaintEvent *e) override;
-    void setForceSingleColumn(bool f) { forceSingleColumn=f; }
-    void installFilter(QObject *f) { eventFilter=f; installEventFilter(f); }
-    QObject * filter() const { return eventFilter; }
-    void setInfoText(const QString &i) { info=i; update(); }
+    void setBackgroundImage(const QIcon& icon);
+    void paintEvent(QPaintEvent* e) override;
+    void setForceSingleColumn(bool f) { forceSingleColumn = f; }
+    void installFilter(QObject* f) {
+        eventFilter = f;
+        installEventFilter(f);
+    }
+    QObject* filter() const { return eventFilter; }
+    void setInfoText(const QString& i) {
+        info = i;
+        update();
+    }
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void correctSelection();
-//    void itemWasActivated(const QModelIndex &index);
-    void itemWasClicked(const QModelIndex &index);
+    //    void itemWasActivated(const QModelIndex &index);
+    void itemWasClicked(const QModelIndex& index);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void itemsSelected(bool);
-    void itemActivated(const QModelIndex &index); // Only emitted if view is set to single-click
+    void itemActivated(const QModelIndex& index);  // Only emitted if view is
+                                                   // set to single-click
 
-private:
+   private:
     QString info;
-    QObject *eventFilter;
+    QObject* eventFilter;
     bool forceSingleColumn;
     bool alwaysAllowMenu;
     QPixmap bgnd;

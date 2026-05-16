@@ -22,27 +22,15 @@
 
 using namespace Solid::Backends::UDev;
 
-Block::Block(UDevDevice *device)
-    : DeviceInterface(device)
-{
-}
+Block::Block(UDevDevice* device) : DeviceInterface(device) {}
 
-Block::~Block()
-{
-}
+Block::~Block() {}
 
-int Block::deviceMajor() const
-{
-    return m_device->property("MAJOR").toInt();
-}
+int Block::deviceMajor() const { return m_device->property("MAJOR").toInt(); }
 
-int Block::deviceMinor() const
-{
-    return m_device->property("MINOR").toInt();
-}
+int Block::deviceMinor() const { return m_device->property("MINOR").toInt(); }
 
-QString Block::device() const
-{
+QString Block::device() const {
     return m_device->property("DEVNAME").toString();
 }
 

@@ -24,40 +24,34 @@
 
 #include <solid-lite/ifaces/genericinterface.h>
 
-
-Solid::GenericInterface::GenericInterface(QObject *backendObject)
-    : DeviceInterface(*new GenericInterfacePrivate(), backendObject)
-{
+Solid::GenericInterface::GenericInterface(QObject* backendObject)
+    : DeviceInterface(*new GenericInterfacePrivate(), backendObject) {
     if (backendObject) {
-        connect(backendObject, SIGNAL(propertyChanged(QMap<QString,int>)),
-                this, SIGNAL(propertyChanged(QMap<QString,int>)));
-        connect(backendObject, SIGNAL(conditionRaised(QString,QString)),
-                this, SIGNAL(conditionRaised(QString,QString)));
+        connect(backendObject, SIGNAL(propertyChanged(QMap<QString, int>)),
+                this, SIGNAL(propertyChanged(QMap<QString, int>)));
+        connect(backendObject, SIGNAL(conditionRaised(QString, QString)), this,
+                SIGNAL(conditionRaised(QString, QString)));
     }
 }
 
+Solid::GenericInterface::~GenericInterface() {}
 
-Solid::GenericInterface::~GenericInterface()
-{
-
+QVariant Solid::GenericInterface::property(const QString& key) const {
+    Q_D(const GenericInterface);
+    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(), QVariant(),
+                      property(key));
 }
 
-QVariant Solid::GenericInterface::property(const QString &key) const
-{
+QMap<QString, QVariant> Solid::GenericInterface::allProperties() const {
     Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), QVariant(), property(key));
+    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(),
+                      QVariantMap(), allProperties());
 }
 
-QMap<QString, QVariant> Solid::GenericInterface::allProperties() const
-{
+bool Solid::GenericInterface::propertyExists(const QString& key) const {
     Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), QVariantMap(), allProperties());
-}
-
-bool Solid::GenericInterface::propertyExists(const QString &key) const
-{
-    Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), false, propertyExists(key));
+    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(), false,
+                      propertyExists(key));
 }
 
 #include "moc_genericinterface.cpp"

@@ -29,25 +29,19 @@
 
 class Input;
 
-class TrackScanner : public StandardJob
-{
+class TrackScanner : public StandardJob {
     Q_OBJECT
 
-public:
-    struct Data
-    {
-        Data()
-            : loudness(0.0)
-            , peak(0.0)
-            , truePeak(0.0) {
-        }
-        double peakValue() const { return truePeak>peak ? truePeak : peak; }
+   public:
+    struct Data {
+        Data() : loudness(0.0), peak(0.0), truePeak(0.0) {}
+        double peakValue() const { return truePeak > peak ? truePeak : peak; }
         double loudness;
         double peak;
         double truePeak;
     };
 
-    static Data global(const QList<TrackScanner *> &scanners);
+    static Data global(const QList<TrackScanner*>& scanners);
     static double clamp(double v);
     static double reference(double v);
 
@@ -56,21 +50,21 @@ public:
     TrackScanner(int i);
     ~TrackScanner();
 
-    void setFile(const QString &fileName);
-    const Data & results() const { return data; }
+    void setFile(const QString& fileName);
+    const Data& results() const { return data; }
     int index() const { return idx; }
-    bool ok() const { return data.peakValue()>0.00001; }
+    bool ok() const { return data.peakValue() > 0.00001; }
 
-private:
+   private:
     void run();
     void setFinishedStatus(bool f);
 
-private:
+   private:
     int idx;
-    ebur128_state *state;
+    ebur128_state* state;
     Data data;
     QString file;
-    Input *input;
+    Input* input;
 };
 
 #endif

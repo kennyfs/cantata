@@ -1,17 +1,17 @@
 /****************************************************************************
-** 
+**
 ** Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
-** 
+**
 ** This file is part of a Qt Solutions component.
 **
-** Commercial Usage  
+** Commercial Usage
 ** Licensees holding valid Qt Commercial licenses may use this file in
 ** accordance with the Qt Solutions Commercial License Agreement provided
 ** with the Software or, alternatively, in accordance with the terms
 ** contained in a written agreement between you and Nokia.
-** 
+**
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
 ** General Public License version 2.1 as published by the Free Software
@@ -19,31 +19,30 @@
 ** packaging of this file.  Please review the following information to
 ** ensure the GNU Lesser General Public License version 2.1 requirements
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-** 
+**
 ** In addition, as a special exception, Nokia gives you certain
 ** additional rights. These rights are described in the Nokia Qt LGPL
 ** Exception version 1.1, included in the file LGPL_EXCEPTION.txt in this
 ** package.
-** 
-** GNU General Public License Usage 
+**
+** GNU General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU
 ** General Public License version 3.0 as published by the Free Software
 ** Foundation and appearing in the file LICENSE.GPL included in the
 ** packaging of this file.  Please review the following information to
 ** ensure the GNU General Public License version 3.0 requirements will be
 ** met: http://www.gnu.org/copyleft/gpl.html.
-** 
+**
 ** Please note Third Party Software included with Qt Solutions may impose
 ** additional restrictions and it is the user's responsibility to ensure
 ** that they have met the licensing requirements of the GPL, LGPL, or Qt
 ** Solutions Commercial license and the relevant license of the Third
 ** Party Software they are using.
-** 
+**
 ** If you are unsure which license is appropriate for your use, please
 ** contact Nokia at qt-info@nokia.com.
-** 
+**
 ****************************************************************************/
-
 
 #include "qtsinglecoreapplication.h"
 #include "qtlocalpeer.h"
@@ -76,30 +75,33 @@
     argv are passed on to the QCoreAppliation constructor.
 */
 
-QtSingleCoreApplication::QtSingleCoreApplication(int &argc, char **argv)
-    : QCoreApplication(argc, argv)
-{
+QtSingleCoreApplication::QtSingleCoreApplication(int& argc, char** argv)
+    : QCoreApplication(argc, argv) {
     peer = new QtLocalPeer(this);
-    connect(peer, SIGNAL(messageReceived(const QString&)), SIGNAL(messageReceived(const QString&)));
-    connect(peer, SIGNAL(messageReceived(const QByteArray&)), SIGNAL(messageReceived(const QByteArray&)));
-    connect(peer, SIGNAL(messageReceived(const char*)), SIGNAL(messageReceived(const char*)));
+    connect(peer, SIGNAL(messageReceived(const QString&)),
+            SIGNAL(messageReceived(const QString&)));
+    connect(peer, SIGNAL(messageReceived(const QByteArray&)),
+            SIGNAL(messageReceived(const QByteArray&)));
+    connect(peer, SIGNAL(messageReceived(const char*)),
+            SIGNAL(messageReceived(const char*)));
 }
-
 
 /*!
     Creates a QtSingleCoreApplication object with the application
     identifier \a appId. \a argc and \a argv are passed on to the
     QCoreAppliation constructor.
 */
-QtSingleCoreApplication::QtSingleCoreApplication(const QString &appId, int &argc, char **argv)
-    : QCoreApplication(argc, argv)
-{
+QtSingleCoreApplication::QtSingleCoreApplication(const QString& appId,
+                                                 int& argc, char** argv)
+    : QCoreApplication(argc, argv) {
     peer = new QtLocalPeer(this, appId);
-    connect(peer, SIGNAL(messageReceived(const QString&)), SIGNAL(messageReceived(const QString&)));
-    connect(peer, SIGNAL(messageReceived(const QByteArray&)), SIGNAL(messageReceived(const QByteArray&)));
-    connect(peer, SIGNAL(messageReceived(const char*)), SIGNAL(messageReceived(const char*)));
+    connect(peer, SIGNAL(messageReceived(const QString&)),
+            SIGNAL(messageReceived(const QString&)));
+    connect(peer, SIGNAL(messageReceived(const QByteArray&)),
+            SIGNAL(messageReceived(const QByteArray&)));
+    connect(peer, SIGNAL(messageReceived(const char*)),
+            SIGNAL(messageReceived(const char*)));
 }
-
 
 /*!
     Returns true if another instance of this application is running;
@@ -112,11 +114,7 @@ QtSingleCoreApplication::QtSingleCoreApplication(const QString &appId, int &argc
     \sa sendMessage()
 */
 
-bool QtSingleCoreApplication::isRunning()
-{
-    return peer->isClient();
-}
-
+bool QtSingleCoreApplication::isRunning() { return peer->isClient(); }
 
 /*!
     Tries to send the text \a message to the currently running
@@ -132,32 +130,25 @@ bool QtSingleCoreApplication::isRunning()
     \sa isRunning(), messageReceived()
 */
 
-bool QtSingleCoreApplication::sendMessage(const QString &message, int timeout)
-{
+bool QtSingleCoreApplication::sendMessage(const QString& message, int timeout) {
     return peer->sendMessage(message, timeout);
 }
 
-bool QtSingleCoreApplication::sendMessage(const QByteArray &message, int timeout)
-{
+bool QtSingleCoreApplication::sendMessage(const QByteArray& message,
+                                          int timeout) {
     return peer->sendMessage(message, timeout);
 }
 
-bool QtSingleCoreApplication::sendMessage(const char* message, int timeout)
-{
+bool QtSingleCoreApplication::sendMessage(const char* message, int timeout) {
     return peer->sendMessage(message, timeout);
 }
-
 
 /*!
     Returns the application identifier. Two processes with the same
     identifier will be regarded as instances of the same application.
 */
 
-QString QtSingleCoreApplication::id() const
-{
-    return peer->applicationId();
-}
-
+QString QtSingleCoreApplication::id() const { return peer->applicationId(); }
 
 /*!
     \fn void QtSingleCoreApplication::messageReceived(const QString& message)

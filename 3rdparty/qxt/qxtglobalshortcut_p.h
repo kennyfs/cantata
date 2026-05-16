@@ -26,7 +26,7 @@
 #define QXTGLOBALSHORTCUT_P_H
 
 #include "qxtglobalshortcut.h"
-#if QT_VERSION<0x050000
+#if QT_VERSION < 0x050000
 #include <QAbstractEventDispatcher>
 #else
 #include <QAbstractNativeEventFilter>
@@ -35,13 +35,14 @@
 #include <QKeySequence>
 #include <QHash>
 
-#if QT_VERSION>=0x050000
-class QxtGlobalShortcutPrivate : public QAbstractNativeEventFilter, public QxtPrivate<QxtGlobalShortcut>
+#if QT_VERSION >= 0x050000
+class QxtGlobalShortcutPrivate : public QAbstractNativeEventFilter,
+                                 public QxtPrivate<QxtGlobalShortcut>
 #else
 class QxtGlobalShortcutPrivate : public QxtPrivate<QxtGlobalShortcut>
 #endif
 {
-public:
+   public:
     QXT_DECLARE_PUBLIC(QxtGlobalShortcut)
     QxtGlobalShortcutPrivate();
     ~QxtGlobalShortcutPrivate();
@@ -55,14 +56,14 @@ public:
 
     static bool error;
     static int ref;
-    #if QT_VERSION<0x050000
+#if QT_VERSION < 0x050000
     static QAbstractEventDispatcher::EventFilter prevEventFilter;
     static bool eventFilter(void* message);
-    #else
-    bool nativeEventFilter(const QByteArray &, void *message, long *result);
-    #endif
+#else
+    bool nativeEventFilter(const QByteArray&, void* message, long* result);
+#endif
 
-private:
+   private:
     static quint32 nativeKeycode(Qt::Key keycode);
     static quint32 nativeModifiers(Qt::KeyboardModifiers modifiers);
 
@@ -73,4 +74,4 @@ private:
     static QHash<QPair<quint32, quint32>, QxtGlobalShortcut*> shortcuts;
 };
 
-#endif // QXTGLOBALSHORTCUT_P_H
+#endif  // QXTGLOBALSHORTCUT_P_H

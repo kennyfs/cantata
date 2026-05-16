@@ -27,30 +27,30 @@
 #include "contextengine.h"
 #include <QStringList>
 
-class LastFmEngine : public ContextEngine
-{
+class LastFmEngine : public ContextEngine {
     Q_OBJECT
-    
-public:
+
+   public:
     static const QLatin1String constLang;
     static const QLatin1String constLinkPlaceholder;
 
     static void enableDebug();
 
-    LastFmEngine(QObject *p);
+    LastFmEngine(QObject* p);
 
     QStringList getLangs() const override;
-    QString getPrefix(const QString &) const override { return constLang; }
+    QString getPrefix(const QString&) const override { return constLang; }
     QString translateLinks(QString text) const override;
 
-public Q_SLOTS:
-    void search(const QStringList &query, Mode mode) override;
+   public Q_SLOTS:
+    void search(const QStringList& query, Mode mode) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void parseResponse();
-    
-private:
-    QString parseResponse(const QByteArray &data, const QString &firstTag, const QString &secondTag);
+
+   private:
+    QString parseResponse(const QByteArray& data, const QString& firstTag,
+                          const QString& secondTag);
 };
 
 #endif

@@ -29,41 +29,42 @@
 #include "playqueuemodel.h"
 #include "mpd-interface/song.h"
 
-PlayQueueProxyModel::PlayQueueProxyModel(QObject *parent)
-    : ProxyModel(parent)
-{
+PlayQueueProxyModel::PlayQueueProxyModel(QObject* parent) : ProxyModel(parent) {
     setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 
-bool PlayQueueProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-{
+bool PlayQueueProxyModel::filterAcceptsRow(
+    int sourceRow, const QModelIndex& sourceParent) const {
     if (!filterEnabled) {
         return true;
     }
 
-    if (-1!=sourceParent.row()) {
+    if (-1 != sourceParent.row()) {
         return false;
     }
 
     const QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    return index.isValid() && matchesFilter(*static_cast<Song *>(index.internalPointer()));
+    return index.isValid() &&
+           matchesFilter(*static_cast<Song*>(index.internalPointer()));
 }
 
-QMimeData *PlayQueueProxyModel::mimeData(const QModelIndexList &indexes) const
-{
+QMimeData* PlayQueueProxyModel::mimeData(const QModelIndexList& indexes) const {
     QModelIndexList sourceIndexes;
 
-    for (const QModelIndex &index: indexes) {
+    for (const QModelIndex& index : indexes) {
         sourceIndexes.append(mapToSource(index));
     }
 
     return sourceModel()->mimeData(sourceIndexes);
 }
 
-bool PlayQueueProxyModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
-{
+bool PlayQueueProxyModel::dropMimeData(const QMimeData* data,
+                                       Qt::DropAction action, int row,
+                                       int column, const QModelIndex& parent) {
     const QModelIndex sourceIndex = mapToSource(index(row, column, parent));
-    return sourceModel()->dropMimeData(data, action, sourceIndex.row(), sourceIndex.column(), sourceIndex.parent());
+    return sourceModel()->dropMimeData(data, action, sourceIndex.row(),
+                                       sourceIndex.column(),
+                                       sourceIndex.parent());
 }
 
 #include "moc_playqueueproxymodel.cpp"

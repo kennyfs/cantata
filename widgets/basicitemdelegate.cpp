@@ -31,22 +31,23 @@
 #include <QApplication>
 #include <QAbstractItemView>
 
-void BasicItemDelegate::drawLine(QPainter *p, const QRect &r, const QColor &color, bool fadeStart, bool fadeEnd, double alpha)
-{
+void BasicItemDelegate::drawLine(QPainter* p, const QRect& r,
+                                 const QColor& color, bool fadeStart,
+                                 bool fadeEnd, double alpha) {
     QColor col(color);
     QLinearGradient grad(r.bottomLeft(), r.bottomRight());
 
     if (fadeStart || fadeEnd) {
-        double fadeSize=(fadeStart && fadeEnd ? 64.0 : 32.0);
-        if (r.width()<(2.2*fadeSize)) {
-            fadeSize=r.width()/3.0;
+        double fadeSize = (fadeStart && fadeEnd ? 64.0 : 32.0);
+        if (r.width() < (2.2 * fadeSize)) {
+            fadeSize = r.width() / 3.0;
         }
-        double fadePos=fadeSize/r.width();
+        double fadePos = fadeSize / r.width();
         col.setAlphaF(fadeStart ? 0.0 : alpha);
         grad.setColorAt(0, col);
         col.setAlphaF(alpha);
         grad.setColorAt(fadePos, col);
-        grad.setColorAt(1.0-fadePos, col);
+        grad.setColorAt(1.0 - fadePos, col);
         col.setAlphaF(fadeEnd ? 0.0 : alpha);
         grad.setColorAt(1, col);
         p->setPen(QPen(grad, 1));
@@ -57,83 +58,81 @@ void BasicItemDelegate::drawLine(QPainter *p, const QRect &r, const QColor &colo
     p->drawLine(r.bottomLeft(), r.bottomRight());
 }
 
-BasicItemDelegate::BasicItemDelegate(QObject *p)
-    : QStyledItemDelegate(p)
-    , trackMouse(false)
-    , underMouse(false)
-{
-    if (GtkStyle::isActive() && qobject_cast<QAbstractItemView *>(p)) {
-        static_cast<QAbstractItemView *>(p)->setAttribute(Qt::WA_MouseTracking);
-        trackMouse=true;
+BasicItemDelegate::BasicItemDelegate(QObject* p)
+    : QStyledItemDelegate(p), trackMouse(false), underMouse(false) {
+    if (GtkStyle::isActive() && qobject_cast<QAbstractItemView*>(p)) {
+        static_cast<QAbstractItemView*>(p)->setAttribute(Qt::WA_MouseTracking);
+        trackMouse = true;
         p->installEventFilter(this);
     }
 }
 
-BasicItemDelegate::~BasicItemDelegate()
-{
-}
+BasicItemDelegate::~BasicItemDelegate() {}
 
-void BasicItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+void BasicItemDelegate::paint(QPainter* painter,
+                              const QStyleOptionViewItem& option,
+                              const QModelIndex& index) const {
     if (!index.isValid()) {
         return;
     }
 
-    bool selected=option.state&QStyle::State_Selected;
-    bool active=option.state&QStyle::State_Active;
+    bool selected = option.state & QStyle::State_Selected;
+    bool active = option.state & QStyle::State_Active;
     if (GtkStyle::isActive()) {
-        bool mouseOver=option.state&QStyle::State_MouseOver;
+        bool mouseOver = option.state & QStyle::State_MouseOver;
         QStyleOptionViewItem opt = option;
         initStyleOption(&opt, index);
 
         if (trackMouse && !underMouse) {
-            mouseOver=false;
+            mouseOver = false;
         }
 
         if (mouseOver) {
-            opt.showDecorationSelected=true;
+            opt.showDecorationSelected = true;
 
             GtkStyle::drawSelection(option, painter, selected ? 0.75 : 0.25);
-            opt.showDecorationSelected=false;
-            opt.state&=~(QStyle::State_MouseOver|QStyle::State_Selected);
-            opt.backgroundBrush=QBrush(Qt::transparent);
+            opt.showDecorationSelected = false;
+            opt.state &= ~(QStyle::State_MouseOver | QStyle::State_Selected);
+            opt.backgroundBrush = QBrush(Qt::transparent);
             if (selected) {
-                opt.palette.setBrush(QPalette::Text, opt.palette.highlightedText());
+                opt.palette.setBrush(QPalette::Text,
+                                     opt.palette.highlightedText());
             }
         }
-        QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
+        QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &opt,
+                                           painter, opt.widget);
     } else {
         QStyledItemDelegate::paint(painter, option, index);
     }
 
-    QColor col(option.palette.color(active ? QPalette::Active : QPalette::Inactive,
-                                    selected ? QPalette::HighlightedText : QPalette::Text));
+    QColor col(option.palette.color(
+        active ? QPalette::Active : QPalette::Inactive,
+        selected ? QPalette::HighlightedText : QPalette::Text));
 
-    switch (((QStyleOptionViewItem &)option).viewItemPosition) {
-    case QStyleOptionViewItem::Beginning:
-        drawLine(painter, option.rect, col, true, false);
-        break;
-    case QStyleOptionViewItem::Middle:
-        drawLine(painter, option.rect, col, false, false);
-        break;
-    case QStyleOptionViewItem::End:
-        drawLine(painter, option.rect, col, false, true);
-        break;
-    case QStyleOptionViewItem::Invalid:
-    case QStyleOptionViewItem::OnlyOne:
-        drawLine(painter, option.rect, col, true, true);
+    switch (((QStyleOptionViewItem&)option).viewItemPosition) {
+        case QStyleOptionViewItem::Beginning:
+            drawLine(painter, option.rect, col, true, false);
+            break;
+        case QStyleOptionViewItem::Middle:
+            drawLine(painter, option.rect, col, false, false);
+            break;
+        case QStyleOptionViewItem::End:
+            drawLine(painter, option.rect, col, false, true);
+            break;
+        case QStyleOptionViewItem::Invalid:
+        case QStyleOptionViewItem::OnlyOne:
+            drawLine(painter, option.rect, col, true, true);
     }
 }
 
-bool BasicItemDelegate::eventFilter(QObject *object, QEvent *event)
-{
-    if (object==parent()) {
-        if (QEvent::Enter==event->type()) {
-            underMouse=true;
-            static_cast<QAbstractItemView *>(parent())->viewport()->update();
-        } else if (QEvent::Leave==event->type()) {
-            underMouse=false;
-            static_cast<QAbstractItemView *>(parent())->viewport()->update();
+bool BasicItemDelegate::eventFilter(QObject* object, QEvent* event) {
+    if (object == parent()) {
+        if (QEvent::Enter == event->type()) {
+            underMouse = true;
+            static_cast<QAbstractItemView*>(parent())->viewport()->update();
+        } else if (QEvent::Leave == event->type()) {
+            underMouse = false;
+            static_cast<QAbstractItemView*>(parent())->viewport()->update();
         }
     }
     return QStyledItemDelegate::eventFilter(object, event);

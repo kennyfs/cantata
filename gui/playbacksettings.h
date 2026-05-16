@@ -29,32 +29,32 @@
 #include <QList>
 #include <QSet>
 
-class PlaybackSettings : public QWidget, private Ui::PlaybackSettings
-{
+class PlaybackSettings : public QWidget, private Ui::PlaybackSettings {
     Q_OBJECT
 
-public:
-    PlaybackSettings(QWidget *p);
-    ~PlaybackSettings() override { }
+   public:
+    PlaybackSettings(QWidget* p);
+    ~PlaybackSettings() override {}
 
     void load();
     void save();
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void getReplayGain();
-    void setReplayGain(const QString &);
+    void setReplayGain(const QString&);
     void setCrossFade(int secs);
     void outputs();
     void enableOutput(quint32 id, bool);
 
-private Q_SLOTS:
-    void replayGainSetting(const QString &rg);
-    void updateOutputs(const QList<Output> &outputs);
+   private Q_SLOTS:
+    void replayGainSetting(const QString& rg);
+    void updateOutputs(const QList<Output>& outputs);
     void mpdConnectionStateChanged(bool c);
     void showAboutReplayGain();
 
-private:
+   private:
     QSet<int> enabledOutputs;
     QString rgSetting;
 };

@@ -27,35 +27,28 @@
 
 static const QString subDir("online");
 
-OnlineDb::OnlineDb(const QString &serviceName, QObject *p)
-    : LibraryDb(p, serviceName)
-    , insertCoverQuery(nullptr)
-    , getCoverQuery(nullptr)
-{
-}
+OnlineDb::OnlineDb(const QString& serviceName, QObject* p)
+    : LibraryDb(p, serviceName),
+      insertCoverQuery(nullptr),
+      getCoverQuery(nullptr) {}
 
-OnlineDb::~OnlineDb()
-{
-}
+OnlineDb::~OnlineDb() {}
 
-bool OnlineDb::init(const QString &dbFile)
-{
+bool OnlineDb::init(const QString& dbFile) {
     LibraryDb::init(dbFile);
     createTable("covers(artistId text, albumId text, url text)");
     createTable("stats(artists integer)");
     return true;
 }
 
-void OnlineDb::create()
-{
+void OnlineDb::create() {
     if (!db) {
-        init(Utils::dataDir(subDir, true)+dbName+".sql");
+        init(Utils::dataDir(subDir, true) + dbName + ".sql");
     }
 }
 
-void OnlineDb::startUpdate()
-{
-    updateStarted(currentVersion+1);
+void OnlineDb::startUpdate() {
+    updateStarted(currentVersion + 1);
     if (!db) {
         return;
     }
@@ -63,38 +56,35 @@ void OnlineDb::startUpdate()
     QSqlQuery(*db).exec("drop index genre_idx");
 }
 
-void OnlineDb::endUpdate()
-{
-    updateFinished();
-}
+void OnlineDb::endUpdate() { updateFinished(); }
 
-void OnlineDb::insertStats(int numArtists)
-{
+void OnlineDb::insertStats(int numArtists) {
     if (!db) {
         return;
     }
     QSqlQuery(*db).exec("delete from stats");
-    QSqlQuery(*db).exec("insert into stats(artists) values("+QString::number(numArtists)+")");
+    QSqlQuery(*db).exec("insert into stats(artists) values(" +
+                        QString::number(numArtists) + ")");
 }
 
-void OnlineDb::reset()
-{
+void OnlineDb::reset() {
     delete insertCoverQuery;
     delete getCoverQuery;
-    insertCoverQuery=nullptr;
-    getCoverQuery=nullptr;
+    insertCoverQuery = nullptr;
+    getCoverQuery = nullptr;
     LibraryDb::reset();
 }
 
-void OnlineDb::storeCoverUrl(const QString &artistId, const QString &albumId, const QString &url)
-{
+void OnlineDb::storeCoverUrl(const QString& artistId, const QString& albumId,
+                             const QString& url) {
     if (!db) {
         return;
     }
     if (!insertCoverQuery) {
-        insertCoverQuery=new QSqlQuery(*db);
-        insertCoverQuery->prepare("insert into covers(artistId, albumId, url) "
-                                  "values(:artistId, :albumId, :url)");
+        insertCoverQuery = new QSqlQuery(*db);
+        insertCoverQuery->prepare(
+            "insert into covers(artistId, albumId, url) "
+            "values(:artistId, :albumId, :url)");
     }
     insertCoverQuery->bindValue(":artistId", artistId);
     insertCoverQuery->bindValue(":albumId", albumId);
@@ -102,8 +92,7 @@ void OnlineDb::storeCoverUrl(const QString &artistId, const QString &albumId, co
     insertCoverQuery->exec();
 }
 
-int OnlineDb::getStats()
-{
+int OnlineDb::getStats() {
     if (!db) {
         return -1;
     }
@@ -115,12 +104,13 @@ int OnlineDb::getStats()
     return -1;
 }
 
-QString OnlineDb::getCoverUrl(const QString &artistId, const QString &albumId)
-{
-    if (0!=currentVersion && db) {
+QString OnlineDb::getCoverUrl(const QString& artistId, const QString& albumId) {
+    if (0 != currentVersion && db) {
         if (!getCoverQuery) {
-            getCoverQuery=new QSqlQuery(*db);
-            getCoverQuery->prepare("select url from covers where artistId=:artistId and albumId=:albumId limit 1;");
+            getCoverQuery = new QSqlQuery(*db);
+            getCoverQuery->prepare(
+                "select url from covers where artistId=:artistId and "
+                "albumId=:albumId limit 1;");
         }
         getCoverQuery->bindValue(":artistId", artistId);
         getCoverQuery->bindValue(":albumId", albumId);

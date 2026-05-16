@@ -36,12 +36,8 @@
 #include <QModelIndex>
 #include <algorithm>
 
-ListView::ListView(QWidget *parent)
-    : QListView(parent)
-    , eventFilter(nullptr)
-    , menu(nullptr)
-    , zoomLevel(1.0)
-{
+ListView::ListView(QWidget* parent)
+    : QListView(parent), eventFilter(nullptr), menu(nullptr), zoomLevel(1.0) {
     setDragEnabled(true);
     setContextMenuPolicy(Qt::NoContextMenu);
     setDragDropMode(QAbstractItemView::DragOnly);
@@ -50,95 +46,96 @@ ListView::ListView(QWidget *parent)
     setUniformItemSizes(true);
     setAttribute(Qt::WA_MouseTracking);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showCustomContextMenu(const QPoint &)));
-    connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(checkDoubleClick(const QModelIndex &)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+            SLOT(showCustomContextMenu(const QPoint&)));
+    connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this,
+            SLOT(checkDoubleClick(const QModelIndex&)));
 }
 
-ListView::~ListView()
-{
-}
+ListView::~ListView() {}
 
-void ListView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
-{
+void ListView::selectionChanged(const QItemSelection& selected,
+                                const QItemSelection& deselected) {
     QListView::selectionChanged(selected, deselected);
-    bool haveSelection=haveSelectedItems();
+    bool haveSelection = haveSelectedItems();
 
-    setContextMenuPolicy(haveSelection ? Qt::ActionsContextMenu : (menu ? Qt::CustomContextMenu : Qt::NoContextMenu));
+    setContextMenuPolicy(
+        haveSelection ? Qt::ActionsContextMenu
+                      : (menu ? Qt::CustomContextMenu : Qt::NoContextMenu));
     emit itemsSelected(haveSelection);
 }
 
-bool ListView::haveSelectedItems() const
-{
+bool ListView::haveSelectedItems() const {
     // Dont need the sorted type of 'selectedIndexes' here...
-    return selectionModel() && selectionModel()->selectedIndexes().count()>0;
+    return selectionModel() && selectionModel()->selectedIndexes().count() > 0;
 }
 
-bool ListView::haveUnSelectedItems() const
-{
+bool ListView::haveUnSelectedItems() const {
     // Dont need the sorted type of 'selectedIndexes' here...
-    return selectionModel() && model() && selectionModel()->selectedIndexes().count()!=model()->rowCount();
+    return selectionModel() && model() &&
+           selectionModel()->selectedIndexes().count() != model()->rowCount();
 }
 
-void ListView::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (Qt::NoModifier==event->modifiers() && Qt::LeftButton==event->button()) {
+void ListView::mouseReleaseEvent(QMouseEvent* event) {
+    if (Qt::NoModifier == event->modifiers() &&
+        Qt::LeftButton == event->button()) {
         QListView::mouseReleaseEvent(event);
     }
 }
 
-QModelIndexList ListView::selectedIndexes(bool sorted) const
-{
-    QModelIndexList indexes=selectionModel() ? selectionModel()->selectedIndexes() : QModelIndexList();
+QModelIndexList ListView::selectedIndexes(bool sorted) const {
+    QModelIndexList indexes = selectionModel()
+                                  ? selectionModel()->selectedIndexes()
+                                  : QModelIndexList();
     if (sorted) {
         std::sort(indexes.begin(), indexes.end());
     }
     return indexes;
 }
 
-void ListView::setModel(QAbstractItemModel *m)
-{
-    QAbstractItemModel *old=model();
+void ListView::setModel(QAbstractItemModel* m) {
+    QAbstractItemModel* old = model();
     QListView::setModel(m);
 
     if (old) {
-        disconnect(old, SIGNAL(layoutChanged()), this, SLOT(correctSelection()));
+        disconnect(old, SIGNAL(layoutChanged()), this,
+                   SLOT(correctSelection()));
     }
 
-    if (m && old!=m) {
+    if (m && old != m) {
         connect(m, SIGNAL(layoutChanged()), this, SLOT(correctSelection()));
     }
 }
 
-void ListView::addDefaultAction(QAction *act)
-{
+void ListView::addDefaultAction(QAction* act) {
     if (!menu) {
-        menu=new QMenu(this);
+        menu = new QMenu(this);
     }
     menu->addAction(act);
 }
 
-void ListView::setBackgroundImage(const QIcon &icon)
-{
-    QPalette pal=parentWidget()->palette();
-//    if (!icon.isNull()) {
-//        pal.setColor(QPalette::Base, Qt::transparent);
-//    }
-    #ifndef Q_OS_MAC
+void ListView::setBackgroundImage(const QIcon& icon) {
+    QPalette pal = parentWidget()->palette();
+    //    if (!icon.isNull()) {
+    //        pal.setColor(QPalette::Base, Qt::transparent);
+    //    }
+#ifndef Q_OS_MAC
     setPalette(pal);
-    #endif
+#endif
     viewport()->setPalette(pal);
-    bgnd=TreeView::createBgndPixmap(icon);
+    bgnd = TreeView::createBgndPixmap(icon);
 }
 
-void ListView::paintEvent(QPaintEvent *e)
-{
+void ListView::paintEvent(QPaintEvent* e) {
     if (!bgnd.isNull()) {
         QPainter p(viewport());
-        QSize sz=size();
-        p.fillRect(0, 0, sz.width(), sz.height(), QApplication::palette().color(QPalette::Base));
-        p.drawPixmap((sz.width()-bgnd.width())/2, (sz.height()-bgnd.height())/2, bgnd);
+        QSize sz = size();
+        p.fillRect(0, 0, sz.width(), sz.height(),
+                   QApplication::palette().color(QPalette::Base));
+        p.drawPixmap((sz.width() - bgnd.width()) / 2,
+                     (sz.height() - bgnd.height()) / 2, bgnd);
     }
-    if (!info.isEmpty() && model() && 0==model()->rowCount()) {
+    if (!info.isEmpty() && model() && 0 == model()->rowCount()) {
         QPainter p(viewport());
         QColor col(palette().text().color());
         col.setAlphaF(0.5);
@@ -146,14 +143,14 @@ void ListView::paintEvent(QPaintEvent *e)
         f.setItalic(true);
         p.setPen(col);
         p.setFont(f);
-        p.drawText(rect().adjusted(8, 8, -16, -16), Qt::AlignCenter|Qt::TextWordWrap, info);
+        p.drawText(rect().adjusted(8, 8, -16, -16),
+                   Qt::AlignCenter | Qt::TextWordWrap, info);
     }
     QListView::paintEvent(e);
 }
 
 // Workaround for https://bugreports.qt-project.org/browse/QTBUG-18009
-void ListView::correctSelection()
-{
+void ListView::correctSelection() {
     if (!selectionModel()) {
         return;
     }
@@ -163,16 +160,15 @@ void ListView::correctSelection()
     selectionModel()->select(s, QItemSelectionModel::SelectCurrent);
 }
 
-void ListView::showCustomContextMenu(const QPoint &pos)
-{
+void ListView::showCustomContextMenu(const QPoint& pos) {
     if (menu) {
         menu->popup(mapToGlobal(pos));
     }
 }
 
-void ListView::checkDoubleClick(const QModelIndex &idx)
-{
-    if (!TreeView::getForceSingleClick() && idx.model() && idx.model()->rowCount(idx)) {
+void ListView::checkDoubleClick(const QModelIndex& idx) {
+    if (!TreeView::getForceSingleClick() && idx.model() &&
+        idx.model()->rowCount(idx)) {
         return;
     }
     emit itemDoubleClicked(idx);

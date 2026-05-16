@@ -30,27 +30,31 @@
 class FilenameSchemeDialog;
 class DevicePropertiesWidget;
 
-class DevicePropertiesDialog : public Dialog
-{
+class DevicePropertiesDialog : public Dialog {
     Q_OBJECT
 
-public:
-    DevicePropertiesDialog(QWidget *parent);
-    void show(const QString &path, const DeviceOptions &opts, int props, int disabledProps=0) { show(path, opts, QList<DeviceStorage>(), props, disabledProps); }
-    void show(const QString &path, const DeviceOptions &opts, const QList<DeviceStorage> &storage, int props, int disabledProps=0);
+   public:
+    DevicePropertiesDialog(QWidget* parent);
+    void show(const QString& path, const DeviceOptions& opts, int props,
+              int disabledProps = 0) {
+        show(path, opts, QList<DeviceStorage>(), props, disabledProps);
+    }
+    void show(const QString& path, const DeviceOptions& opts,
+              const QList<DeviceStorage>& storage, int props,
+              int disabledProps = 0);
 
-Q_SIGNALS:
-    void updatedSettings(const QString &path, const DeviceOptions &opts);
+   Q_SIGNALS:
+    void updatedSettings(const QString& path, const DeviceOptions& opts);
     void cancelled();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void enableOkButton();
 
-private:
+   private:
     void slotButtonClicked(int button) override;
 
-private:
-    DevicePropertiesWidget *devProp;
+   private:
+    DevicePropertiesWidget* devProp;
 };
 
 #endif

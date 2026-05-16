@@ -30,27 +30,26 @@
 
 class QFile;
 
-class MountPoints : public QObject
-{
+class MountPoints : public QObject {
     Q_OBJECT
 
-public:
-    static MountPoints * self();
+   public:
+    static MountPoints* self();
 
     MountPoints();
     int currentToken() const { return token; }
-    bool isMounted(const QString &mp) const;
+    bool isMounted(const QString& mp) const;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void updated();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void updateMountPoints();
 
-private:
+   private:
     int token;
     QSet<QString> current;
-    QFile *mounts;
+    QFile* mounts;
 };
 
-#endif // MOUNTPOINTS_H
+#endif  // MOUNTPOINTS_H

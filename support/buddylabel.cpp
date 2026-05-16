@@ -28,25 +28,21 @@
 #include <QRadioButton>
 #include <QEvent>
 
-BuddyLabel::BuddyLabel(const QString &text, QWidget *p, QWidget *b)
-    : QLabel(text, p)
-{
+BuddyLabel::BuddyLabel(const QString& text, QWidget* p, QWidget* b)
+    : QLabel(text, p) {
     if (b) {
         setBuddy(b);
     }
 }
 
-BuddyLabel::BuddyLabel(QWidget *p, QWidget *b)
-    : QLabel(p)
-{
+BuddyLabel::BuddyLabel(QWidget* p, QWidget* b) : QLabel(p) {
     if (b) {
         setBuddy(b);
     }
 }
 
-bool BuddyLabel::event(QEvent *e)
-{
-    if (QEvent::Shortcut==e->type()) {
+bool BuddyLabel::event(QEvent* e) {
+    if (QEvent::Shortcut == e->type()) {
         mouseReleaseEvent(nullptr);
         e->accept();
         return true;
@@ -55,10 +51,9 @@ bool BuddyLabel::event(QEvent *e)
     }
 }
 
-void BuddyLabel::mouseReleaseEvent(QMouseEvent *)
-{
+void BuddyLabel::mouseReleaseEvent(QMouseEvent*) {
     if (buddy() && buddy()->isEnabled()) {
-        PathRequester *pr=qobject_cast<PathRequester*>(buddy());
+        PathRequester* pr = qobject_cast<PathRequester*>(buddy());
         if (pr) {
             pr->setFocus();
             return;
@@ -66,21 +61,20 @@ void BuddyLabel::mouseReleaseEvent(QMouseEvent *)
 
         buddy()->setFocus();
 
-        QCheckBox *cb=qobject_cast<QCheckBox*>(buddy());
+        QCheckBox* cb = qobject_cast<QCheckBox*>(buddy());
         if (cb) {
             cb->setChecked(!cb->isChecked());
             return;
         }
-        QRadioButton *rb=qobject_cast<QRadioButton*>(buddy());
+        QRadioButton* rb = qobject_cast<QRadioButton*>(buddy());
         if (rb) {
             rb->setChecked(!rb->isChecked());
             return;
         }
-        QComboBox *combo=qobject_cast<QComboBox*>(buddy());
+        QComboBox* combo = qobject_cast<QComboBox*>(buddy());
         if (combo) {
             combo->showPopup();
             return;
         }
     }
 }
-

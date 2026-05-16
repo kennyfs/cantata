@@ -32,16 +32,15 @@ class QDBusPendingCallWatcher;
 class QDBusArgument;
 class OrgFreedesktopNotificationsInterface;
 
-QDBusArgument& operator<< (QDBusArgument &arg, const QImage &image);
-const QDBusArgument& operator>> (const QDBusArgument &arg, QImage &image);
+QDBusArgument& operator<<(QDBusArgument& arg, const QImage& image);
+const QDBusArgument& operator>>(const QDBusArgument& arg, QImage& image);
 
-class Notify : public QObject
-{
+class Notify : public QObject {
     Q_OBJECT
 
-public:
-    Notify(QObject *p);
-    ~Notify() override { }
+   public:
+    Notify(QObject* p);
+    ~Notify() override {}
 
     enum Urgency {
         DefaultUrgency = -1,
@@ -50,15 +49,16 @@ public:
         CriticalUrgency
     };
 
-    void show(const QString &title, const QString &text, const QImage &img, Urgency urgency = DefaultUrgency);
-    
-private Q_SLOTS:
-    void callFinished(QDBusPendingCallWatcher *watcher);
+    void show(const QString& title, const QString& text, const QImage& img,
+              Urgency urgency = DefaultUrgency);
 
-private:
+   private Q_SLOTS:
+    void callFinished(QDBusPendingCallWatcher* watcher);
+
+   private:
     QDateTime lastTime;
     int lastId;
-    OrgFreedesktopNotificationsInterface *iface;
+    OrgFreedesktopNotificationsInterface* iface;
 };
 
 #endif

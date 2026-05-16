@@ -27,14 +27,13 @@
 #include "support/utils.h"
 #include <QString>
 
-struct Partition
-{
+struct Partition {
     Partition() = default;
-    Partition(QString n) : name(n) { }
+    Partition(QString n) : name(n) {}
     ~Partition() = default;
 
-    bool operator<(const Partition &o) const {
-        return Utils::compare(name, o.name)<0;
+    bool operator<(const Partition& o) const {
+        return Utils::compare(name, o.name) < 0;
     }
 
     QString name;

@@ -25,20 +25,17 @@
 #include <ifaces/storagedrive.h>
 #include "udisksblock.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 
-class UDisksStorageDrive: public Block, virtual public Solid::Ifaces::StorageDrive
-{
+class UDisksStorageDrive : public Block,
+                           virtual public Solid::Ifaces::StorageDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
-public:
-    UDisksStorageDrive(UDisksDevice *device);
+   public:
+    UDisksStorageDrive(UDisksDevice* device);
     virtual ~UDisksStorageDrive();
 
     virtual qulonglong size() const;
@@ -48,8 +45,8 @@ public:
     virtual Solid::StorageDrive::Bus bus() const;
 };
 
-}
-}
-}
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKSSTORAGEDRIVE_H
+#endif  // UDISKSSTORAGEDRIVE_H

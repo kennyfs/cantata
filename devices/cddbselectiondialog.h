@@ -31,21 +31,20 @@
 class QComboBox;
 class QTreeWidget;
 
-class CddbSelectionDialog : public Dialog
-{
+class CddbSelectionDialog : public Dialog {
     Q_OBJECT
 
-public:
-    CddbSelectionDialog(QWidget *parent);
+   public:
+    CddbSelectionDialog(QWidget* parent);
 
-    int select(const QList<CdAlbum> &albums);
+    int select(const QList<CdAlbum>& albums);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void updateTracks();
 
-private:
-    QComboBox *combo;
-    QTreeWidget *tracks;
+   private:
+    QComboBox* combo;
+    QTreeWidget* tracks;
     QList<CdAlbum> albumDetails;
 };
 

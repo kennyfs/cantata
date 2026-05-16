@@ -25,39 +25,46 @@
 #include "support/monoicon.h"
 #include "models/mpdlibrarymodel.h"
 
-static const int constMinDate=1800;
-static const int constMaxDate=2100;
+static const int constMinDate = 1800;
+static const int constMaxDate = 2100;
 
-#define REMOVE(w) \
+#define REMOVE(w)         \
     w->setVisible(false); \
-    w->deleteLater(); \
-    w=0;
+    w->deleteLater();     \
+    w = 0;
 
-PlaylistRuleDialog::PlaylistRuleDialog(QWidget *parent, bool isDynamic)
-    : Dialog(parent)
-    , addingRules(false)
-{
-    QWidget *mainWidet = new QWidget(this);
+PlaylistRuleDialog::PlaylistRuleDialog(QWidget* parent, bool isDynamic)
+    : Dialog(parent), addingRules(false) {
+    QWidget* mainWidet = new QWidget(this);
     setupUi(mainWidet);
     setMainWidget(mainWidet);
-    setButtons(Ok|Cancel);
+    setButtons(Ok | Cancel);
     enableButton(Ok, false);
     setCaption(isDynamic ? tr("Dynamic Rule") : tr("Smart Rule"));
 
-    connect(artistText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(composerText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(commentText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
+    connect(artistText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(composerText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(commentText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
     if (isDynamic) {
-        connect(similarArtistsText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
+        connect(similarArtistsText, SIGNAL(textChanged(const QString&)),
+                SLOT(enableOkButton()));
     } else {
         REMOVE(similarArtistsText)
         REMOVE(similarArtistsTextLabel)
     }
-    connect(albumArtistText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(albumText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(titleText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(genreText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
-    connect(filenameText, SIGNAL(textChanged(const QString &)), SLOT(enableOkButton()));
+    connect(albumArtistText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(albumText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(titleText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(genreText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
+    connect(filenameText, SIGNAL(textChanged(const QString&)),
+            SLOT(enableOkButton()));
     connect(dateFromSpin, SIGNAL(valueChanged(int)), SLOT(enableOkButton()));
     connect(dateToSpin, SIGNAL(valueChanged(int)), SLOT(enableOkButton()));
     connect(exactCheck, SIGNAL(toggled(bool)), SLOT(enableOkButton()));
@@ -67,9 +74,10 @@ PlaylistRuleDialog::PlaylistRuleDialog(QWidget *parent, bool isDynamic)
     QSet<QString> composers;
     QSet<QString> albums;
     QSet<QString> genres;
-    MpdLibraryModel::self()->getDetails(artists, albumArtists, composers, albums, genres);
+    MpdLibraryModel::self()->getDetails(artists, albumArtists, composers,
+                                        albums, genres);
 
-    QStringList strings=artists.values();
+    QStringList strings = artists.values();
     strings.sort();
     artistText->clear();
     artistText->insertItems(0, strings);
@@ -79,55 +87,54 @@ PlaylistRuleDialog::PlaylistRuleDialog(QWidget *parent, bool isDynamic)
         similarArtistsText->insertItems(0, strings);
     }
 
-    strings=albumArtists.values();
+    strings = albumArtists.values();
     strings.sort();
     albumArtistText->clear();
     albumArtistText->insertItems(0, strings);
 
-    strings=composers.values();
+    strings = composers.values();
     strings.sort();
     composerText->clear();
     composerText->insertItems(0, strings);
 
-    strings=albums.values();
+    strings = albums.values();
     strings.sort();
     albumText->clear();
     albumText->insertItems(0, strings);
 
-    strings=genres.values();
+    strings = genres.values();
     strings.sort();
     genreText->clear();
     genreText->insertItems(0, strings);
 
     commentText->clear();
 
-    dateFromSpin->setRange(constMinDate-1, constMaxDate);
-    dateToSpin->setRange(constMinDate-1, constMaxDate);
+    dateFromSpin->setRange(constMinDate - 1, constMaxDate);
+    dateToSpin->setRange(constMinDate - 1, constMaxDate);
     artistText->setFocus();
     errorLabel->setVisible(false);
     errorLabel->setStyleSheet(QLatin1String("QLabel{color:red;}"));
     adjustSize();
-    int h=height();
-    int w=width();
-    int minW=Utils::scaleForDpi(500);
+    int h = height();
+    int w = width();
+    int minW = Utils::scaleForDpi(500);
     setMinimumWidth(minW);
     setMinimumHeight(h);
-    if (w<minW) {
+    if (w < minW) {
         resize(minW, h);
     }
 }
 
-PlaylistRuleDialog::~PlaylistRuleDialog()
-{
-}
+PlaylistRuleDialog::~PlaylistRuleDialog() {}
 
-bool PlaylistRuleDialog::edit(const RulesPlaylists::Rule &rule, bool isAdd)
-{
-    addingRules=isAdd;
-    typeCombo->setCurrentIndex(QLatin1String("true")==rule[RulesPlaylists::constExcludeKey] ? 1 : 0);
+bool PlaylistRuleDialog::edit(const RulesPlaylists::Rule& rule, bool isAdd) {
+    addingRules = isAdd;
+    typeCombo->setCurrentIndex(
+        QLatin1String("true") == rule[RulesPlaylists::constExcludeKey] ? 1 : 0);
     artistText->setText(rule[RulesPlaylists::constArtistKey]);
     if (similarArtistsText) {
-        similarArtistsText->setText(rule[RulesPlaylists::constSimilarArtistsKey]);
+        similarArtistsText->setText(
+            rule[RulesPlaylists::constSimilarArtistsKey]);
     }
     albumArtistText->setText(rule[RulesPlaylists::constAlbumArtistKey]);
     composerText->setText(rule[RulesPlaylists::constComposerKey]);
@@ -137,39 +144,39 @@ bool PlaylistRuleDialog::edit(const RulesPlaylists::Rule &rule, bool isAdd)
     genreText->setText(rule[RulesPlaylists::constGenreKey]);
     filenameText->setText(rule[RulesPlaylists::constFileKey]);
 
-    QString date=rule[RulesPlaylists::constDateKey];
-    int dateFrom=0;
-    int dateTo=0;
+    QString date = rule[RulesPlaylists::constDateKey];
+    int dateFrom = 0;
+    int dateTo = 0;
     if (!date.isEmpty()) {
-        int idx=date.indexOf(RulesPlaylists::constRangeSep);
-        if (-1==idx) {
-            dateFrom=date.toInt();
+        int idx = date.indexOf(RulesPlaylists::constRangeSep);
+        if (-1 == idx) {
+            dateFrom = date.toInt();
         } else {
-            dateFrom=date.left(idx).toInt();
-            dateTo=date.mid(idx+1).toInt();
+            dateFrom = date.left(idx).toInt();
+            dateTo = date.mid(idx + 1).toInt();
         }
     }
 
-    if (dateFrom<constMinDate || dateFrom>constMaxDate) {
-        dateFrom=constMinDate-1;
+    if (dateFrom < constMinDate || dateFrom > constMaxDate) {
+        dateFrom = constMinDate - 1;
     }
-    if (dateTo<constMinDate || dateTo>constMaxDate) {
-        dateTo=constMinDate-1;
+    if (dateTo < constMinDate || dateTo > constMaxDate) {
+        dateTo = constMinDate - 1;
     }
     dateFromSpin->setValue(dateFrom);
     dateToSpin->setValue(dateTo);
-    exactCheck->setChecked(QLatin1String("false")!=rule[RulesPlaylists::constExactKey]);
+    exactCheck->setChecked(QLatin1String("false") !=
+                           rule[RulesPlaylists::constExactKey]);
     errorLabel->setVisible(false);
 
-    setButtons(isAdd ? User1|Ok|Close : Ok|Cancel);
+    setButtons(isAdd ? User1 | Ok | Close : Ok | Cancel);
     setButtonText(User1, tr("Add"));
     setButtonGuiItem(User1, GuiItem(tr("Add"), FontAwesome::plus));
     enableOkButton();
-    return QDialog::Accepted==exec();
+    return QDialog::Accepted == exec();
 }
 
-RulesPlaylists::Rule PlaylistRuleDialog::rule() const
-{
+RulesPlaylists::Rule PlaylistRuleDialog::rule() const {
     RulesPlaylists::Rule r;
     if (!artist().isEmpty()) {
         r.insert(RulesPlaylists::constArtistKey, artist());
@@ -198,13 +205,16 @@ RulesPlaylists::Rule PlaylistRuleDialog::rule() const
     if (!filename().isEmpty()) {
         r.insert(RulesPlaylists::constFileKey, filename());
     }
-    int dateFrom=dateFromSpin->value();
-    int dateTo=dateToSpin->value();
-    bool haveFrom=dateFrom>=constMinDate && dateFrom<=constMaxDate;
-    bool haveTo=dateTo>=constMinDate && dateTo<=constMaxDate && dateTo!=dateFrom;
+    int dateFrom = dateFromSpin->value();
+    int dateTo = dateToSpin->value();
+    bool haveFrom = dateFrom >= constMinDate && dateFrom <= constMaxDate;
+    bool haveTo =
+        dateTo >= constMinDate && dateTo <= constMaxDate && dateTo != dateFrom;
 
     if (haveFrom && haveTo) {
-        r.insert(RulesPlaylists::constDateKey, QString::number(dateFrom)+RulesPlaylists::constRangeSep+QString::number(dateTo));
+        r.insert(RulesPlaylists::constDateKey,
+                 QString::number(dateFrom) + RulesPlaylists::constRangeSep +
+                     QString::number(dateTo));
     } else if (haveFrom) {
         r.insert(RulesPlaylists::constDateKey, QString::number(dateFrom));
     } else if (haveTo) {
@@ -214,41 +224,53 @@ RulesPlaylists::Rule PlaylistRuleDialog::rule() const
     if (!exactCheck->isChecked()) {
         r.insert(RulesPlaylists::constExactKey, QLatin1String("false"));
     }
-    if (1==typeCombo->currentIndex()) {
+    if (1 == typeCombo->currentIndex()) {
         r.insert(RulesPlaylists::constExcludeKey, QLatin1String("true"));
     }
     return r;
 }
 
-void PlaylistRuleDialog::enableOkButton()
-{
-    static const int constMaxDateRange=20;
+void PlaylistRuleDialog::enableOkButton() {
+    static const int constMaxDateRange = 20;
 
-    int dateFrom=dateFromSpin->value();
-    int dateTo=dateToSpin->value();
-    bool haveFrom=dateFrom>=constMinDate && dateFrom<=constMaxDate;
-    bool haveTo=dateTo>=constMinDate && dateTo<=constMaxDate && dateTo!=dateFrom;
-    bool enable=(!haveFrom || !haveTo || (dateTo>=dateFrom && (dateTo-dateFrom)<=constMaxDateRange)) &&
-                (haveFrom || haveTo || !artist().isEmpty() || !similarArtists().isEmpty() || !albumArtist().isEmpty() ||
-                 !composer().isEmpty() || !comment().isEmpty() || !album().isEmpty() || !title().isEmpty() || !genre().isEmpty() || !filename().isEmpty());
+    int dateFrom = dateFromSpin->value();
+    int dateTo = dateToSpin->value();
+    bool haveFrom = dateFrom >= constMinDate && dateFrom <= constMaxDate;
+    bool haveTo =
+        dateTo >= constMinDate && dateTo <= constMaxDate && dateTo != dateFrom;
+    bool enable =
+        (!haveFrom || !haveTo ||
+         (dateTo >= dateFrom && (dateTo - dateFrom) <= constMaxDateRange)) &&
+        (haveFrom || haveTo || !artist().isEmpty() ||
+         !similarArtists().isEmpty() || !albumArtist().isEmpty() ||
+         !composer().isEmpty() || !comment().isEmpty() || !album().isEmpty() ||
+         !title().isEmpty() || !genre().isEmpty() || !filename().isEmpty());
 
     if (enable && exactCheck->isChecked() && !filename().isEmpty()) {
-        enable=false;
+        enable = false;
     }
 
     errorLabel->setVisible(false);
     if (!enable) {
         if (haveFrom && haveTo) {
-            if (dateTo<dateFrom) {
-                errorLabel->setText(tr("<i><b>ERROR</b>: 'From Year' should be less than 'To Year'</i>"));
+            if (dateTo < dateFrom) {
+                errorLabel->setText(
+                    tr("<i><b>ERROR</b>: 'From Year' should be less than 'To "
+                       "Year'</i>"));
                 errorLabel->setVisible(true);
-            } else if (dateTo-dateFrom>constMaxDateRange) {
-                errorLabel->setText(tr("<i><b>ERROR:</b> Date range is too large (can only be a maximum of %1 years)</i>").arg(constMaxDateRange));
+            } else if (dateTo - dateFrom > constMaxDateRange) {
+                errorLabel->setText(
+                    tr("<i><b>ERROR:</b> Date range is too large (can only be "
+                       "a maximum of %1 years)</i>")
+                        .arg(constMaxDateRange));
                 errorLabel->setVisible(true);
             }
         }
-        if (!filename().isEmpty() && exactCheck->isChecked() && !errorLabel->isVisible()) {
-            errorLabel->setText(tr("<i><b>ERROR:</b> You can only match on filename / path if 'Exact match' is <b>not</b> checked</i>"));
+        if (!filename().isEmpty() && exactCheck->isChecked() &&
+            !errorLabel->isVisible()) {
+            errorLabel->setText(
+                tr("<i><b>ERROR:</b> You can only match on filename / path if "
+                   "'Exact match' is <b>not</b> checked</i>"));
             errorLabel->setVisible(true);
         }
     }
@@ -258,9 +280,8 @@ void PlaylistRuleDialog::enableOkButton()
     }
 }
 
-void PlaylistRuleDialog::slotButtonClicked(int button)
-{
-    if (addingRules && (User1==button || Ok==button)) {
+void PlaylistRuleDialog::slotButtonClicked(int button) {
+    if (addingRules && (User1 == button || Ok == button)) {
         emit addRule(rule());
     }
 

@@ -29,37 +29,37 @@
 #include "config.h"
 #include <QWizard>
 
-class InitialSettingsWizard : public QWizard, public Ui::InitialSettingsWizard
-{
+class InitialSettingsWizard : public QWizard, public Ui::InitialSettingsWizard {
     Q_OBJECT
 
-public:
-    InitialSettingsWizard(QWidget *p=nullptr);
+   public:
+    InitialSettingsWizard(QWidget* p = nullptr);
     ~InitialSettingsWizard() override;
     MPDConnectionDetails getDetails();
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
-    void setDetails(const MPDConnectionDetails &det);
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
+    void setDetails(const MPDConnectionDetails& det);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void connectToMpd();
     void mpdConnectionStateChanged(bool c);
-    void showError(const QString &message);
-    void dbError(const QString &message);
+    void showError(const QString& message);
+    void dbError(const QString& message);
     void pageChanged(int p);
     void accept() override;
     void reject() override;
     void controlNextButton();
-    #ifdef AVAHI_FOUND
+#ifdef AVAHI_FOUND
     void adoptServerSettings(QString ip, QString port);
     void detectMPDs();
-    #endif
+#endif
 
-private:
-    #ifdef AVAHI_FOUND
-    QPushButton *discoveryButton;
-    #endif
+   private:
+#ifdef AVAHI_FOUND
+    QPushButton* discoveryButton;
+#endif
 };
 
 #endif

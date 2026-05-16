@@ -36,7 +36,7 @@ class NetworkJob;
 class UltimateLyricsProvider : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
 
     UltimateLyricsProvider();
@@ -46,37 +46,42 @@ public:
     typedef QList<RuleItem> Rule;
     typedef QPair<QString, QString> UrlFormat;
 
-    void setName(const QString &n) { name = n; }
-    void setUrl(const QString &u) { url = u; }
-    void setCharset(const QString &c) { charset = c; }
+    void setName(const QString& n) { name = n; }
+    void setUrl(const QString& u) { url = u; }
+    void setCharset(const QString& c) { charset = c; }
     void setRelevance(int r) { relevance = r; }
-    void addUrlFormat(const QString &replace, const QString &with) { urlFormats << UrlFormat(replace, with); }
-    void addExtractRule(const Rule &rule) { extractRules << rule; }
-    void addExcludeRule(const Rule &rule) { excludeRules << rule; }
-    void addInvalidIndicator(const QString &indicator) { invalidIndicators << indicator; }
+    void addUrlFormat(const QString& replace, const QString& with) {
+        urlFormats << UrlFormat(replace, with);
+    }
+    void addExtractRule(const Rule& rule) { extractRules << rule; }
+    void addExcludeRule(const Rule& rule) { excludeRules << rule; }
+    void addInvalidIndicator(const QString& indicator) {
+        invalidIndicators << indicator;
+    }
     QString getName() const { return name; }
     QString displayName() const;
     int getRelevance() const { return relevance; }
-    void fetchInfo(int id, Song metadata, bool removeThe=false);
+    void fetchInfo(int id, Song metadata, bool removeThe = false);
     bool isEnabled() const { return enabled; }
     void setEnabled(bool e) { enabled = e; }
     void abort();
 
-Q_SIGNALS:
-    void lyricsReady(int id, const QString &data);
+   Q_SIGNALS:
+    void lyricsReady(int id, const QString& data);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void wikiMediaSearchResponse();
     void wikiMediaLyricsFetched();
     void lyricsFetched();
 
-private:
-    QString doTagReplace(QString str, const Song &song, bool doAll=true);
-    void doUrlReplace(const QString &tag, const QString &value, QString &u) const;
+   private:
+    QString doTagReplace(QString str, const Song& song, bool doAll = true);
+    void doUrlReplace(const QString& tag, const QString& value,
+                      QString& u) const;
 
-private:
+   private:
     bool enabled;
-    QHash<NetworkJob *, int> requests;
+    QHash<NetworkJob*, int> requests;
     QMap<int, Song> songs;
     QString name;
     QString url;
@@ -88,4 +93,4 @@ private:
     QStringList invalidIndicators;
 };
 
-#endif // ULTIMATELYRICSPROVIDER_H
+#endif  // ULTIMATELYRICSPROVIDER_H

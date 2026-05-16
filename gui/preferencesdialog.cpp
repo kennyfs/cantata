@@ -47,120 +47,127 @@
 #include <QDesktopWidget>
 #include <QTimer>
 
-static int iCount=0;
+static int iCount = 0;
 
-int PreferencesDialog::instanceCount()
-{
-    return iCount;
-}
+int PreferencesDialog::instanceCount() { return iCount; }
 
-PreferencesDialog::PreferencesDialog(QWidget *parent)
-    : ConfigDialog(parent, "PreferencesDialog")
-{
+PreferencesDialog::PreferencesDialog(QWidget* parent)
+    : ConfigDialog(parent, "PreferencesDialog") {
     iCount++;
     server = new ServerSettings(this);
     playback = new PlaybackSettings(this);
     interface = new InterfaceSettings(this);
     context = new ContextSettings(this);
     cache = new CacheSettings(this);
-    #ifdef ENABLE_SCROBBLING
+#ifdef ENABLE_SCROBBLING
     scrobbling = new ScrobblingSettings(this);
-    #endif
+#endif
     custom = new CustomActionsSettings(this);
     apiKeys = new ApiKeysSettings(this);
     server->load();
     playback->load();
     interface->load();
     context->load();
-    #ifdef ENABLE_SCROBBLING
+#ifdef ENABLE_SCROBBLING
     scrobbling->load();
-    #endif
+#endif
     custom->load();
     QColor iconColor = Utils::clampColor(palette().text().color());
-    addPage(QLatin1String("collection"), server, tr("Collection"), MonoIcon::icon(FontAwesome::music, iconColor), tr("Collection Settings"));
-    addPage(QLatin1String("playback"), playback, tr("Playback"), MonoIcon::icon(FontAwesome::volumeup, iconColor), tr("Playback Settings"));
-    addPage(QLatin1String("interface"), interface, tr("Interface"), MonoIcon::icon(FontAwesome::sliders, iconColor), tr("Interface Settings"));
-    addPage(QLatin1String("info"), context, tr("Info"), MonoIcon::icon(FontAwesome::infocircle, iconColor), tr("Info View Settings"));
-    #ifdef ENABLE_SCROBBLING
-    addPage(QLatin1String("scrobbling"), scrobbling, tr("Scrobbling"), MonoIcon::icon(FontAwesome::lastfm, iconColor), tr("Scrobbling Settings"));
-    #endif
-    #if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
+    addPage(QLatin1String("collection"), server, tr("Collection"),
+            MonoIcon::icon(FontAwesome::music, iconColor),
+            tr("Collection Settings"));
+    addPage(QLatin1String("playback"), playback, tr("Playback"),
+            MonoIcon::icon(FontAwesome::volumeup, iconColor),
+            tr("Playback Settings"));
+    addPage(QLatin1String("interface"), interface, tr("Interface"),
+            MonoIcon::icon(FontAwesome::sliders, iconColor),
+            tr("Interface Settings"));
+    addPage(QLatin1String("info"), context, tr("Info"),
+            MonoIcon::icon(FontAwesome::infocircle, iconColor),
+            tr("Info View Settings"));
+#ifdef ENABLE_SCROBBLING
+    addPage(QLatin1String("scrobbling"), scrobbling, tr("Scrobbling"),
+            MonoIcon::icon(FontAwesome::lastfm, iconColor),
+            tr("Scrobbling Settings"));
+#endif
+#if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
     audiocd = new AudioCdSettings(0);
     audiocd->load();
-    addPage(QLatin1String("cd"), audiocd, tr("Audio CD"), Icons::self()->albumMonoIcon, tr("Audio CD Settings"));
-    #endif
-    #ifdef ENABLE_PROXY_CONFIG
+    addPage(QLatin1String("cd"), audiocd, tr("Audio CD"),
+            Icons::self()->albumMonoIcon, tr("Audio CD Settings"));
+#endif
+#ifdef ENABLE_PROXY_CONFIG
     proxy = new ProxySettings(0);
     proxy->load();
-    addPage(QLatin1String("proxy"), proxy, tr("Proxy"), MonoIcon::icon(FontAwesome::globe, iconColor), tr("Proxy Settings"));
-    #endif
+    addPage(QLatin1String("proxy"), proxy, tr("Proxy"),
+            MonoIcon::icon(FontAwesome::globe, iconColor),
+            tr("Proxy Settings"));
+#endif
     shortcuts = new ShortcutsSettingsPage(nullptr);
-    addPage(QLatin1String("shortcuts"), shortcuts, tr("Shortcuts"), MonoIcon::icon(FontAwesome::keyboardo, iconColor), tr("Keyboard Shortcut Settings"));
+    addPage(QLatin1String("shortcuts"), shortcuts, tr("Shortcuts"),
+            MonoIcon::icon(FontAwesome::keyboardo, iconColor),
+            tr("Keyboard Shortcut Settings"));
     shortcuts->load();
-    addPage(QLatin1String("cache"), cache, tr("Cache"), MonoIcon::icon(FontAwesome::foldero, iconColor), tr("Cached Items"));
-    addPage(QLatin1String("custom"), custom, tr("Custom Actions"), MonoIcon::icon(FontAwesome::rocket, iconColor), tr("Custom Actions"));
-    addPage(QLatin1String("apikeys"), apiKeys, tr("Service Keys"), MonoIcon::icon(FontAwesome::key, iconColor), tr("Service API Keys"));
-    #ifdef Q_OS_MAC
+    addPage(QLatin1String("cache"), cache, tr("Cache"),
+            MonoIcon::icon(FontAwesome::foldero, iconColor),
+            tr("Cached Items"));
+    addPage(QLatin1String("custom"), custom, tr("Custom Actions"),
+            MonoIcon::icon(FontAwesome::rocket, iconColor),
+            tr("Custom Actions"));
+    addPage(QLatin1String("apikeys"), apiKeys, tr("Service Keys"),
+            MonoIcon::icon(FontAwesome::key, iconColor),
+            tr("Service API Keys"));
+#ifdef Q_OS_MAC
     setCaption(tr("Cantata Preferences"));
     setMinimumWidth(800);
-    #else
+#else
     setCaption(tr("Configure"));
-    #endif
+#endif
     setAttribute(Qt::WA_DeleteOnClose);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setCurrentPage(QLatin1String("collection"));
 }
 
-PreferencesDialog::~PreferencesDialog()
-{
-    iCount--;
-}
+PreferencesDialog::~PreferencesDialog() { iCount--; }
 
-void PreferencesDialog::showPage(const QString &page)
-{
-    QStringList parts=page.split(QLatin1Char(':'));
+void PreferencesDialog::showPage(const QString& page) {
+    QStringList parts = page.split(QLatin1Char(':'));
     if (setCurrentPage(parts.at(0))) {
-        if (parts.count()>1) {
-            QWidget *cur=getPage(parts.at(0));
-            if (qobject_cast<InterfaceSettings *>(cur)) {
-                static_cast<InterfaceSettings *>(cur)->showPage(parts.at(1));
+        if (parts.count() > 1) {
+            QWidget* cur = getPage(parts.at(0));
+            if (qobject_cast<InterfaceSettings*>(cur)) {
+                static_cast<InterfaceSettings*>(cur)->showPage(parts.at(1));
             }
         }
     }
     Utils::raiseWindow(this);
 }
 
-void PreferencesDialog::writeSettings()
-{
-    // *Must* save server settings first, so that MPD settings go to the correct instance!
+void PreferencesDialog::writeSettings() {
+    // *Must* save server settings first, so that MPD settings go to the correct
+    // instance!
     server->save();
     playback->save();
     interface->save();
-    #ifdef ENABLE_PROXY_CONFIG
+#ifdef ENABLE_PROXY_CONFIG
     proxy->save();
-    #endif
+#endif
     shortcuts->save();
-    #if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
+#if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
     audiocd->save();
-    #endif
+#endif
     context->save();
-    #ifdef ENABLE_SCROBBLING
+#ifdef ENABLE_SCROBBLING
     scrobbling->save();
-    #endif
+#endif
     custom->save();
     apiKeys->save();
     Settings::self()->save();
     emit settingsSaved();
 }
 
-void PreferencesDialog::save()
-{
-    writeSettings();
-}
+void PreferencesDialog::save() { writeSettings(); }
 
-void PreferencesDialog::cancel()
-{
-    server->cancel();
-}
+void PreferencesDialog::cancel() { server->cancel(); }
 
 #include "moc_preferencesdialog.cpp"

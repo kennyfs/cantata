@@ -35,102 +35,117 @@ class QMimeData;
 class Device;
 class MirrorMenu;
 
-class DevicesModel : public MusicLibraryModel
-{
+class DevicesModel : public MusicLibraryModel {
     Q_OBJECT
 
-public:
-    static DevicesModel * self();
+   public:
+    static DevicesModel* self();
 
     static void enableDebug();
     static bool debugEnabled();
-    static QString fixDevicePath(const QString &path);
+    static QString fixDevicePath(const QString& path);
 
-    DevicesModel(QObject *parent = nullptr);
+    DevicesModel(QObject* parent = nullptr);
     ~DevicesModel() override;
-    QModelIndex index(int row, int column, const QModelIndex &parent=QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &index) const override;
-    QVariant headerData(int, Qt::Orientation, int = Qt::DisplayRole) const override { return QVariant(); }
-    int columnCount(const QModelIndex & = QModelIndex()) const override { return 1; }
-    int rowCount(const QModelIndex &parent=QModelIndex()) const override;
-    void getDetails(QSet<QString> &artists, QSet<QString> &albumArtists, QSet<QString> &composers, QSet<QString> &albums, QSet<QString> &genres);
-    QList<Song> songs(const QModelIndexList &indexes, bool playableOnly=false, bool fullPath=false) const;
-    QStringList filenames(const QModelIndexList &indexes, bool playableOnly=false, bool fullPath=false) const;
-    int row(void *i) const override { return collections.indexOf(static_cast<MusicLibraryItemRoot *>(i)); }
-    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-    QVariant data(const QModelIndex &, int) const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QStringList playableUrls(const QModelIndexList &indexes) const;
-    void clear(bool clearConfig=true);
-    MirrorMenu * menu() { return itemMenu; }
-    Device * device(const QString &udi);
+    QModelIndex index(int row, int column,
+                      const QModelIndex& parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex& index) const override;
+    QVariant headerData(int, Qt::Orientation,
+                        int = Qt::DisplayRole) const override {
+        return QVariant();
+    }
+    int columnCount(const QModelIndex& = QModelIndex()) const override {
+        return 1;
+    }
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    void getDetails(QSet<QString>& artists, QSet<QString>& albumArtists,
+                    QSet<QString>& composers, QSet<QString>& albums,
+                    QSet<QString>& genres);
+    QList<Song> songs(const QModelIndexList& indexes, bool playableOnly = false,
+                      bool fullPath = false) const;
+    QStringList filenames(const QModelIndexList& indexes,
+                          bool playableOnly = false,
+                          bool fullPath = false) const;
+    int row(void* i) const override {
+        return collections.indexOf(static_cast<MusicLibraryItemRoot*>(i));
+    }
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role) override;
+    QVariant data(const QModelIndex&, int) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QStringList playableUrls(const QModelIndexList& indexes) const;
+    void clear(bool clearConfig = true);
+    MirrorMenu* menu() { return itemMenu; }
+    Device* device(const QString& udi);
     bool isEnabled() const { return enabled; }
     void setEnabled(bool e);
     void stop();
-    QMimeData * mimeData(const QModelIndexList &indexes) const override;
-    #ifdef ENABLE_REMOTE_DEVICES
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+#ifdef ENABLE_REMOTE_DEVICES
     void unmountRemote();
-    #endif
+#endif
 
-    Action * configureAct() const { return configureAction; }
-    Action * refreshAct() const { return refreshAction; }
-    Action * connectAct() const { return connectAction; }
-    Action * disconnectAct() const { return disconnectAction; }
-    #if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
-    Action * editAct() const { return editAction; }
-    void playCd(const QString &dev);
-    #endif
+    Action* configureAct() const { return configureAction; }
+    Action* refreshAct() const { return refreshAction; }
+    Action* connectAct() const { return connectAction; }
+    Action* disconnectAct() const { return disconnectAction; }
+#if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
+    Action* editAct() const { return editAction; }
+    void playCd(const QString& dev);
+#endif
 
-private:
-    int indexOf(const QString &id);
+   private:
+    int indexOf(const QString& id);
 
-public Q_SLOTS:
-    void setCover(const Song &song, const QImage &img, const QString &file);
-    void setCover(const Song &song, const QImage &img);
-    void deviceAdded(const QString &udi);
-    void deviceRemoved(const QString &udi);
-    void accessibilityChanged(bool accessible, const QString &udi);
-    void deviceUpdating(const QString &udi, bool state);
+   public Q_SLOTS:
+    void setCover(const Song& song, const QImage& img, const QString& file);
+    void setCover(const Song& song, const QImage& img);
+    void deviceAdded(const QString& udi);
+    void deviceRemoved(const QString& udi);
+    void accessibilityChanged(bool accessible, const QString& udi);
+    void deviceUpdating(const QString& udi, bool state);
     void emitAddToDevice();
-    void addRemoteDevice(const DeviceOptions &opts, RemoteFsDevice::Details details);
-    void removeRemoteDevice(const QString &udi, bool removeFromConfig=true);
+    void addRemoteDevice(const DeviceOptions& opts,
+                         RemoteFsDevice::Details details);
+    void removeRemoteDevice(const QString& udi, bool removeFromConfig = true);
     void remoteDeviceUdiChanged();
     void mountsChanged();
 
-private:
-    void addLocalDevice(const QString &udi);
-    #ifdef ENABLE_REMOTE_DEVICES
+   private:
+    void addLocalDevice(const QString& udi);
+#ifdef ENABLE_REMOTE_DEVICES
     void loadRemote();
-    #endif
+#endif
 
-Q_SIGNALS:
-    void addToDevice(const QString &udi);
-    void error(const QString &text);
-    void updated(const QModelIndex &idx);
-    void matches(const QString &udi, const QList<CdAlbum> &albums);
-    void invalid(const QList<Song> &songs);
-    void updatedDetails(const QList<Song> &songs);
-    void add(const QStringList &files, int action, quint8 priority, bool decreasePriority); // add songs to MPD playqueue
+   Q_SIGNALS:
+    void addToDevice(const QString& udi);
+    void error(const QString& text);
+    void updated(const QModelIndex& idx);
+    void matches(const QString& udi, const QList<CdAlbum>& albums);
+    void invalid(const QList<Song>& songs);
+    void updatedDetails(const QList<Song>& songs);
+    void add(const QStringList& files, int action, quint8 priority,
+             bool decreasePriority);  // add songs to MPD playqueue
 
-private Q_SLOTS:
-    void play(const QList<Song> &songs);
+   private Q_SLOTS:
+    void play(const QList<Song>& songs);
     void loadLocal();
     void updateItemMenu();
 
-private:
-    QList<MusicLibraryItemRoot *> collections;
+   private:
+    QList<MusicLibraryItemRoot*> collections;
     QSet<QString> volumes;
-    MirrorMenu *itemMenu;
+    MirrorMenu* itemMenu;
     bool enabled;
     bool inhibitMenuUpdate;
-    Action *configureAction;
-    Action *refreshAction;
-    Action *connectAction;
-    Action *disconnectAction;
-    #if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
+    Action* configureAction;
+    Action* refreshAction;
+    Action* connectAction;
+    Action* disconnectAction;
+#if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
     QString autoplayCd;
-    Action *editAction;
-    #endif
+    Action* editAction;
+#endif
     friend class Device;
 };
 

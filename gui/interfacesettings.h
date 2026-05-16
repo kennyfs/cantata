@@ -28,31 +28,30 @@
 
 class QStringList;
 
-class InterfaceSettings : public QWidget, private Ui::InterfaceSettings
-{
+class InterfaceSettings : public QWidget, private Ui::InterfaceSettings {
     Q_OBJECT
 
-public:
-    InterfaceSettings(QWidget *p);
-    ~InterfaceSettings() override { }
+   public:
+    InterfaceSettings(QWidget* p);
+    ~InterfaceSettings() override {}
 
     void load();
     void save();
 
-    void showEvent(QShowEvent *e) override;
-    void showPage(const QString &page);
+    void showEvent(QShowEvent* e) override;
+    void showPage(const QString& page);
     QSize sizeHint() const override;
 
-private:
-    void addView(const QString &v, const QString &prop);
+   private:
+    void addView(const QString& v, const QString& prop);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void playQueueViewChanged();
     void forceSingleClickChanged();
     void enableStartupState();
     void langChanged();
     void styleChanged();
-    void viewItemChanged(QListWidgetItem *changedItem);
+    void viewItemChanged(QListWidgetItem* changedItem);
     void sbAutoHideChanged();
     void setPlayQueueBackgroundOpacityLabel();
     void setPlayQueueBackgroundBlurLabel();
@@ -61,7 +60,7 @@ private Q_SLOTS:
     void systemTrayPopupToggled();
     void storeCoversInMpdDirToggled();
 
-private:
+   private:
     bool loaded;
 };
 

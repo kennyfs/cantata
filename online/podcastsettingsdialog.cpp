@@ -30,34 +30,33 @@
 #include <QCheckBox>
 #include <QFormLayout>
 
-static void setIndex(QComboBox *combo, int val)
-{
-    int possible=0;
-    for (int i=0; i<combo->count(); ++i) {
-        int cval=combo->itemData(i).toInt();
-        if (cval==val) {
+static void setIndex(QComboBox* combo, int val) {
+    int possible = 0;
+    for (int i = 0; i < combo->count(); ++i) {
+        int cval = combo->itemData(i).toInt();
+        if (cval == val) {
             combo->setCurrentIndex(i);
-            possible=-1;
+            possible = -1;
             break;
         }
-        if (cval<val) {
-            possible=i;
+        if (cval < val) {
+            possible = i;
         }
     }
 
-    if (possible>=0) {
+    if (possible >= 0) {
         combo->setCurrentIndex(possible);
     }
 }
 
-PodcastSettingsDialog::PodcastSettingsDialog(QWidget *p)
-    : Dialog(p, "PodcastSettingsDialog", QSize(550, 160))
-{
-    QWidget *mw=new QWidget(this);
-    QFormLayout * lay=new QFormLayout(mw);
-    BuddyLabel * updateLabel=new BuddyLabel(tr("Check for new episodes:"), mw);
-    BuddyLabel * downloadLabel=new BuddyLabel(tr("Download episodes to:"), mw);
-    BuddyLabel * autoDownloadLabel=new BuddyLabel(tr("Download automatically:"), mw);
+PodcastSettingsDialog::PodcastSettingsDialog(QWidget* p)
+    : Dialog(p, "PodcastSettingsDialog", QSize(550, 160)) {
+    QWidget* mw = new QWidget(this);
+    QFormLayout* lay = new QFormLayout(mw);
+    BuddyLabel* updateLabel = new BuddyLabel(tr("Check for new episodes:"), mw);
+    BuddyLabel* downloadLabel = new BuddyLabel(tr("Download episodes to:"), mw);
+    BuddyLabel* autoDownloadLabel =
+        new BuddyLabel(tr("Download automatically:"), mw);
 
     updateCombo = new QComboBox(this);
     updateLabel->setBuddy(updateCombo);
@@ -67,7 +66,7 @@ PodcastSettingsDialog::PodcastSettingsDialog(QWidget *p)
     autoDownloadCombo = new QComboBox(this);
     autoDownloadLabel->setBuddy(autoDownloadCombo);
 
-    int row=0;
+    int row = 0;
     lay->setMargin(0);
     lay->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     lay->setWidget(row, QFormLayout::LabelRole, updateLabel);
@@ -79,7 +78,7 @@ PodcastSettingsDialog::PodcastSettingsDialog(QWidget *p)
     lay->setWidget(row, QFormLayout::LabelRole, autoDownloadLabel);
     lay->setWidget(row++, QFormLayout::FieldRole, autoDownloadCombo);
 
-    setButtons(Ok|Cancel);
+    setButtons(Ok | Cancel);
     setMainWidget(mw);
     setCaption(tr("Podcast Settings"));
 
@@ -87,11 +86,11 @@ PodcastSettingsDialog::PodcastSettingsDialog(QWidget *p)
     updateCombo->addItem(tr("Every 15 minutes"), 15);
     updateCombo->addItem(tr("Every 30 minutes"), 30);
     updateCombo->addItem(tr("Every hour"), 60);
-    updateCombo->addItem(tr("Every 2 hours"), 2*60);
-    updateCombo->addItem(tr("Every 6 hours"), 6*60);
-    updateCombo->addItem(tr("Every 12 hours"), 12*60);
-    updateCombo->addItem(tr("Every day"), 24*60);
-    updateCombo->addItem(tr("Every week"), 7*24*60);
+    updateCombo->addItem(tr("Every 2 hours"), 2 * 60);
+    updateCombo->addItem(tr("Every 6 hours"), 6 * 60);
+    updateCombo->addItem(tr("Every 12 hours"), 12 * 60);
+    updateCombo->addItem(tr("Every day"), 24 * 60);
+    updateCombo->addItem(tr("Every week"), 7 * 24 * 60);
 
     autoDownloadCombo->addItem(tr("Don't automatically download episodes"), 0);
     autoDownloadCombo->addItem(tr("Latest episode"), 1);
@@ -103,52 +102,65 @@ PodcastSettingsDialog::PodcastSettingsDialog(QWidget *p)
     autoDownloadCombo->addItem(tr("Latest %1 episodes").arg(50), 50);
     autoDownloadCombo->addItem(tr("All episodes"), 1000);
 
-    origRssUpdate=Settings::self()->rssUpdate();
+    origRssUpdate = Settings::self()->rssUpdate();
     setIndex(updateCombo, origRssUpdate);
-    connect(updateCombo, SIGNAL(currentIndexChanged(int)), SLOT(checkSaveable()));
-    origPodcastDownloadPath=Utils::convertPathForDisplay(Settings::self()->podcastDownloadPath());
-    origPodcastAutoDownload=Settings::self()->podcastAutoDownloadLimit();
+    connect(updateCombo, SIGNAL(currentIndexChanged(int)),
+            SLOT(checkSaveable()));
+    origPodcastDownloadPath =
+        Utils::convertPathForDisplay(Settings::self()->podcastDownloadPath());
+    origPodcastAutoDownload = Settings::self()->podcastAutoDownloadLimit();
     setIndex(autoDownloadCombo, origPodcastAutoDownload);
     downloadPath->setText(origPodcastDownloadPath);
     connect(downloadPath, SIGNAL(textChanged(QString)), SLOT(checkSaveable()));
-    connect(autoDownloadCombo, SIGNAL(currentIndexChanged(int)), SLOT(checkSaveable()));
+    connect(autoDownloadCombo, SIGNAL(currentIndexChanged(int)),
+            SLOT(checkSaveable()));
     enableButton(Ok, false);
-    changed=0;
+    changed = 0;
 }
 
-void PodcastSettingsDialog::checkSaveable()
-{
-    enableButton(Ok, autoDownloadCombo->itemData(autoDownloadCombo->currentIndex()).toInt()!=origPodcastAutoDownload ||
-                     updateCombo->itemData(updateCombo->currentIndex()).toInt()!=origRssUpdate ||
-                     downloadPath->text().trimmed()!=origPodcastDownloadPath);
+void PodcastSettingsDialog::checkSaveable() {
+    enableButton(
+        Ok, autoDownloadCombo->itemData(autoDownloadCombo->currentIndex())
+                        .toInt() != origPodcastAutoDownload ||
+                updateCombo->itemData(updateCombo->currentIndex()).toInt() !=
+                    origRssUpdate ||
+                downloadPath->text().trimmed() != origPodcastDownloadPath);
 }
 
-void PodcastSettingsDialog::slotButtonClicked(int button)
-{
+void PodcastSettingsDialog::slotButtonClicked(int button) {
     switch (button) {
-    case Ok:
-        if (updateCombo->itemData(updateCombo->currentIndex()).toInt()!=origRssUpdate) {
-            changed|=RssUpdate;
-            Settings::self()->saveRssUpdate(updateCombo->itemData(updateCombo->currentIndex()).toInt());
-        }
-        if (downloadPath->text().trimmed()!=origPodcastDownloadPath) {
-            changed|=DownloadPath;
-            Settings::self()->savePodcastDownloadPath(Utils::convertPathFromDisplay(downloadPath->text().trimmed()));
-        }
-        if (autoDownloadCombo->itemData(autoDownloadCombo->currentIndex()).toInt()!=origPodcastAutoDownload) {
-            changed|=AutoDownload;
-            Settings::self()->savePodcastAutoDownloadLimit(autoDownloadCombo->itemData(autoDownloadCombo->currentIndex()).toInt());
-        }
-        accept();
-        break;
-    case Close:
-    case Cancel:
-        reject();
-        // Need to call this - if not, when dialog is closed by window X control, it is not deleted!!!!
-        Dialog::slotButtonClicked(button);
-        break;
-    default:
-        break;
+        case Ok:
+            if (updateCombo->itemData(updateCombo->currentIndex()).toInt() !=
+                origRssUpdate) {
+                changed |= RssUpdate;
+                Settings::self()->saveRssUpdate(
+                    updateCombo->itemData(updateCombo->currentIndex()).toInt());
+            }
+            if (downloadPath->text().trimmed() != origPodcastDownloadPath) {
+                changed |= DownloadPath;
+                Settings::self()->savePodcastDownloadPath(
+                    Utils::convertPathFromDisplay(
+                        downloadPath->text().trimmed()));
+            }
+            if (autoDownloadCombo->itemData(autoDownloadCombo->currentIndex())
+                    .toInt() != origPodcastAutoDownload) {
+                changed |= AutoDownload;
+                Settings::self()->savePodcastAutoDownloadLimit(
+                    autoDownloadCombo
+                        ->itemData(autoDownloadCombo->currentIndex())
+                        .toInt());
+            }
+            accept();
+            break;
+        case Close:
+        case Cancel:
+            reject();
+            // Need to call this - if not, when dialog is closed by window X
+            // control, it is not deleted!!!!
+            Dialog::slotButtonClicked(button);
+            break;
+        default:
+            break;
     }
 }
 

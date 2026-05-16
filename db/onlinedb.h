@@ -26,31 +26,30 @@
 
 #include "librarydb.h"
 
-class OnlineDb : public LibraryDb
-{
+class OnlineDb : public LibraryDb {
     Q_OBJECT
-public:
-
-    OnlineDb(const QString &serviceName, QObject *p=nullptr);
+   public:
+    OnlineDb(const QString& serviceName, QObject* p = nullptr);
     ~OnlineDb() override;
 
-    bool init(const QString &dbFile) override;
+    bool init(const QString& dbFile) override;
     void create();
-    QString getCoverUrl(const QString &artistId, const QString &albumId);
+    QString getCoverUrl(const QString& artistId, const QString& albumId);
     int getStats();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void startUpdate();
     void endUpdate();
-    void storeCoverUrl(const QString &artistId, const QString &albumId, const QString &url);
+    void storeCoverUrl(const QString& artistId, const QString& albumId,
+                       const QString& url);
     void insertStats(int numArtists);
 
-private:
+   private:
     void reset() override;
 
-private:
-    QSqlQuery *insertCoverQuery;
-    QSqlQuery *getCoverQuery;
+   private:
+    QSqlQuery* insertCoverQuery;
+    QSqlQuery* getCoverQuery;
 };
 
 #endif

@@ -24,21 +24,17 @@
 #include <ifaces/storagevolume.h>
 #include "udisksblock.h"
 
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
-
-class UDisksStorageVolume: public Block, virtual public Solid::Ifaces::StorageVolume
-{
+class UDisksStorageVolume : public Block,
+                            virtual public Solid::Ifaces::StorageVolume {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageVolume)
 
-public:
-    UDisksStorageVolume(UDisksDevice *device);
+   public:
+    UDisksStorageVolume(UDisksDevice* device);
     virtual ~UDisksStorageVolume();
 
     virtual QString encryptedContainerUdi() const;
@@ -50,8 +46,8 @@ public:
     virtual bool isIgnored() const;
 };
 
-}
-}
-}
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKSSTORAGEVOLUME_H
+#endif  // UDISKSSTORAGEVOLUME_H

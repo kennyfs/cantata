@@ -23,56 +23,41 @@
 
 using namespace Solid::Backends::Wmi;
 
-Volume::Volume(WmiDevice *device)
-    : Block(device)
-{
-    if(m_device->type() == Solid::DeviceInterface::StorageVolume)
-    {
-        m_logicalDisk = WmiDevice::win32LogicalDiskByDiskPartitionID(m_device->property("DeviceID").toString());
-    }else if(m_device->type() == Solid::DeviceInterface::OpticalDisc)
-    {
-        m_logicalDisk = WmiDevice::win32LogicalDiskByDriveLetter(m_device->property("Drive").toString());
+Volume::Volume(WmiDevice* device) : Block(device) {
+    if (m_device->type() == Solid::DeviceInterface::StorageVolume) {
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDiskPartitionID(
+            m_device->property("DeviceID").toString());
+    } else if (m_device->type() == Solid::DeviceInterface::OpticalDisc) {
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDriveLetter(
+            m_device->property("Drive").toString());
     }
 }
 
-Volume::~Volume()
-{
+Volume::~Volume() {}
 
+bool Volume::isIgnored() const { return m_logicalDisk.isNull(); }
+
+Solid::StorageVolume::UsageType Volume::usage() const {
+    return Solid::StorageVolume::FileSystem;  // TODO:???
 }
 
-
-bool Volume::isIgnored() const
-{
-    return m_logicalDisk.isNull();
-}
-
-Solid::StorageVolume::UsageType Volume::usage() const
-{
-        return Solid::StorageVolume::FileSystem;//TODO:???
-}
-
-QString Volume::fsType() const
-{
+QString Volume::fsType() const {
     return m_logicalDisk.getProperty("FileSystem").toString();
 }
 
-QString Volume::label() const
-{
+QString Volume::label() const {
     return m_logicalDisk.getProperty("VolumeName").toString();
 }
 
-QString Volume::uuid() const
-{
+QString Volume::uuid() const {
     return m_logicalDisk.getProperty("VolumeSerialNumber").toString();
 }
 
-qulonglong Volume::size() const
-{
+qulonglong Volume::size() const {
     return m_device->property("Size").toULongLong();
 }
 
-QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const
-{
+QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const {
     return this->uuid();
 }
 

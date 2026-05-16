@@ -23,73 +23,53 @@
 
 #include <QtCore/QStringList>
 
-
 using namespace Solid::Backends::Wmi;
 
-Cdrom::Cdrom(WmiDevice *device)
-    : Storage(device), m_ejectInProgress(false)
-{
-    connect(device, SIGNAL(conditionRaised(QString,QString)),
-             this, SLOT(slotCondition(QString,QString)));
+Cdrom::Cdrom(WmiDevice* device) : Storage(device), m_ejectInProgress(false) {
+    connect(device, SIGNAL(conditionRaised(QString, QString)), this,
+            SLOT(slotCondition(QString, QString)));
 }
 
-Cdrom::~Cdrom()
-{
+Cdrom::~Cdrom() {}
 
-}
-
-
-Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
-{
+Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const {
     Solid::OpticalDrive::MediumTypes supported;
 
     QString type = m_device->property("MediaType").toString();
-    if (type == "CdRomOnly" || type == "CD-ROM")
-    {
+    if (type == "CdRomOnly" || type == "CD-ROM") {
         supported |= Solid::OpticalDrive::Cdr;
-    }
-    else if (type == "CdRomWrite")
-    {
-        supported |= Solid::OpticalDrive::Cdr|Solid::OpticalDrive::Cdrw;
-    }
-    else if (type == "DVDRomOnly")
-    {
+    } else if (type == "CdRomWrite") {
+        supported |= Solid::OpticalDrive::Cdr | Solid::OpticalDrive::Cdrw;
+    } else if (type == "DVDRomOnly") {
         supported |= Solid::OpticalDrive::Dvd;
-    }
-    else if (type == "DVDRomWrite" || type == "DVD Writer")
-    {
-        supported |= Solid::OpticalDrive::Dvd|Solid::OpticalDrive::Dvdr|Solid::OpticalDrive::Dvdrw;
+    } else if (type == "DVDRomWrite" || type == "DVD Writer") {
+        supported |= Solid::OpticalDrive::Dvd | Solid::OpticalDrive::Dvdr |
+                     Solid::OpticalDrive::Dvdrw;
     }
 
     return supported;
 }
 
-int Cdrom::readSpeed() const
-{
+int Cdrom::readSpeed() const {
     return m_device->property("TransferRate").toInt();
 }
 
-int Cdrom::writeSpeed() const
-{
+int Cdrom::writeSpeed() const {
     return m_device->property("TransferRate").toInt();
 }
 
-QList<int> Cdrom::writeSpeeds() const
-{
+QList<int> Cdrom::writeSpeeds() const {
     QList<int> speeds;
     return speeds;
 }
 
-void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
-{
-    if (name == "EjectPressed")
-    {
+void Cdrom::slotCondition(const QString& name, const QString& /*reason */) {
+    if (name == "EjectPressed") {
         emit ejectPressed(m_device->udi());
     }
 }
 
-bool Cdrom::eject()
-{
+bool Cdrom::eject() {
     if (m_ejectInProgress) {
         return false;
     }
@@ -98,56 +78,54 @@ bool Cdrom::eject()
     return callWmiDriveEject();
 }
 
-bool Cdrom::callWmiDriveEject()
-{
-//    QString udi = m_device->udi();
-//    QString interface = "org.freedesktop.Wmi.Device.Storage";
+bool Cdrom::callWmiDriveEject() {
+    //    QString udi = m_device->udi();
+    //    QString interface = "org.freedesktop.Wmi.Device.Storage";
 
     // HACK: Eject doesn't work on cdrom drives when there's a mounted disc,
     // let's try to workaround this by calling a child volume...
     // if (m_device->property("storage.removable.media_available").toBool()) {
-        // QDBusInterface manager("org.freedesktop.Wmi",
-                               // "/org/freedesktop/Wmi/Manager",
-                               // "org.freedesktop.Wmi.Manager",
-                               // QDBusConnection::systemBus());
+    // QDBusInterface manager("org.freedesktop.Wmi",
+    // "/org/freedesktop/Wmi/Manager",
+    // "org.freedesktop.Wmi.Manager",
+    // QDBusConnection::systemBus());
 
-        // QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch", "info.parent", udi);
+    // QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch",
+    // "info.parent", udi);
 
-        // if (reply.isValid())
-        // {
-            // QStringList udis = reply;
-            // if (!udis.isEmpty()) {
-                // udi = udis[0];
-                // interface = "org.freedesktop.Wmi.Device.Volume";
-            // }
-        // }
+    // if (reply.isValid())
+    // {
+    // QStringList udis = reply;
+    // if (!udis.isEmpty()) {
+    // udi = udis[0];
+    // interface = "org.freedesktop.Wmi.Device.Volume";
+    // }
+    // }
     // }
 
     // QDBusConnection c = QDBusConnection::systemBus();
-    // QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      // interface, "Eject");
+    // QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi",
+    // udi, interface, "Eject");
 
     // msg << QStringList();
 
-
     // return c.callWithCallback(msg, this,
-                              // SLOT(slotDBusReply(QDBusMessage)),
-                              // SLOT(slotDBusError(QDBusError)));
+    // SLOT(slotDBusReply(QDBusMessage)),
+    // SLOT(slotDBusError(QDBusError)));
     return false;
 }
 
-void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
+void Solid::Backends::Wmi::Cdrom::slotProcessFinished(
+    int exitCode, QProcess::ExitStatus exitStatus) {
     Q_UNUSED(exitStatus);
     if (m_ejectInProgress) {
         m_ejectInProgress = false;
 
-        if (exitCode==0) {
+        if (exitCode == 0) {
             emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
             emit ejectDone(Solid::UnauthorizedOperation,
-                           m_process->readAllStandardError(),
-                           m_device->udi());
+                           m_process->readAllStandardError(), m_device->udi());
         }
     }
 

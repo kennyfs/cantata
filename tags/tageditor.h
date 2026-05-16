@@ -34,40 +34,43 @@
 class Device;
 #endif
 
-class TagEditor : public SongDialog, Ui::TagEditor
-{
+class TagEditor : public SongDialog, Ui::TagEditor {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    TagEditor(QWidget *parent, const QList<Song> &songs,
-              const QSet<QString> &existingArtists, const QSet<QString> &existingAlbumArtists, const QSet<QString> &existingComposers,
-              const QSet<QString> &existingAlbums, const QSet<QString> &existingGenres, const QString &udi);
+    TagEditor(QWidget* parent, const QList<Song>& songs,
+              const QSet<QString>& existingArtists,
+              const QSet<QString>& existingAlbumArtists,
+              const QSet<QString>& existingComposers,
+              const QSet<QString>& existingAlbums,
+              const QSet<QString>& existingGenres, const QString& udi);
     ~TagEditor() override;
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void update();
-    void getRating(const QString &f);
-    void setRating(const QString &f, quint8 r);
+    void getRating(const QString& f);
+    void setRating(const QString& f, quint8 r);
 
-private:
+   private:
     void enableOkButton();
     void setLabelStates();
     void setVariousHint();
-    void fillSong(Song &s, bool isAll, bool skipEmpty) const;
+    void fillSong(Song& s, bool isAll, bool skipEmpty) const;
     void slotButtonClicked(int button) override;
     void updateTrackName(int index, bool edited);
     void updateEditedStatus(int index);
     bool applyUpdates();
-    #ifdef ENABLE_DEVICES_SUPPORT
-    Device * getDevice(const QString &udi, QWidget *p);
-    #endif
-    void closeEvent(QCloseEvent *event) override;
+#ifdef ENABLE_DEVICES_SUPPORT
+    Device* getDevice(const QString& udi, QWidget* p);
+#endif
+    void closeEvent(QCloseEvent* event) override;
     void controlInitialActionsState();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void readComments();
     void applyVa();
     void revertVa();
@@ -77,17 +80,17 @@ private Q_SLOTS:
     void adjustTrackNumbers();
     void readRatings();
     void writeRatings();
-    void updateEdited(bool isFromAll=false);
-    void setSong(const Song &s);
+    void updateEdited(bool isFromAll = false);
+    void setSong(const Song& s);
     void setIndex(int idx);
-    void rating(const QString &f, quint8 r);
+    void rating(const QString& f, quint8 r);
     void checkRating();
 
-private:
+   private:
     QString baseDir;
-    #ifdef ENABLE_DEVICES_SUPPORT
+#ifdef ENABLE_DEVICES_SUPPORT
     QString deviceUdi;
-    #endif
+#endif
     QList<Song> original;
     QList<Song> edited;
     int currentSongIndex;
@@ -105,8 +108,8 @@ private:
     bool saving;
     bool composerSupport;
     bool commentSupport;
-    QAction *readRatingsAct;
-    QAction *writeRatingsAct;
+    QAction* readRatingsAct;
+    QAction* writeRatingsAct;
 };
 
 #endif

@@ -35,62 +35,56 @@
 
 class QTimer;
 
-class DynamicPlaylists : public RulesPlaylists
-{
+class DynamicPlaylists : public RulesPlaylists {
     Q_OBJECT
 
-public:
-    enum Command {
-        Unknown,
-        Ping,
-        List,
-        Status,
-        Save,
-        Del,
-        SetActive,
-        Control
-    };
+   public:
+    enum Command { Unknown, Ping, List, Status, Save, Del, SetActive, Control };
 
-    static Command toCommand(const QString &cmd);
+    static Command toCommand(const QString& cmd);
     static QString toString(Command cmd);
     static void enableDebug();
 
-    static DynamicPlaylists * self();
+    static DynamicPlaylists* self();
 
     DynamicPlaylists();
-    ~DynamicPlaylists() override { }
+    ~DynamicPlaylists() override {}
 
     QString name() const override;
     QString title() const override;
     QString descr() const override;
     bool isDynamic() const override { return true; }
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
     bool isRemote() const override { return usingRemote; }
-    bool saveRemote(const QString &string, const Entry &e) override;
-    void del(const QString &name) override;
-    void start(const QString &name);
-    void stop(bool sendClear=false) override;
-    void toggle(const QString &name);
+    bool saveRemote(const QString& string, const Entry& e) override;
+    void del(const QString& name) override;
+    void start(const QString& name);
+    void stop(bool sendClear = false) override;
+    void toggle(const QString& name);
     bool isRunning();
-    void helperMessage(const QString &message) {  Q_UNUSED(message) checkHelper(); }
-    Action * startAct() const { return startAction; }
-    Action * stopAct() const { return stopAction; }
+    void helperMessage(const QString& message) {
+        Q_UNUSED(message)
+        checkHelper();
+    }
+    Action* startAct() const { return startAction; }
+    Action* stopAct() const { return stopAction; }
     void enableRemotePolling(bool e);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void running(bool status);
-    void error(const QString &str);
+    void error(const QString& str);
 
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void clear();
-    void remoteMessage(const QStringList &args);
+    void remoteMessage(const QStringList& args);
 
     // These are as the result of asynchronous HTTP calls
     void saved(bool s);
     void loadingList();
     void loadedList();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void checkHelper();
     void checkIfRemoteIsRunning();
     void updateRemoteStatus();
@@ -98,21 +92,21 @@ private Q_SLOTS:
     void remoteDynamicSupported(bool s);
     void parseStatus(QStringList response);
 
-private:
+   private:
     void pollRemoteHelper();
     int getPid() const;
     bool controlApp(bool isStart);
-    bool sendCommand(Command cmd, const QStringList &args=QStringList());
-    void parseRemote(const QStringList &response);
+    bool sendCommand(Command cmd, const QStringList& args = QStringList());
+    void parseRemote(const QStringList& response);
 
-private:
-    QTimer *localTimer;
-    Action *startAction;
-    Action *stopAction;
+   private:
+    QTimer* localTimer;
+    Action* startAction;
+    Action* stopAction;
 
     // For remote dynamic servers...
     bool usingRemote;
-    QTimer *remoteTimer;
+    QTimer* remoteTimer;
     bool remotePollingEnabled;
     int statusTime;
     QString lastState;

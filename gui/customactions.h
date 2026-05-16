@@ -28,34 +28,36 @@
 
 class MainWindow;
 
-class CustomActions : public Action
-{
+class CustomActions : public Action {
     Q_OBJECT
-public:
-    struct Command
-    {
-        Command(const QString &n=QString(), const QString &c=QString(), Action *a=nullptr) : name(n.trimmed()), cmd(c.trimmed()), act(a) { }
-        bool operator<(const Command &o) const;
-        bool operator==(const Command &o) const { return name==o.name && cmd==o.cmd; }
-        bool operator!=(const Command &o) const { return !(*this==o); }
+   public:
+    struct Command {
+        Command(const QString& n = QString(), const QString& c = QString(),
+                Action* a = nullptr)
+            : name(n.trimmed()), cmd(c.trimmed()), act(a) {}
+        bool operator<(const Command& o) const;
+        bool operator==(const Command& o) const {
+            return name == o.name && cmd == o.cmd;
+        }
+        bool operator!=(const Command& o) const { return !(*this == o); }
         QString name;
         QString cmd;
-        Action *act;
+        Action* act;
     };
 
     static void enableDebug();
-    static CustomActions * self();
+    static CustomActions* self();
     CustomActions();
 
     void set(QList<Command> cmds);
-    const QList<Command> & commandList() const { return commands; }
-    void setMainWindow(MainWindow *mw) { mainWindow=mw; }
+    const QList<Command>& commandList() const { return commands; }
+    void setMainWindow(MainWindow* mw) { mainWindow = mw; }
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void doAction();
 
-private:
-    MainWindow *mainWindow;
+   private:
+    MainWindow* mainWindow;
     QList<Command> commands;
 };
 

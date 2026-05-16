@@ -23,42 +23,40 @@
 #include <QSocketNotifier>
 #include <QTimer>
 
-class AvahiTimeout: public QObject
-{
+class AvahiTimeout : public QObject {
     Q_OBJECT
 
-public:
-    AvahiTimeout(const struct timeval *tv, AvahiTimeoutCallback cb, void *ud);
-    void updateTimeout(const struct timeval *tv);
+   public:
+    AvahiTimeout(const struct timeval* tv, AvahiTimeoutCallback cb, void* ud);
+    void updateTimeout(const struct timeval* tv);
 
-private:
+   private:
     QTimer timer;
     AvahiTimeoutCallback callback;
-    void *userData;
+    void* userData;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void timeout();
 };
 
-class AvahiWatch: public QObject
-{
+class AvahiWatch : public QObject {
     Q_OBJECT
 
-public:
-    AvahiWatch(int f, AvahiWatchEvent ev, AvahiWatchCallback cb, void *ud);
+   public:
+    AvahiWatch(int f, AvahiWatchEvent ev, AvahiWatchCallback cb, void* ud);
     void setEventType(AvahiWatchEvent event);
     AvahiWatchEvent previousEvent();
 
-private:
+   private:
     QScopedPointer<QSocketNotifier> notifier;
     AvahiWatchCallback callback;
     AvahiWatchEvent event;
     AvahiWatchEvent prevEvent;
-    void *userData;
+    void* userData;
     int fd;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void activated(int fd);
 };
 
-#endif //AVAHIPOLL_H
+#endif  // AVAHIPOLL_H

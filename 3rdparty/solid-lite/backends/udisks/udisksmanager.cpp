@@ -32,21 +32,17 @@
 using namespace Solid::Backends::UDisks;
 using namespace Solid::Backends::Shared;
 
-UDisksManager::UDisksManager(QObject *parent)
+UDisksManager::UDisksManager(QObject* parent)
     : Solid::Ifaces::DeviceManager(parent),
-      m_manager(UD_DBUS_SERVICE,
-                UD_DBUS_PATH,
-                UD_DBUS_INTERFACE_DISKS,
-                QDBusConnection::systemBus())
-{
-    m_supportedInterfaces
-            << Solid::DeviceInterface::GenericInterface
-            << Solid::DeviceInterface::Block
-            << Solid::DeviceInterface::StorageAccess
-            << Solid::DeviceInterface::StorageDrive
-            << Solid::DeviceInterface::OpticalDrive
-            << Solid::DeviceInterface::OpticalDisc
-            << Solid::DeviceInterface::StorageVolume;
+      m_manager(UD_DBUS_SERVICE, UD_DBUS_PATH, UD_DBUS_INTERFACE_DISKS,
+                QDBusConnection::systemBus()) {
+    m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                          << Solid::DeviceInterface::Block
+                          << Solid::DeviceInterface::StorageAccess
+                          << Solid::DeviceInterface::StorageDrive
+                          << Solid::DeviceInterface::OpticalDrive
+                          << Solid::DeviceInterface::OpticalDisc
+                          << Solid::DeviceInterface::StorageVolume;
 
     qDBusRegisterMetaType<QList<QDBusObjectPath> >();
     qDBusRegisterMetaType<QVariantMap>();
@@ -54,41 +50,40 @@ UDisksManager::UDisksManager(QObject *parent)
     bool serviceFound = m_manager.isValid();
     if (!serviceFound) {
         // find out whether it will be activated automatically
-        QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.DBus",
-                                                              "/org/freedesktop/DBus",
-                                                              "org.freedesktop.DBus",
-                                                              "ListActivatableNames");
+        QDBusMessage message = QDBusMessage::createMethodCall(
+            "org.freedesktop.DBus", "/org/freedesktop/DBus",
+            "org.freedesktop.DBus", "ListActivatableNames");
 
-        QDBusReply<QStringList> reply = QDBusConnection::systemBus().call(message);
+        QDBusReply<QStringList> reply =
+            QDBusConnection::systemBus().call(message);
         if (reply.isValid() && reply.value().contains(UD_DBUS_SERVICE)) {
-            QDBusConnection::systemBus().interface()->startService(UD_DBUS_SERVICE);
+            QDBusConnection::systemBus().interface()->startService(
+                UD_DBUS_SERVICE);
             serviceFound = true;
         }
     }
 
     if (serviceFound) {
-        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-                this, SLOT(slotDeviceAdded(QDBusObjectPath)));
-        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-                this, SLOT(slotDeviceRemoved(QDBusObjectPath)));
-        connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)),
-                this, SLOT(slotDeviceChanged(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
+                SLOT(slotDeviceAdded(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
+                SLOT(slotDeviceRemoved(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceChanged(QDBusObjectPath)), this,
+                SLOT(slotDeviceChanged(QDBusObjectPath)));
     }
 }
 
-UDisksManager::~UDisksManager()
-{
+UDisksManager::~UDisksManager() {}
 
-}
-
-QObject* UDisksManager::createDevice(const QString& udi)
-{
-    if (udi==udiPrefix()) {
-        RootDevice *root = new RootDevice(udi);
+QObject* UDisksManager::createDevice(const QString& udi) {
+    if (udi == udiPrefix()) {
+        RootDevice* root = new RootDevice(udi);
 
         root->setProduct(tr("Storage"));
         root->setDescription(tr("Storage devices"));
-        root->setIcon("server-database"); // Obviously wasn't meant for that, but maps nicely in oxygen icon set :-p
+        root->setIcon(
+            "server-database");  // Obviously wasn't meant for that, but maps
+                                 // nicely in oxygen icon set :-p
 
         return root;
 
@@ -100,34 +95,27 @@ QObject* UDisksManager::createDevice(const QString& udi)
     }
 }
 
-QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInterface::Type type)
-{
+QStringList UDisksManager::devicesFromQuery(const QString& parentUdi,
+                                            Solid::DeviceInterface::Type type) {
     QStringList result;
 
-    if (!parentUdi.isEmpty())
-    {
-        foreach (const QString &udi, deviceCache())
-        {
-            if (udi==udiPrefix())
-                continue;
+    if (!parentUdi.isEmpty()) {
+        foreach (const QString& udi, deviceCache()) {
+            if (udi == udiPrefix()) continue;
 
             UDisksDevice device(udi);
-            if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
+            if (device.queryDeviceInterface(type) &&
+                device.parentUdi() == parentUdi)
                 result << udi;
         }
 
         return result;
-    }
-    else if (type != Solid::DeviceInterface::Unknown)
-    {
-        foreach (const QString &udi, deviceCache())
-        {
-            if (udi==udiPrefix())
-                continue;
+    } else if (type != Solid::DeviceInterface::Unknown) {
+        foreach (const QString& udi, deviceCache()) {
+            if (udi == udiPrefix()) continue;
 
             UDisksDevice device(udi);
-            if (device.queryDeviceInterface(type))
-                result << udi;
+            if (device.queryDeviceInterface(type)) result << udi;
         }
 
         return result;
@@ -136,21 +124,21 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     return deviceCache();
 }
 
-QStringList UDisksManager::allDevices()
-{
+QStringList UDisksManager::allDevices() {
     m_knownDrivesWithMedia.clear();
     m_deviceCache.clear();
     m_deviceCache << udiPrefix();
 
-    foreach(const QString &udi, allDevicesInternal())
-    {
+    foreach (const QString& udi, allDevicesInternal()) {
         m_deviceCache.append(udi);
 
         UDisksDevice device(udi);
-        if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) // forge a special (separate) device for optical discs
+        if (device.queryDeviceInterface(
+                Solid::DeviceInterface::OpticalDrive))  // forge a special
+                                                        // (separate) device for
+                                                        // optical discs
         {
-            if (device.prop("DeviceIsOpticalDisc").toBool())
-            {
+            if (device.prop("DeviceIsOpticalDisc").toBool()) {
                 if (!m_knownDrivesWithMedia.contains(udi))
                     m_knownDrivesWithMedia.append(udi);
                 m_deviceCache.append(udi + ":media");
@@ -161,9 +149,9 @@ QStringList UDisksManager::allDevices()
     return m_deviceCache;
 }
 
-QStringList UDisksManager::allDevicesInternal()
-{
-    QDBusReply<QList<QDBusObjectPath> > reply = m_manager.call("EnumerateDevices");
+QStringList UDisksManager::allDevicesInternal() {
+    QDBusReply<QList<QDBusObjectPath> > reply =
+        m_manager.call("EnumerateDevices");
 
     if (!reply.isValid()) {
         qWarning() << Q_FUNC_INFO << " error: " << reply.error().name();
@@ -171,25 +159,20 @@ QStringList UDisksManager::allDevicesInternal()
     }
 
     QStringList retList;
-    foreach(const QDBusObjectPath &path, reply.value()) {
+    foreach (const QDBusObjectPath& path, reply.value()) {
         retList << path.path();
     }
 
     return retList;
 }
 
-QSet< Solid::DeviceInterface::Type > UDisksManager::supportedInterfaces() const
-{
+QSet<Solid::DeviceInterface::Type> UDisksManager::supportedInterfaces() const {
     return m_supportedInterfaces;
 }
 
-QString UDisksManager::udiPrefix() const
-{
-    return UD_UDI_DISKS_PREFIX;
-}
+QString UDisksManager::udiPrefix() const { return UD_UDI_DISKS_PREFIX; }
 
-void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
-{
+void UDisksManager::slotDeviceAdded(const QDBusObjectPath& opath) {
     const QString udi = opath.path();
 
     if (!m_deviceCache.contains(udi)) {
@@ -197,17 +180,17 @@ void UDisksManager::slotDeviceAdded(const QDBusObjectPath &opath)
     }
 
     UDisksDevice device(udi);
-    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
-            && !device.prop("DeviceIsMediaAvailable").toBool()
-            && !m_dirtyDevices.contains(udi))
+    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive) &&
+        !device.prop("DeviceIsMediaAvailable").toBool() &&
+        !m_dirtyDevices.contains(udi))
         m_dirtyDevices.append(udi);
 
     emit deviceAdded(udi);
-    slotDeviceChanged(opath);  // case: hotswap event (optical drive with media inside)
+    slotDeviceChanged(
+        opath);  // case: hotswap event (optical drive with media inside)
 }
 
-void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
-{
+void UDisksManager::slotDeviceRemoved(const QDBusObjectPath& opath) {
     const QString udi = opath.path();
 
     // case: hotswap event (optical drive with media inside)
@@ -217,22 +200,19 @@ void UDisksManager::slotDeviceRemoved(const QDBusObjectPath &opath)
         emit deviceRemoved(udi + ":media");
     }
 
-    if (m_dirtyDevices.contains(udi))
-        m_dirtyDevices.removeAll(udi);
+    if (m_dirtyDevices.contains(udi)) m_dirtyDevices.removeAll(udi);
 
     emit deviceRemoved(udi);
     m_deviceCache.removeAll(opath.path());
 }
 
-void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
-{
+void UDisksManager::slotDeviceChanged(const QDBusObjectPath& opath) {
     const QString udi = opath.path();
     UDisksDevice device(udi);
 
-    if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
-    {
-        if (!m_knownDrivesWithMedia.contains(udi) && device.prop("DeviceIsOpticalDisc").toBool())
-        {
+    if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) {
+        if (!m_knownDrivesWithMedia.contains(udi) &&
+            device.prop("DeviceIsOpticalDisc").toBool()) {
             m_knownDrivesWithMedia.append(udi);
             if (!m_deviceCache.isEmpty()) {
                 m_deviceCache.append(udi + ":media");
@@ -240,31 +220,27 @@ void UDisksManager::slotDeviceChanged(const QDBusObjectPath &opath)
             emit deviceAdded(udi + ":media");
         }
 
-        if (m_knownDrivesWithMedia.contains(udi) && !device.prop("DeviceIsOpticalDisc").toBool())
-        {
+        if (m_knownDrivesWithMedia.contains(udi) &&
+            !device.prop("DeviceIsOpticalDisc").toBool()) {
             m_knownDrivesWithMedia.removeAll(udi);
             m_deviceCache.removeAll(udi + ":media");
             emit deviceRemoved(udi + ":media");
         }
     }
 
-    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive)
-            && device.prop("DeviceIsMediaAvailable").toBool()
-            && m_dirtyDevices.contains(udi))
-    {
-        //qDebug() << "dirty device added:" << udi;
+    if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive) &&
+        device.prop("DeviceIsMediaAvailable").toBool() &&
+        m_dirtyDevices.contains(udi)) {
+        // qDebug() << "dirty device added:" << udi;
         emit deviceAdded(udi);
         m_dirtyDevices.removeAll(udi);
     }
 }
 
-const QStringList &UDisksManager::deviceCache()
-{
-    if (m_deviceCache.isEmpty())
-        allDevices();
+const QStringList& UDisksManager::deviceCache() {
+    if (m_deviceCache.isEmpty()) allDevices();
 
     return m_deviceCache;
 }
-
 
 #include "backends/udisks/moc_udisksmanager.cpp"

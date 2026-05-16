@@ -25,27 +25,20 @@
 
 namespace UdevQt {
 
-DevicePrivate::DevicePrivate(struct udev_device *udev_, bool ref)
-    : udev(udev_)
-{
-    if (ref)
-        udev_device_ref(udev);
+DevicePrivate::DevicePrivate(struct udev_device* udev_, bool ref)
+    : udev(udev_) {
+    if (ref) udev_device_ref(udev);
 }
 
-DevicePrivate::~DevicePrivate()
-{
-    udev_device_unref(udev);
-}
+DevicePrivate::~DevicePrivate() { udev_device_unref(udev); }
 
-DevicePrivate &DevicePrivate::operator=(const DevicePrivate &other)
-{
+DevicePrivate& DevicePrivate::operator=(const DevicePrivate& other) {
     udev_device_unref(udev);
     udev = udev_device_ref(other.udev);
     return *this;
 }
 
-QString DevicePrivate::decodePropertyValue(const QByteArray &encoded) const
-{
+QString DevicePrivate::decodePropertyValue(const QByteArray& encoded) const {
     QByteArray decoded;
     const int len = encoded.length();
 
@@ -61,8 +54,7 @@ QString DevicePrivate::decodePropertyValue(const QByteArray &encoded) const
                 QByteArray hex = encoded.mid(i + 2, 2);
                 bool ok;
                 int code = hex.toInt(&ok, 16);
-                if (ok)
-                    decoded.append(char(code));
+                if (ok) decoded.append(char(code));
                 i += 3;
                 continue;
             }
@@ -73,13 +65,9 @@ QString DevicePrivate::decodePropertyValue(const QByteArray &encoded) const
     return QString::fromUtf8(decoded);
 }
 
-Device::Device()
-    : d(nullptr)
-{
-}
+Device::Device() : d(nullptr) {}
 
-Device::Device(const Device &other)
-{
+Device::Device(const Device& other) {
     if (other.d) {
         d = new DevicePrivate(other.d->udev);
     } else {
@@ -87,20 +75,12 @@ Device::Device(const Device &other)
     }
 }
 
-Device::Device(DevicePrivate *devPrivate)
-    : d(devPrivate)
-{
-}
+Device::Device(DevicePrivate* devPrivate) : d(devPrivate) {}
 
-Device::~Device()
-{
-    delete d;
-}
+Device::~Device() { delete d; }
 
-Device &Device::operator=(const Device &other)
-{
-    if (this == &other)
-        return *this;
+Device& Device::operator=(const Device& other) {
+    if (this == &other) return *this;
     if (!other.d) {
         delete d;
         d = nullptr;
@@ -115,148 +95,118 @@ Device &Device::operator=(const Device &other)
     return *this;
 }
 
-bool Device::isValid() const
-{
-    return (d != nullptr);
-}
+bool Device::isValid() const { return (d != nullptr); }
 
-QString Device::subsystem() const
-{
-    if (!d)
-        return QString();
+QString Device::subsystem() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_subsystem(d->udev));
 }
 
-QString Device::devType() const
-{
-    if (!d)
-        return QString();
+QString Device::devType() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_devtype(d->udev));
 }
 
-QString Device::name() const
-{
-    if (!d)
-        return QString();
+QString Device::name() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_sysname(d->udev));
 }
 
-QString Device::sysfsPath() const
-{
-    if (!d)
-        return QString();
+QString Device::sysfsPath() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_syspath(d->udev));
 }
 
-int Device::sysfsNumber() const
-{
-    if (!d)
-        return -1;
+int Device::sysfsNumber() const {
+    if (!d) return -1;
 
     QString value = QString::fromLatin1(udev_device_get_sysnum(d->udev));
     bool success = false;
     int number = value.toInt(&success);
-    if (success)
-        return number;
+    if (success) return number;
     return -1;
 }
 
-QString Device::driver() const
-{
-    if (!d)
-        return QString();
+QString Device::driver() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_driver(d->udev));
 }
 
-QString Device::primaryDeviceFile() const
-{
-    if (!d)
-        return QString();
+QString Device::primaryDeviceFile() const {
+    if (!d) return QString();
 
     return QString::fromLatin1(udev_device_get_devnode(d->udev));
 }
 
-QStringList Device::alternateDeviceSymlinks() const
-{
-    if (!d)
-        return QStringList();
+QStringList Device::alternateDeviceSymlinks() const {
+    if (!d) return QStringList();
 
     return listFromListEntry(udev_device_get_devlinks_list_entry(d->udev));
 }
 
-QStringList Device::deviceProperties() const
-{
-    if (!d)
-        return QStringList();
+QStringList Device::deviceProperties() const {
+    if (!d) return QStringList();
 
     return listFromListEntry(udev_device_get_properties_list_entry(d->udev));
 }
 
-Device Device::parent() const
-{
-    if (!d)
-        return Device();
+Device Device::parent() const {
+    if (!d) return Device();
 
-    struct udev_device *p = udev_device_get_parent(d->udev);
+    struct udev_device* p = udev_device_get_parent(d->udev);
 
-    if (!p)
-        return Device();
+    if (!p) return Device();
 
     return Device(new DevicePrivate(p));
 }
 
-QVariant Device::deviceProperty(const QString &name) const
-{
-    if (!d)
-        return QVariant();
+QVariant Device::deviceProperty(const QString& name) const {
+    if (!d) return QVariant();
 
     QByteArray propName = name.toLatin1();
-    QString propValue = QString::fromLatin1(udev_device_get_property_value(d->udev, propName.constData()));
+    QString propValue = QString::fromLatin1(
+        udev_device_get_property_value(d->udev, propName.constData()));
     if (!propValue.isEmpty()) {
         return QVariant::fromValue(propValue);
     }
     return QVariant();
 }
 
-QString Device::decodedDeviceProperty(const QString &name) const
-{
-    if (!d)
-        return QString();
+QString Device::decodedDeviceProperty(const QString& name) const {
+    if (!d) return QString();
 
     QByteArray propName = name.toLatin1();
-    return d->decodePropertyValue(udev_device_get_property_value(d->udev, propName.constData()));
+    return d->decodePropertyValue(
+        udev_device_get_property_value(d->udev, propName.constData()));
 }
 
-QVariant Device::sysfsProperty(const QString &name) const
-{
-    if (!d)
-        return QVariant();
+QVariant Device::sysfsProperty(const QString& name) const {
+    if (!d) return QVariant();
 
     QByteArray propName = name.toLatin1();
-    QString propValue = QString::fromLatin1(udev_device_get_sysattr_value(d->udev, propName.constData()));
+    QString propValue = QString::fromLatin1(
+        udev_device_get_sysattr_value(d->udev, propName.constData()));
     if (!propValue.isEmpty()) {
         return QVariant::fromValue(propValue);
     }
     return QVariant();
 }
 
-Device Device::ancestorOfType(const QString &subsys, const QString &devtype) const
-{
-    if (!d)
-        return Device();
+Device Device::ancestorOfType(const QString& subsys,
+                              const QString& devtype) const {
+    if (!d) return Device();
 
-    struct udev_device *p = udev_device_get_parent_with_subsystem_devtype(d->udev,
-                                subsys.toLatin1().constData(), devtype.toLatin1().constData());
+    struct udev_device* p = udev_device_get_parent_with_subsystem_devtype(
+        d->udev, subsys.toLatin1().constData(), devtype.toLatin1().constData());
 
-    if (!p)
-        return Device();
+    if (!p) return Device();
 
     return Device(new DevicePrivate(p));
 }
 
-}
+}  // namespace UdevQt

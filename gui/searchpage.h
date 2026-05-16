@@ -31,56 +31,55 @@
 class Action;
 class SqueezedTextLabel;
 
-class SearchPage : public SinglePageWidget
-{
+class SearchPage : public SinglePageWidget {
     Q_OBJECT
 
-public:
-    SearchPage(QWidget *p);
+   public:
+    SearchPage(QWidget* p);
     ~SearchPage() override;
 
     void refresh() override;
     void clear();
     void setView(int mode) override;
-    void showEvent(QShowEvent *e) override;
-    QStringList selectedFiles(bool allowPlaylists=false) const override;
-    QList<Song> selectedSongs(bool allowPlaylists=false) const override;
-    #ifdef ENABLE_DEVICES_SUPPORT
-    void addSelectionToDevice(const QString &udi) override;
+    void showEvent(QShowEvent* e) override;
+    QStringList selectedFiles(bool allowPlaylists = false) const override;
+    QList<Song> selectedSongs(bool allowPlaylists = false) const override;
+#ifdef ENABLE_DEVICES_SUPPORT
+    void addSelectionToDevice(const QString& udi) override;
     void deleteSongs() override;
-    #endif
-    void setSearchCategory(const QString &cat);
+#endif
+    void setSearchCategory(const QString& cat);
 
-Q_SIGNALS:
-    void addToDevice(const QString &from, const QString &to, const QList<Song> &songs);
-    void deleteSongs(const QString &from, const QList<Song> &songs);
-    void locate(const QList<Song> &songs);
+   Q_SIGNALS:
+    void addToDevice(const QString& from, const QString& to,
+                     const QList<Song>& songs);
+    void deleteSongs(const QString& from, const QList<Song>& songs);
+    void locate(const QList<Song>& songs);
 
-public Q_SLOTS:   
-    void itemDoubleClicked(const QModelIndex &);
+   public Q_SLOTS:
+    void itemDoubleClicked(const QModelIndex&);
     void setSearchCategories();
     void statsUpdated(int songs, quint32 time);
     void locateSongs();
 
-private:
+   private:
     void doSearch() override;
     void controlActions() override;
 
-private:
-    enum State
-    {
-        State_ComposerSupported  = 0x01,
-        State_CommmentSupported  = 0x02,
+   private:
+    enum State {
+        State_ComposerSupported = 0x01,
+        State_CommmentSupported = 0x02,
         State_PerformerSupported = 0x04,
-        State_ModifiedSupported  = 0x08,
-        State_OrigDateSupported  = 0x10
+        State_ModifiedSupported = 0x08,
+        State_OrigDateSupported = 0x10
     };
 
     int state;
     MpdSearchModel model;
     SearchProxyModel proxy;
-    Action *locateAction;
-    SqueezedTextLabel *statsLabel;
+    Action* locateAction;
+    SqueezedTextLabel* statsLabel;
 };
 
 #endif

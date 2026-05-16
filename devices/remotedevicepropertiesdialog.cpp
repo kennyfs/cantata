@@ -31,20 +31,18 @@
 #include <QStyle>
 #include <QIcon>
 
-RemoteDevicePropertiesDialog::RemoteDevicePropertiesDialog(QWidget *parent)
-    : Dialog(parent)
-    , isCreate(false)
-{
-    setButtons(Ok|Cancel);
+RemoteDevicePropertiesDialog::RemoteDevicePropertiesDialog(QWidget* parent)
+    : Dialog(parent), isCreate(false) {
+    setButtons(Ok | Cancel);
     setCaption(tr("Device Properties"));
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::WindowModal);
-    tab=new QTabWidget(this);
-    remoteProp=new RemoteDevicePropertiesWidget(tab);
-    devProp=new DevicePropertiesWidget(tab);
-    int margin=style()->pixelMetric(QStyle::PM_LayoutLeftMargin);
-    if (margin<1) {
-        margin=6;
+    tab = new QTabWidget(this);
+    remoteProp = new RemoteDevicePropertiesWidget(tab);
+    devProp = new DevicePropertiesWidget(tab);
+    int margin = style()->pixelMetric(QStyle::PM_LayoutLeftMargin);
+    if (margin < 1) {
+        margin = 6;
     }
     devProp->layout()->setContentsMargins(margin, margin, margin, margin);
     tab->addTab(remoteProp, tr("Connection"));
@@ -52,9 +50,11 @@ RemoteDevicePropertiesDialog::RemoteDevicePropertiesDialog(QWidget *parent)
     setMainWidget(tab);
 }
 
-void RemoteDevicePropertiesDialog::show(const DeviceOptions &opts, const RemoteFsDevice::Details &det, int props, int disabledProps, bool create, bool isConnected)
-{
-    isCreate=create;
+void RemoteDevicePropertiesDialog::show(const DeviceOptions& opts,
+                                        const RemoteFsDevice::Details& det,
+                                        int props, int disabledProps,
+                                        bool create, bool isConnected) {
+    isCreate = create;
     if (isCreate) {
         setCaption(tr("Add Device"));
     }
@@ -66,7 +66,8 @@ void RemoteDevicePropertiesDialog::show(const DeviceOptions &opts, const RemoteF
     }
     devProp->setEnabled(!create && isConnected);
     devProp->showRemoteConnectionNote(!isConnected);
-    devProp->update(QString(), opts, QList<DeviceStorage>(), props, disabledProps);
+    devProp->update(QString(), opts, QList<DeviceStorage>(), props,
+                    disabledProps);
     remoteProp->update(det, create, isConnected);
     connect(devProp, SIGNAL(updated()), SLOT(enableOkButton()));
     connect(remoteProp, SIGNAL(updated()), SLOT(enableOkButton()));
@@ -74,33 +75,39 @@ void RemoteDevicePropertiesDialog::show(const DeviceOptions &opts, const RemoteF
     enableButtonOk(false);
 }
 
-void RemoteDevicePropertiesDialog::enableOkButton()
-{
-    bool useDevProp=devProp->isEnabled();
-    enableButtonOk(remoteProp->isSaveable() && (!useDevProp || devProp->isSaveable()) &&
-                   (isCreate || remoteProp->isModified() || !useDevProp || devProp->isModified()));
+void RemoteDevicePropertiesDialog::enableOkButton() {
+    bool useDevProp = devProp->isEnabled();
+    enableButtonOk(remoteProp->isSaveable() &&
+                   (!useDevProp || devProp->isSaveable()) &&
+                   (isCreate || remoteProp->isModified() || !useDevProp ||
+                    devProp->isModified()));
 }
 
-void RemoteDevicePropertiesDialog::slotButtonClicked(int button)
-{
+void RemoteDevicePropertiesDialog::slotButtonClicked(int button) {
     switch (button) {
-    case Ok: {
-        RemoteFsDevice::Details d=remoteProp->details();
-        if (d.name!=remoteProp->origDetails().name && DevicesModel::self()->device(RemoteFsDevice::createUdi(d.name))) {
-            MessageBox::error(this, tr("A remote device named '%1' already exists!\n\nPlease choose a different name.").arg(d.name));
-        } else {
-            emit updatedSettings(devProp->settings(), remoteProp->details());
-            accept();
+        case Ok: {
+            RemoteFsDevice::Details d = remoteProp->details();
+            if (d.name != remoteProp->origDetails().name &&
+                DevicesModel::self()->device(
+                    RemoteFsDevice::createUdi(d.name))) {
+                MessageBox::error(
+                    this, tr("A remote device named '%1' already "
+                             "exists!\n\nPlease choose a different name.")
+                              .arg(d.name));
+            } else {
+                emit updatedSettings(devProp->settings(),
+                                     remoteProp->details());
+                accept();
+            }
+            break;
         }
-        break;
-    }
-    case Cancel:
-        emit cancelled();
-        reject();
-        break;
-    default:
-        Dialog::slotButtonClicked(button);
-        break;
+        case Cancel:
+            emit cancelled();
+            reject();
+            break;
+        default:
+            Dialog::slotButtonClicked(button);
+            break;
     }
 }
 

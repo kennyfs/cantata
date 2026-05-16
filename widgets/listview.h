@@ -31,44 +31,54 @@
 class QIcon;
 class QMenu;
 
-class ListView : public QListView
-{
+class ListView : public QListView {
     Q_OBJECT
 
-public:
-    ListView(QWidget *parent=nullptr);
+   public:
+    ListView(QWidget* parent = nullptr);
     ~ListView() override;
 
-    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
+    void selectionChanged(const QItemSelection& selected,
+                          const QItemSelection& deselected) override;
     bool haveSelectedItems() const;
     bool haveUnSelectedItems() const;
-    void startDrag(Qt::DropActions supportedActions) override { TreeView::drag(supportedActions, this, selectedIndexes()); }
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    QModelIndexList selectedIndexes() const override { return selectedIndexes(true); }
+    void startDrag(Qt::DropActions supportedActions) override {
+        TreeView::drag(supportedActions, this, selectedIndexes());
+    }
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    QModelIndexList selectedIndexes() const override {
+        return selectedIndexes(true);
+    }
     QModelIndexList selectedIndexes(bool sorted) const;
-    void setModel(QAbstractItemModel *m) override;
-    void addDefaultAction(QAction *act);
-    void setBackgroundImage(const QIcon &icon);
-    void paintEvent(QPaintEvent *e) override;
-    void installFilter(QObject *f) { eventFilter=f; installEventFilter(f); }
-    QObject * filter() const { return eventFilter; }
+    void setModel(QAbstractItemModel* m) override;
+    void addDefaultAction(QAction* act);
+    void setBackgroundImage(const QIcon& icon);
+    void paintEvent(QPaintEvent* e) override;
+    void installFilter(QObject* f) {
+        eventFilter = f;
+        installEventFilter(f);
+    }
+    QObject* filter() const { return eventFilter; }
     double zoom() const { return zoomLevel; }
     void setZoom(double l) { zoomLevel = l; }
-    void setInfoText(const QString &i) { info=i; update(); }
+    void setInfoText(const QString& i) {
+        info = i;
+        update();
+    }
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void correctSelection();
-    void showCustomContextMenu(const QPoint &pos);
-    void checkDoubleClick(const QModelIndex &idx);
+    void showCustomContextMenu(const QPoint& pos);
+    void checkDoubleClick(const QModelIndex& idx);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     bool itemsSelected(bool);
-    void itemDoubleClicked(const QModelIndex &idx);
+    void itemDoubleClicked(const QModelIndex& idx);
 
-private:
+   private:
     QString info;
-    QObject *eventFilter;
-    QMenu *menu;
+    QObject* eventFilter;
+    QMenu* menu;
     QPixmap bgnd;
     double zoomLevel;
 };

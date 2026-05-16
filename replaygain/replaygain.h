@@ -31,37 +31,36 @@
 #include "trackscanner.h"
 #include "config.h"
 
-class ReplayGain : public QObject
-{
+class ReplayGain : public QObject {
     Q_OBJECT
 
-public:
-    ReplayGain(const QStringList &fileNames);
+   public:
+    ReplayGain(const QStringList& fileNames);
     virtual ~ReplayGain();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void scan();
 
-private:
+   private:
     void createScanner(int index);
     void clearScanners();
     void showProgress();
     void showResults();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void scannerProgress(int p);
     void scannerDone();
 
-private:
+   private:
     struct Track {
-        Track() : progress(0), finished(false), success(false) { }
+        Track() : progress(0), finished(false), success(false) {}
         unsigned char progress;
         bool finished : 1;
         bool success : 1;
     };
 
     QStringList files;
-    QMap<int, TrackScanner *> scanners;
+    QMap<int, TrackScanner*> scanners;
     QList<int> toScan;
     QMap<int, Track> tracks;
     int lastProgress;

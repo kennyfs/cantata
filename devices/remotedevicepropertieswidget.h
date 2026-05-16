@@ -27,28 +27,28 @@
 #include "ui_remotedevicepropertieswidget.h"
 #include "remotefsdevice.h"
 
-class RemoteDevicePropertiesWidget : public QWidget, Ui::RemoteDevicePropertiesWidget
-{
+class RemoteDevicePropertiesWidget : public QWidget,
+                                     Ui::RemoteDevicePropertiesWidget {
     Q_OBJECT
 
-public:
-
-    RemoteDevicePropertiesWidget(QWidget *parent);
-    virtual ~RemoteDevicePropertiesWidget() { }
-    void update(const RemoteFsDevice::Details &d, bool create, bool isConnected);
+   public:
+    RemoteDevicePropertiesWidget(QWidget* parent);
+    virtual ~RemoteDevicePropertiesWidget() {}
+    void update(const RemoteFsDevice::Details& d, bool create,
+                bool isConnected);
     RemoteFsDevice::Details details();
-    const RemoteFsDevice::Details & origDetails() const { return orig; }
+    const RemoteFsDevice::Details& origDetails() const { return orig; }
     bool isModified() const { return modified; }
     bool isSaveable() const { return saveable; }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void updated();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void checkSaveable();
     void setType();
 
-private:
+   private:
     RemoteFsDevice::Details orig;
     bool modified;
     bool saveable;

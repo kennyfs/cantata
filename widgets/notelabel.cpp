@@ -27,85 +27,75 @@
 #include <QFont>
 #include <QVariant>
 
-static void init(QLabel *label)
-{
-    static const int constMinFontSize=9;
+static void init(QLabel* label) {
+    static const int constMinFontSize = 9;
 
-    label->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    label->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
     label->setWordWrap(true);
-    if (label->font().pointSize()>constMinFontSize) {
+    if (label->font().pointSize() > constMinFontSize) {
         label->setFont(Utils::smallFont(label->font()));
     }
 }
 
-static QLabel * init(QWidget *p, bool url)
-{
-    int layoutSpacing=Utils::layoutSpacing(p);
-    int spacing=p->fontMetrics().height()*(Utils::limitedHeight(p) ? 0.25 : 1.0)-layoutSpacing;
-    if (spacing<layoutSpacing) {
-        spacing=layoutSpacing;
+static QLabel* init(QWidget* p, bool url) {
+    int layoutSpacing = Utils::layoutSpacing(p);
+    int spacing =
+        p->fontMetrics().height() * (Utils::limitedHeight(p) ? 0.25 : 1.0) -
+        layoutSpacing;
+    if (spacing < layoutSpacing) {
+        spacing = layoutSpacing;
     }
 
-    QVBoxLayout *l=new QVBoxLayout(p);
+    QVBoxLayout* l = new QVBoxLayout(p);
     l->setMargin(0);
     l->setSpacing(0);
-    QLabel *label;
+    QLabel* label;
     if (url) {
-        label=new UrlLabel(p);
+        label = new UrlLabel(p);
     } else {
-        label=new StateLabel(p);
+        label = new StateLabel(p);
     }
     init(label);
-    l->addItem(new QSpacerItem(2, spacing, QSizePolicy::Fixed, QSizePolicy::Fixed));
+    l->addItem(
+        new QSpacerItem(2, spacing, QSizePolicy::Fixed, QSizePolicy::Fixed));
     l->addWidget(label);
     return label;
 }
 
-QString NoteLabel::formatText(const QString &text)
-{
+QString NoteLabel::formatText(const QString& text) {
     return tr("<i><b>NOTE:</b> %1</i>").arg(text);
 }
 
-NoteLabel::NoteLabel(QWidget *parent)
-    : QWidget(parent)
-{
-    label=static_cast<StateLabel *>(init(this, false));
+NoteLabel::NoteLabel(QWidget* parent) : QWidget(parent) {
+    label = static_cast<StateLabel*>(init(this, false));
     label->setTextInteractionFlags(Qt::TextBrowserInteraction);
     label->setOpenExternalLinks(true);
 }
 
-void NoteLabel::setProperty(const char *name, const QVariant &value)
-{
-    if (name && !strcmp(name, "text") && QVariant::String==value.type()) {
+void NoteLabel::setProperty(const char* name, const QVariant& value) {
+    if (name && !strcmp(name, "text") && QVariant::String == value.type()) {
         setText(value.toString());
     }
 }
 
-UrlNoteLabel::UrlNoteLabel(QWidget *parent)
-    : QWidget(parent)
-{
-    label=static_cast<UrlLabel *>(init(this, true));
+UrlNoteLabel::UrlNoteLabel(QWidget* parent) : QWidget(parent) {
+    label = static_cast<UrlLabel*>(init(this, true));
     connect(label, SIGNAL(leftClickedUrl()), this, SIGNAL(leftClickedUrl()));
 }
 
-void UrlNoteLabel::setProperty(const char *name, const QVariant &value)
-{
-    if (name && !strcmp(name, "text") && QVariant::String==value.type()) {
+void UrlNoteLabel::setProperty(const char* name, const QVariant& value) {
+    if (name && !strcmp(name, "text") && QVariant::String == value.type()) {
         setText(value.toString());
     }
 }
 
-PlainNoteLabel::PlainNoteLabel(QWidget *parent)
-    : StateLabel(parent)
-{
+PlainNoteLabel::PlainNoteLabel(QWidget* parent) : StateLabel(parent) {
     init(this);
     setTextInteractionFlags(Qt::TextBrowserInteraction);
     setOpenExternalLinks(true);
 }
 
-PlainUrlNoteLabel::PlainUrlNoteLabel(QWidget *parent)
-    : UrlLabel(parent)
-{
+PlainUrlNoteLabel::PlainUrlNoteLabel(QWidget* parent) : UrlLabel(parent) {
     init(this);
 }
 

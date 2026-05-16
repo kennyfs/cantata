@@ -88,29 +88,24 @@ class SqueezedTextLabel;
  * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.7
  */
-class KMsgWidget : public QFrame
-{
+class KMsgWidget : public QFrame {
     Q_OBJECT
     Q_ENUMS(MessageType)
 
     Q_PROPERTY(QString text READ text WRITE setText)
     Q_PROPERTY(bool wordWrap READ wordWrap WRITE setWordWrap)
-    Q_PROPERTY(bool closeButtonVisible READ isCloseButtonVisible WRITE setCloseButtonVisible)
+    Q_PROPERTY(bool closeButtonVisible READ isCloseButtonVisible WRITE
+                   setCloseButtonVisible)
     Q_PROPERTY(MessageType messageType READ messageType WRITE setMessageType)
-public:
-    enum MessageType {
-        Positive,
-        Information,
-        Warning,
-        Error
-    };
+   public:
+    enum MessageType { Positive, Information, Warning, Error };
 
     /**
      * Constructs a KMsgWidget with the specified parent.
      */
-    explicit KMsgWidget(QWidget *parent = nullptr);
+    explicit KMsgWidget(QWidget* parent = nullptr);
 
-    explicit KMsgWidget(const QString &text, QWidget *parent = nullptr);
+    explicit KMsgWidget(const QString& text, QWidget* parent = nullptr);
 
     ~KMsgWidget() override;
 
@@ -122,18 +117,18 @@ public:
 
     MessageType messageType() const;
 
-    void addAction(QAction *action);
+    void addAction(QAction* action);
 
-    void removeAction(QAction *action);
+    void removeAction(QAction* action);
 
-//    QSize sizeHint() const;
+    //    QSize sizeHint() const;
 
-//    QSize minimumSizeHint() const;
+    //    QSize minimumSizeHint() const;
 
     int heightForWidth(int width) const override;
 
-public Q_SLOTS:
-    void setText(const QString &text);
+   public Q_SLOTS:
+    void setText(const QString& text);
 
     void setWordWrap(bool wordWrap);
 
@@ -153,15 +148,15 @@ public Q_SLOTS:
      */
     void animatedHide();
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
+   protected:
+    void paintEvent(QPaintEvent* event) override;
 
-    bool event(QEvent *event) override;
+    bool event(QEvent* event) override;
 
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
-private:
-    KMsgWidgetPrivate *const d;
+   private:
+    KMsgWidgetPrivate* const d;
     friend class KMsgWidgetPrivate;
 
     Q_PRIVATE_SLOT(d, void slotTimeLineChanged(qreal))
@@ -171,9 +166,8 @@ private:
 class QTimeLine;
 class QLabel;
 class QToolButton;
-class KMsgWidgetPrivate
-{
-public:
+class KMsgWidgetPrivate {
+   public:
     void init(KMsgWidget*);
 
     KMsgWidget* q;

@@ -26,11 +26,11 @@
 
 #include "proxymodel.h"
 
-class SearchProxyModel : public ProxyModel
-{
-public:
-    SearchProxyModel(QObject *parent = nullptr);
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+class SearchProxyModel : public ProxyModel {
+   public:
+    SearchProxyModel(QObject* parent = nullptr);
+    bool lessThan(const QModelIndex& left,
+                  const QModelIndex& right) const override;
 };
 
 #endif

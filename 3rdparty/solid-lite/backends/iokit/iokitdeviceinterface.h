@@ -27,25 +27,22 @@
 #include <QObject>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace IOKit
-{
-class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
-{
+namespace Solid {
+namespace Backends {
+namespace IOKit {
+class DeviceInterface : public QObject,
+                        virtual public Solid::Ifaces::DeviceInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::DeviceInterface)
-public:
-    DeviceInterface(IOKitDevice *device);
+   public:
+    DeviceInterface(IOKitDevice* device);
     virtual ~DeviceInterface();
 
-protected:
-    IOKitDevice *m_device;
+   protected:
+    IOKitDevice* m_device;
 };
-}
-}
-}
+}  // namespace IOKit
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_IOKIT_DEVICEINTERFACE_H
+#endif  // SOLID_BACKENDS_IOKIT_DEVICEINTERFACE_H

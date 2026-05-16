@@ -25,44 +25,42 @@
 #include <solid-lite/ifaces/opticaldrive.h>
 #include "udisksstoragedrive.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks2
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks2 {
 
-class OpticalDrive: public StorageDrive, virtual public Solid::Ifaces::OpticalDrive
-{
+class OpticalDrive : public StorageDrive,
+                     virtual public Solid::Ifaces::OpticalDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::OpticalDrive)
 
-public:
-    OpticalDrive(Device *device);
+   public:
+    OpticalDrive(Device* device);
     ~OpticalDrive() override;
 
-Q_SIGNALS:
-    void ejectPressed(const QString &udi) override;
-    void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi) override;
-    void ejectRequested(const QString &udi);
+   Q_SIGNALS:
+    void ejectPressed(const QString& udi) override;
+    void ejectDone(Solid::ErrorType error, QVariant errorData,
+                   const QString& udi) override;
+    void ejectRequested(const QString& udi);
 
-public:
+   public:
     bool eject() override;
     QList<int> writeSpeeds() const override;
     int writeSpeed() const override;
     int readSpeed() const override;
     Solid::OpticalDrive::MediumTypes supportedMedia() const override;
 
-private Q_SLOTS:
-    void slotDBusReply(const QDBusMessage &reply);
-    void slotDBusError(const QDBusError &error);
+   private Q_SLOTS:
+    void slotDBusReply(const QDBusMessage& reply);
+    void slotDBusError(const QDBusError& error);
 
     void slotEjectRequested();
-    void slotEjectDone(int error, const QString &errorString);
+    void slotEjectDone(int error, const QString& errorString);
 
     void slotChanged();
 
-private:
+   private:
     void initReadWriteSpeeds() const;
 
     bool m_ejectInProgress;
@@ -74,8 +72,8 @@ private:
     mutable bool m_speedsInit;
 };
 
-}
-}
-}
+}  // namespace UDisks2
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKS2OPTICALDRIVE_H
+#endif  // UDISKS2OPTICALDRIVE_H

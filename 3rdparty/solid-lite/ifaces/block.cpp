@@ -20,7 +20,4 @@
 
 #include "block.h"
 
-Solid::Ifaces::Block::~Block()
-{
-}
-
+Solid::Ifaces::Block::~Block() {}

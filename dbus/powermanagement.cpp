@@ -34,77 +34,83 @@
 GLOBAL_STATIC(PowerManagement, instance)
 
 PowerManagement::PowerManagement()
-    : inhibitSuspendWhilstPlaying(false)
-    , cookie(-1)
-{
-    policy = new OrgKdeSolidPowerManagementPolicyAgentInterface(OrgKdeSolidPowerManagementPolicyAgentInterface::staticInterfaceName(),
-                                                                QLatin1String("/org/kde/Solid/PowerManagement/PolicyAgent"),
-                                                                QDBusConnection::sessionBus(), this);
-    inhibit = new OrgFreedesktopPowerManagementInhibitInterface("org.freedesktop.PowerManagement",
-                                                                QLatin1String("/org/freedesktop/PowerManagement/Inhibit"),
-                                                                QDBusConnection::sessionBus(), this);
-    upower = new OrgFreedesktopUPowerInterface(OrgFreedesktopUPowerInterface::staticInterfaceName(),
-                                               QLatin1String("/org/freedesktop/UPower"), QDBusConnection::systemBus(), this);
-    login1 = new OrgFreedesktopLogin1ManagerInterface("org.freedesktop.login1",
-                                                      QLatin1String("/org/freedesktop/login1"), QDBusConnection::systemBus(), this);
+    : inhibitSuspendWhilstPlaying(false), cookie(-1) {
+    policy = new OrgKdeSolidPowerManagementPolicyAgentInterface(
+        OrgKdeSolidPowerManagementPolicyAgentInterface::staticInterfaceName(),
+        QLatin1String("/org/kde/Solid/PowerManagement/PolicyAgent"),
+        QDBusConnection::sessionBus(), this);
+    inhibit = new OrgFreedesktopPowerManagementInhibitInterface(
+        "org.freedesktop.PowerManagement",
+        QLatin1String("/org/freedesktop/PowerManagement/Inhibit"),
+        QDBusConnection::sessionBus(), this);
+    upower = new OrgFreedesktopUPowerInterface(
+        OrgFreedesktopUPowerInterface::staticInterfaceName(),
+        QLatin1String("/org/freedesktop/UPower"), QDBusConnection::systemBus(),
+        this);
+    login1 = new OrgFreedesktopLogin1ManagerInterface(
+        "org.freedesktop.login1", QLatin1String("/org/freedesktop/login1"),
+        QDBusConnection::systemBus(), this);
     connect(upower, SIGNAL(Resuming()), this, SIGNAL(resuming()));
-    connect(login1, SIGNAL(PrepareForSleep(bool)), this, SLOT(prepareForSleep(bool)));
+    connect(login1, SIGNAL(PrepareForSleep(bool)), this,
+            SLOT(prepareForSleep(bool)));
 }
 
-void PowerManagement::setInhibitSuspend(bool i)
-{
-    if (i==inhibitSuspendWhilstPlaying) {
+void PowerManagement::setInhibitSuspend(bool i) {
+    if (i == inhibitSuspendWhilstPlaying) {
         return;
     }
-    inhibitSuspendWhilstPlaying=i;
+    inhibitSuspendWhilstPlaying = i;
 
     if (inhibitSuspendWhilstPlaying) {
-        connect(MPDStatus::self(), SIGNAL(updated()), this, SLOT(mpdStatusUpdated()));
-        if (MPDState_Playing==MPDStatus::self()->state()) {
+        connect(MPDStatus::self(), SIGNAL(updated()), this,
+                SLOT(mpdStatusUpdated()));
+        if (MPDState_Playing == MPDStatus::self()->state()) {
             beginSuppressingSleep();
         }
     } else {
-        disconnect(MPDStatus::self(), SIGNAL(updated()), this, SLOT(mpdStatusUpdated()));
+        disconnect(MPDStatus::self(), SIGNAL(updated()), this,
+                   SLOT(mpdStatusUpdated()));
         stopSuppressingSleep();
     }
 }
 
-void PowerManagement::beginSuppressingSleep()
-{
-    if (-1!=cookie || descriptor.isValid()) {
+void PowerManagement::beginSuppressingSleep() {
+    if (-1 != cookie || descriptor.isValid()) {
         return;
     }
 
-    QString reason=tr("Cantata is playing a track");
+    QString reason = tr("Cantata is playing a track");
     QDBusReply<uint> reply;
     if (policy->isValid()) {
-        reply = policy->AddInhibition((uint)1, QGuiApplication::applicationDisplayName(), reason);
+        reply = policy->AddInhibition(
+            (uint)1, QGuiApplication::applicationDisplayName(), reason);
     } else {
         // Fallback to the fd.o Inhibit interface
-        reply = inhibit->Inhibit(QGuiApplication::applicationDisplayName(), reason);
+        reply =
+            inhibit->Inhibit(QGuiApplication::applicationDisplayName(), reason);
     }
-    cookie=reply.isValid() ? reply : -1;
+    cookie = reply.isValid() ? reply : -1;
 
-    QString types=QStringLiteral("sleep");
-    QString mode=QStringLiteral("block");
+    QString types = QStringLiteral("sleep");
+    QString mode = QStringLiteral("block");
     QDBusPendingReply<QDBusUnixFileDescriptor> futureReply;
-    futureReply = login1->Inhibit(types, QGuiApplication::applicationDisplayName(), reason, mode);
+    futureReply = login1->Inhibit(
+        types, QGuiApplication::applicationDisplayName(), reason, mode);
     futureReply.waitForFinished();
     if (futureReply.isValid()) {
-        descriptor=futureReply.value();
+        descriptor = futureReply.value();
     }
 }
 
-void PowerManagement::stopSuppressingSleep()
-{
-    if (-1!=cookie) {
+void PowerManagement::stopSuppressingSleep() {
+    if (-1 != cookie) {
         if (policy->isValid()) {
             policy->ReleaseInhibition(cookie);
         } else {
             // Fallback to the fd.o Inhibit interface
             inhibit->UnInhibit(cookie);
         }
-        cookie=-1;
+        cookie = -1;
     }
 
     if (descriptor.isValid()) {
@@ -113,10 +119,9 @@ void PowerManagement::stopSuppressingSleep()
     }
 }
 
-void PowerManagement::mpdStatusUpdated()
-{
+void PowerManagement::mpdStatusUpdated() {
     if (inhibitSuspendWhilstPlaying) {
-        if (MPDState_Playing==MPDStatus::self()->state()) {
+        if (MPDState_Playing == MPDStatus::self()->state()) {
             beginSuppressingSleep();
         } else {
             stopSuppressingSleep();
@@ -124,8 +129,7 @@ void PowerManagement::mpdStatusUpdated()
     }
 }
 
-void PowerManagement::prepareForSleep(bool s)
-{
+void PowerManagement::prepareForSleep(bool s) {
     if (!s) {
         emit resuming();
     }

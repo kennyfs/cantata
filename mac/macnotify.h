@@ -27,9 +27,9 @@
 class QString;
 class QImage;
 
-namespace MacNotify
-{
-    extern void showMessage(const QString &title, const QString &text, const QImage &img);
+namespace MacNotify {
+extern void showMessage(const QString& title, const QString& text,
+                        const QImage& img);
 }
 
 #endif

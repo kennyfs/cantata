@@ -39,42 +39,34 @@
 GLOBAL_STATIC(OSXStyle, instance)
 
 OSXStyle::OSXStyle()
-    : view(0)
-    , windowMenu(0)
-    , closeAct(0)
-    , minAct(0)
-    , zoomAct(0)
-{
-}
+    : view(0), windowMenu(0), closeAct(0), minAct(0), zoomAct(0) {}
 
-const QPalette & OSXStyle::viewPalette()
-{
-    return viewWidget()->palette();
-}
+const QPalette& OSXStyle::viewPalette() { return viewWidget()->palette(); }
 
-void OSXStyle::drawSelection(QStyleOptionViewItem opt, QPainter *painter, double opacity)
-{
-    opt.palette=viewPalette();
-    if (opacity<0.999) {
+void OSXStyle::drawSelection(QStyleOptionViewItem opt, QPainter* painter,
+                             double opacity) {
+    opt.palette = viewPalette();
+    if (opacity < 0.999) {
         QColor col(opt.palette.highlight().color());
         col.setAlphaF(opacity);
-        opt.palette.setColor(opt.palette.currentColorGroup(), QPalette::Highlight, col);
+        opt.palette.setColor(opt.palette.currentColorGroup(),
+                             QPalette::Highlight, col);
     }
-    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, viewWidget());
+    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt,
+                                         painter, viewWidget());
 }
 
-QColor OSXStyle::monoIconColor()
-{
-    return QColor(96, 96, 96);
-}
+QColor OSXStyle::monoIconColor() { return QColor(96, 96, 96); }
 
-void OSXStyle::initWindowMenu(QMainWindow *mw)
-{
+void OSXStyle::initWindowMenu(QMainWindow* mw) {
     if (!windowMenu && mw) {
-        windowMenu=new QMenu(tr("&Window"), mw);
-        closeAct=ActionCollection::get()->createAction("close-window", tr("Close"));
-        minAct=ActionCollection::get()->createAction("minimize-window", tr("Minimize"));
-        zoomAct=ActionCollection::get()->createAction("zoom-window", tr("Zoom"));
+        windowMenu = new QMenu(tr("&Window"), mw);
+        closeAct =
+            ActionCollection::get()->createAction("close-window", tr("Close"));
+        minAct = ActionCollection::get()->createAction("minimize-window",
+                                                       tr("Minimize"));
+        zoomAct =
+            ActionCollection::get()->createAction("zoom-window", tr("Zoom"));
         windowMenu->addAction(closeAct);
         windowMenu->addAction(minAct);
         windowMenu->addAction(zoomAct);
@@ -82,9 +74,10 @@ void OSXStyle::initWindowMenu(QMainWindow *mw)
         addWindow(mw);
         mw->menuBar()->addMenu(windowMenu);
         actions[mw]->setChecked(true);
-        connect(qApp, SIGNAL(focusWindowChanged(QWindow *)), SLOT(focusWindowChanged(QWindow *)));
-        closeAct->setShortcut(Qt::ControlModifier+Qt::Key_W);
-        minAct->setShortcut(Qt::ControlModifier+Qt::Key_M);
+        connect(qApp, SIGNAL(focusWindowChanged(QWindow*)),
+                SLOT(focusWindowChanged(QWindow*)));
+        closeAct->setShortcut(Qt::ControlModifier + Qt::Key_W);
+        minAct->setShortcut(Qt::ControlModifier + Qt::Key_M);
         connect(closeAct, SIGNAL(triggered()), SLOT(closeWindow()));
         connect(minAct, SIGNAL(triggered()), SLOT(minimizeWindow()));
         connect(zoomAct, SIGNAL(triggered()), SLOT(zoomWindow()));
@@ -92,50 +85,48 @@ void OSXStyle::initWindowMenu(QMainWindow *mw)
     }
 }
 
-void OSXStyle::addWindow(QWidget *w)
-{
+void OSXStyle::addWindow(QWidget* w) {
     if (w && windowMenu && !actions.contains(w)) {
-        QAction *action=windowMenu->addAction(w->windowTitle());
+        QAction* action = windowMenu->addAction(w->windowTitle());
         action->setCheckable(true);
         connect(action, SIGNAL(triggered()), this, SLOT(showWindow()));
-        connect(w, SIGNAL(windowTitleChanged(QString)), this, SLOT(windowTitleChanged()));
+        connect(w, SIGNAL(windowTitleChanged(QString)), this,
+                SLOT(windowTitleChanged()));
         actions.insert(w, action);
     }
 }
 
-void OSXStyle::removeWindow(QWidget *w)
-{
+void OSXStyle::removeWindow(QWidget* w) {
     if (w && windowMenu && actions.contains(w)) {
-        QAction *act=actions.take(w);
+        QAction* act = actions.take(w);
         windowMenu->removeAction(act);
         disconnect(act, SIGNAL(triggered()), this, SLOT(showWindow()));
-        disconnect(w, SIGNAL(windowTitleChanged(QString)), this, SLOT(windowTitleChanged()));
+        disconnect(w, SIGNAL(windowTitleChanged(QString)), this,
+                   SLOT(windowTitleChanged()));
         act->deleteLater();
     }
 }
 
-void OSXStyle::showWindow()
-{
-    QAction *act=qobject_cast<QAction *>(sender());
+void OSXStyle::showWindow() {
+    QAction* act = qobject_cast<QAction*>(sender());
 
     if (!act) {
         return;
     }
 
-    QMap<QWidget *, QAction *>::Iterator it=actions.begin();
-    QMap<QWidget *, QAction *>::Iterator end=actions.end();
+    QMap<QWidget*, QAction*>::Iterator it = actions.begin();
+    QMap<QWidget*, QAction*>::Iterator end = actions.end();
 
-    for (; it!=end; ++it) {
-        if (it.value()==act) {
+    for (; it != end; ++it) {
+        if (it.value() == act) {
             Utils::raiseWindow(it.key());
         }
-        act->setChecked(it.value()==act);
+        act->setChecked(it.value() == act);
     }
 }
 
-void OSXStyle::windowTitleChanged()
-{
-    QWidget *w=qobject_cast<QWidget *>(sender());
+void OSXStyle::windowTitleChanged() {
+    QWidget* w = qobject_cast<QWidget*>(sender());
 
     if (!w) {
         return;
@@ -145,13 +136,12 @@ void OSXStyle::windowTitleChanged()
     }
 }
 
-void OSXStyle::focusWindowChanged(QWindow *win)
-{
-    QMap<QWidget *, QAction *>::Iterator it=actions.begin();
-    QMap<QWidget *, QAction *>::Iterator end=actions.end();
+void OSXStyle::focusWindowChanged(QWindow* win) {
+    QMap<QWidget*, QAction*>::Iterator it = actions.begin();
+    QMap<QWidget*, QAction*>::Iterator end = actions.end();
 
-    for (; it!=end; ++it) {
-        if (it.key()->windowHandle()==win) {
+    for (; it != end; ++it) {
+        if (it.key()->windowHandle() == win) {
             it.value()->setChecked(true);
             controlActions(it.key());
         } else {
@@ -160,25 +150,22 @@ void OSXStyle::focusWindowChanged(QWindow *win)
     }
 }
 
-void OSXStyle::closeWindow()
-{
-    QWidget *w=currentWindow();
+void OSXStyle::closeWindow() {
+    QWidget* w = currentWindow();
     if (w) {
         w->close();
     }
 }
 
-void OSXStyle::minimizeWindow()
-{
-    QWidget *w=currentWindow();
+void OSXStyle::minimizeWindow() {
+    QWidget* w = currentWindow();
     if (w) {
         w->showMinimized();
     }
 }
 
-void OSXStyle::zoomWindow()
-{
-    QWidget *w=currentWindow();
+void OSXStyle::zoomWindow() {
+    QWidget* w = currentWindow();
     if (w) {
         if (w->isMaximized()) {
             w->showNormal();
@@ -188,12 +175,11 @@ void OSXStyle::zoomWindow()
     }
 }
 
-QWidget * OSXStyle::currentWindow()
-{
-    QMap<QWidget *, QAction *>::Iterator it=actions.begin();
-    QMap<QWidget *, QAction *>::Iterator end=actions.end();
+QWidget* OSXStyle::currentWindow() {
+    QMap<QWidget*, QAction*>::Iterator it = actions.begin();
+    QMap<QWidget*, QAction*>::Iterator end = actions.end();
 
-    for (; it!=end; ++it) {
+    for (; it != end; ++it) {
         if (it.value()->isChecked()) {
             return it.key();
         }
@@ -201,17 +187,15 @@ QWidget * OSXStyle::currentWindow()
     return 0;
 }
 
-void OSXStyle::controlActions(QWidget *w)
-{
-    closeAct->setEnabled(w && w->windowFlags()&Qt::WindowCloseButtonHint);
-    minAct->setEnabled(w && w->windowFlags()&Qt::WindowMinimizeButtonHint);
-    zoomAct->setEnabled(w && w->minimumHeight()!=w->maximumHeight());
+void OSXStyle::controlActions(QWidget* w) {
+    closeAct->setEnabled(w && w->windowFlags() & Qt::WindowCloseButtonHint);
+    minAct->setEnabled(w && w->windowFlags() & Qt::WindowMinimizeButtonHint);
+    zoomAct->setEnabled(w && w->minimumHeight() != w->maximumHeight());
 }
 
-QTreeWidget * OSXStyle::viewWidget()
-{
+QTreeWidget* OSXStyle::viewWidget() {
     if (!view) {
-        view=new QTreeWidget();
+        view = new QTreeWidget();
         view->ensurePolished();
     }
     return view;

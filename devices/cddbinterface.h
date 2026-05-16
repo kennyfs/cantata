@@ -32,34 +32,32 @@
 class Thread;
 typedef struct cddb_disc_s cddb_disc_t;
 
-class CddbInterface : public QObject
-{
+class CddbInterface : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static QString dataTrack();
 
-    CddbInterface(const QString &device);
+    CddbInterface(const QString& device);
     ~CddbInterface();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void lookup(bool full);
 
-Q_SIGNALS:
-    void error(const QString &error);
-    void initialDetails(const CdAlbum &);
-    void matches(const QList<CdAlbum> &);
+   Q_SIGNALS:
+    void error(const QString& error);
+    void initialDetails(const CdAlbum&);
+    void matches(const QList<CdAlbum>&);
 
-private:
+   private:
     void readDisc();
     bool checkConnection();
 
-private:
-    Thread *thread;
+   private:
+    Thread* thread;
     QString dev;
-    cddb_disc_t *disc;
+    cddb_disc_t* disc;
     CdAlbum initial;
 };
 
 #endif
-

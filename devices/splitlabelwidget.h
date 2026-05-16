@@ -32,21 +32,20 @@ class QLabel;
 class QStackedWidget;
 class SqueezedTextLabel;
 
-class SplitLabelWidget : public QStackedWidget
-{
-public:
-    SplitLabelWidget(QWidget *p);
-    void setText(const QString &text);
-    void setText(const QList<QPair<QString, QString> > &details, const QString &msg=QString());
+class SplitLabelWidget : public QStackedWidget {
+   public:
+    SplitLabelWidget(QWidget* p);
+    void setText(const QString& text);
+    void setText(const QList<QPair<QString, QString> >& details,
+                 const QString& msg = QString());
 
-private:
-    QLabel *single;
+   private:
+    QLabel* single;
 
-    QWidget *multiplePage;
-    QLabel *message;
-    QList<QLabel *> labels;
-    QList<SqueezedTextLabel *> values;
+    QWidget* multiplePage;
+    QLabel* message;
+    QList<QLabel*> labels;
+    QList<SqueezedTextLabel*> values;
 };
-
 
 #endif

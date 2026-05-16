@@ -32,24 +32,22 @@
 #include <QDBusObjectPath>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks2
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks2 {
 
 class DeviceBackend;
 
-class Device: public Solid::Ifaces::Device
-{
+class Device : public Solid::Ifaces::Device {
     Q_OBJECT
-public:
-    Device(const QString &udi);
+   public:
+    Device(const QString& udi);
     ~Device() override;
 
-    QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type) override;
-    bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const override;
+    QObject* createDeviceInterface(
+        const Solid::DeviceInterface::Type& type) override;
+    bool queryDeviceInterface(
+        const Solid::DeviceInterface::Type& type) const override;
     QString description() const override;
     QStringList emblems() const override;
     QString icon() const override;
@@ -58,15 +56,15 @@ public:
     QString udi() const override;
     QString parentUdi() const override;
 
-    QVariant prop(const QString &key) const;
-    bool propertyExists(const QString &key) const;
+    QVariant prop(const QString& key) const;
+    bool propertyExists(const QString& key) const;
     QVariantMap allProperties() const;
 
-    bool hasInterface(const QString & name) const;
+    bool hasInterface(const QString& name) const;
     QStringList interfaces() const;
 
-    QString errorToString(const QString & error) const;
-    Solid::ErrorType errorToSolidError(const QString & error) const;
+    QString errorToString(const QString& error) const;
+    Solid::ErrorType errorToSolidError(const QString& error) const;
 
     bool isBlock() const;
     bool isPartition() const;
@@ -85,20 +83,20 @@ public:
 
     QString drivePath() const;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void changed();
-    void propertyChanged(const QMap<QString,int> &changes);
+    void propertyChanged(const QMap<QString, int>& changes);
 
-protected:
+   protected:
     QPointer<DeviceBackend> m_backend;
 
-private:
+   private:
     QString storageDescription() const;
     QString volumeDescription() const;
 };
 
-}
-}
-}
+}  // namespace UDisks2
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKS2DEVICE_H
+#endif  // UDISKS2DEVICE_H

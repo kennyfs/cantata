@@ -27,13 +27,12 @@
 #include <qglobal.h>
 
 #define GLOBAL_STATIC(CLASS, VAR) \
-    CLASS * CLASS::self() \
-    { \
-        static CLASS *VAR=0; \
-        if (!VAR) { \
-            VAR=new CLASS; \
-        } \
-        return VAR; \
+    CLASS* CLASS::self() {        \
+        static CLASS* VAR = 0;    \
+        if (!VAR) {               \
+            VAR = new CLASS;      \
+        }                         \
+        return VAR;               \
     }
 
 #endif

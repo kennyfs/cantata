@@ -30,30 +30,24 @@
 #include "support/lineedit.h"
 #include "config.h"
 
-enum Type {
-    Type_SshFs,
-    Type_File
-};
+enum Type { Type_SshFs, Type_File };
 
-RemoteDevicePropertiesWidget::RemoteDevicePropertiesWidget(QWidget *parent)
-    : QWidget(parent)
-    , modified(false)
-    , saveable(false)
-{
+RemoteDevicePropertiesWidget::RemoteDevicePropertiesWidget(QWidget* parent)
+    : QWidget(parent), modified(false), saveable(false) {
     setupUi(this);
-    if (qobject_cast<QTabWidget *>(parent)) {
+    if (qobject_cast<QTabWidget*>(parent)) {
         verticalLayout->setMargin(4);
     }
     type->addItem(tr("Secure Shell (sshfs)"), (int)Type_SshFs);
     type->addItem(tr("Locally Mounted Folder"), (int)Type_File);
 }
 
-void RemoteDevicePropertiesWidget::update(const RemoteFsDevice::Details &d, bool create, bool isConnected)
-{
-    int t=d.isLocalFile() ? Type_File : Type_SshFs;
+void RemoteDevicePropertiesWidget::update(const RemoteFsDevice::Details& d,
+                                          bool create, bool isConnected) {
+    int t = d.isLocalFile() ? Type_File : Type_SshFs;
     setEnabled(d.isLocalFile() || !isConnected);
     infoLabel->setVisible(create);
-    orig=d;
+    orig = d;
     name->setText(d.name);
     sshPort->setValue(22);
 
@@ -64,84 +58,87 @@ void RemoteDevicePropertiesWidget::update(const RemoteFsDevice::Details &d, bool
     fileFolder->setText(QString());
 
     switch (t) {
-    case Type_SshFs: {
-        sshFolder->setText(d.url.path());
-        if (0!=d.url.port()) {
-            sshPort->setValue(d.url.port());
+        case Type_SshFs: {
+            sshFolder->setText(d.url.path());
+            if (0 != d.url.port()) {
+                sshPort->setValue(d.url.port());
+            }
+            sshHost->setText(d.url.host());
+            sshUser->setText(d.url.userName());
+            sshExtra->setText(d.extraOptions);
+            break;
         }
-        sshHost->setText(d.url.host());
-        sshUser->setText(d.url.userName());
-        sshExtra->setText(d.extraOptions);
-        break;
-    }
-    case Type_File:
-        fileFolder->setText(d.url.path());
-        break;
+        case Type_File:
+            fileFolder->setText(d.url.path());
+            break;
     }
 
     name->setEnabled(d.isLocalFile() || !isConnected);
 
     connect(type, SIGNAL(currentIndexChanged(int)), this, SLOT(setType()));
-    for (int i=1; i<type->count(); ++i) {
-        if (type->itemData(i).toInt()==t) {
+    for (int i = 1; i < type->count(); ++i) {
+        if (type->itemData(i).toInt() == t) {
             type->setCurrentIndex(i);
             stackedWidget->setCurrentIndex(i);
             break;
         }
     }
-    connect(name, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
-    connect(sshHost, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
-    connect(sshUser, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
-    connect(sshFolder, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
+    connect(name, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
+    connect(sshHost, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
+    connect(sshUser, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
+    connect(sshFolder, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
     connect(sshPort, SIGNAL(valueChanged(int)), this, SLOT(checkSaveable()));
-    connect(sshExtra, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
-    connect(fileFolder, SIGNAL(textChanged(const QString &)), this, SLOT(checkSaveable()));
-    modified=false;
+    connect(sshExtra, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
+    connect(fileFolder, SIGNAL(textChanged(const QString&)), this,
+            SLOT(checkSaveable()));
+    modified = false;
     setType();
     checkSaveable();
 }
 
-void RemoteDevicePropertiesWidget::setType()
-{
-    if (Type_SshFs==type->itemData(type->currentIndex()).toInt() && 0==sshPort->value()) {
+void RemoteDevicePropertiesWidget::setType() {
+    if (Type_SshFs == type->itemData(type->currentIndex()).toInt() &&
+        0 == sshPort->value()) {
         sshPort->setValue(22);
     }
 }
 
-void RemoteDevicePropertiesWidget::checkSaveable()
-{
-    RemoteFsDevice::Details det=details();
-    modified=det!=orig;
-    saveable=!det.isEmpty();
+void RemoteDevicePropertiesWidget::checkSaveable() {
+    RemoteFsDevice::Details det = details();
+    modified = det != orig;
+    saveable = !det.isEmpty();
     emit updated();
 }
 
-RemoteFsDevice::Details RemoteDevicePropertiesWidget::details()
-{
-    int t=type->itemData(type->currentIndex()).toInt();
+RemoteFsDevice::Details RemoteDevicePropertiesWidget::details() {
+    int t = type->itemData(type->currentIndex()).toInt();
     RemoteFsDevice::Details det;
 
-    det.name=name->text().trimmed();
+    det.name = name->text().trimmed();
     switch (t) {
-    case Type_SshFs: {
-        det.url.setHost(sshHost->text().trimmed());
-        det.url.setUserName(sshUser->text().trimmed());
-        det.url.setPath(sshFolder->text().trimmed());
-        det.url.setPort(sshPort->value());
-        det.url.setScheme(RemoteFsDevice::constSshfsProtocol);
-        det.extraOptions=sshExtra->text().trimmed();
-        break;
-    }
-    case Type_File: {
-        QString path=fileFolder->text().trimmed();
-        if (path.isEmpty()) {
-            path="/";
+        case Type_SshFs: {
+            det.url.setHost(sshHost->text().trimmed());
+            det.url.setUserName(sshUser->text().trimmed());
+            det.url.setPath(sshFolder->text().trimmed());
+            det.url.setPort(sshPort->value());
+            det.url.setScheme(RemoteFsDevice::constSshfsProtocol);
+            det.extraOptions = sshExtra->text().trimmed();
+            break;
         }
-        det.url.setPath(path);
-        det.url.setScheme(RemoteFsDevice::constFileProtocol);
-        break;
-    }
-
+        case Type_File: {
+            QString path = fileFolder->text().trimmed();
+            if (path.isEmpty()) {
+                path = "/";
+            }
+            det.url.setPath(path);
+            det.url.setScheme(RemoteFsDevice::constFileProtocol);
+            break;
+        }
     }
     return det;
 }

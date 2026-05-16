@@ -27,29 +27,33 @@
 #include "kmessagewidget.h"
 #include <QList>
 
-class MessageWidget : public KMsgWidget
-{
+class MessageWidget : public KMsgWidget {
     Q_OBJECT
-public:
-
-    MessageWidget(QWidget *parent);
+   public:
+    MessageWidget(QWidget* parent);
     ~MessageWidget() override;
-    void setError(const QString &msg, bool showCloseButton=true) { setMessage(msg, Error, showCloseButton); }
-    void setInformation(const QString &msg, bool showCloseButton=true) { setMessage(msg, Information, showCloseButton); }
-    void setWarning(const QString &msg, bool showCloseButton=true) { setMessage(msg, Warning, showCloseButton); }
+    void setError(const QString& msg, bool showCloseButton = true) {
+        setMessage(msg, Error, showCloseButton);
+    }
+    void setInformation(const QString& msg, bool showCloseButton = true) {
+        setMessage(msg, Information, showCloseButton);
+    }
+    void setWarning(const QString& msg, bool showCloseButton = true) {
+        setMessage(msg, Warning, showCloseButton);
+    }
     void setVisible(bool v) override;
     bool isActive() const { return active; }
     void removeAllActions();
-    void setActions(const QList<QAction *> acts);
-    bool showingError() const { return Error==msgType; }
+    void setActions(const QList<QAction*> acts);
+    bool showingError() const { return Error == msgType; }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void visible(bool);
 
-private:
-    void setMessage(const QString &msg, MessageType type, bool showCloseButton);
+   private:
+    void setMessage(const QString& msg, MessageType type, bool showCloseButton);
 
-private:
+   private:
     bool active;
     MessageType msgType;
 };

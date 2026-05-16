@@ -28,10 +28,9 @@
 #include <QMutex>
 #include "mpdconnection.h"
 
-class MPDUser
-{
-public:
-    static MPDUser * self();
+class MPDUser {
+   public:
+    static MPDUser* self();
 
     static const QString constName;
     static QString translatedName();
@@ -42,20 +41,24 @@ public:
     bool isRunning();
     void start();
     void stop();
-    void setMusicFolder(const QString &folder);
-    // Remove all files and folders (apart from Music folder!) associated with use MPD instance...
+    void setMusicFolder(const QString& folder);
+    // Remove all files and folders (apart from Music folder!) associated with
+    // use MPD instance...
     void cleanup();
 
-    const MPDConnectionDetails & details(bool createFiles=false) { init(createFiles); return det; }
-    void setDetails(const MPDConnectionDetails &d);
+    const MPDConnectionDetails& details(bool createFiles = false) {
+        init(createFiles);
+        return det;
+    }
+    void setDetails(const MPDConnectionDetails& d);
 
-private:
+   private:
     void init(bool create);
     int getPid();
     void killProcess();
     bool controlMpd(bool stop);
 
-private:
+   private:
     QString mpdExe;
     QString pidFileName;
     MPDConnectionDetails det;

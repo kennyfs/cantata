@@ -1,23 +1,23 @@
 /**
-  * This file is part of the KDE project
-  * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
-  * Copyright (C) 2007 John Tapsell <tapsell@kde.org>
-  *
-  * This library is free software; you can redistribute it and/or
-  * modify it under the terms of the GNU Library General Public
-  * License as published by the Free Software Foundation; either
-  * version 2 of the License, or (at your option) any later version.
-  *
-  * This library is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Library General Public License for more details.
-  *
-  * You should have received a copy of the GNU Library General Public License
-  * along with this library; see the file COPYING.LIB.  If not, write to
-  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-  * Boston, MA 02110-1301, USA.
-  */
+ * This file is part of the KDE project
+ * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+ * Copyright (C) 2007 John Tapsell <tapsell@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
 
 #include "kcategorizedsortfilterproxymodel.h"
 #include "kcategorizedsortfilterproxymodel_p.h"
@@ -27,33 +27,30 @@
 #include <QSize>
 #include <QCollator>
 
-KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(QObject *parent)
-    : QSortFilterProxyModel(parent)
-    , d(new KCategorizedSortFilterProxyModelPrivate())
+KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(
+    QObject* parent)
+    : QSortFilterProxyModel(parent),
+      d(new KCategorizedSortFilterProxyModelPrivate())
 
-{
-}
+{}
 
-KCategorizedSortFilterProxyModel::~KCategorizedSortFilterProxyModel()
-{
+KCategorizedSortFilterProxyModel::~KCategorizedSortFilterProxyModel() {
     delete d;
 }
 
-void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
-{
+void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order) {
     d->sortColumn = column;
     d->sortOrder = order;
 
     QSortFilterProxyModel::sort(column, order);
 }
 
-bool KCategorizedSortFilterProxyModel::isCategorizedModel() const
-{
+bool KCategorizedSortFilterProxyModel::isCategorizedModel() const {
     return d->categorizedModel;
 }
 
-void KCategorizedSortFilterProxyModel::setCategorizedModel(bool categorizedModel)
-{
+void KCategorizedSortFilterProxyModel::setCategorizedModel(
+    bool categorizedModel) {
     if (categorizedModel == d->categorizedModel) {
         return;
     }
@@ -63,19 +60,18 @@ void KCategorizedSortFilterProxyModel::setCategorizedModel(bool categorizedModel
     invalidate();
 }
 
-int KCategorizedSortFilterProxyModel::sortColumn() const
-{
+int KCategorizedSortFilterProxyModel::sortColumn() const {
     return d->sortColumn;
 }
 
-Qt::SortOrder KCategorizedSortFilterProxyModel::sortOrder() const
-{
+Qt::SortOrder KCategorizedSortFilterProxyModel::sortOrder() const {
     return d->sortOrder;
 }
 
-void KCategorizedSortFilterProxyModel::setSortCategoriesByNaturalComparison(bool sortCategoriesByNaturalComparison)
-{
-    if (sortCategoriesByNaturalComparison == d->sortCategoriesByNaturalComparison) {
+void KCategorizedSortFilterProxyModel::setSortCategoriesByNaturalComparison(
+    bool sortCategoriesByNaturalComparison) {
+    if (sortCategoriesByNaturalComparison ==
+        d->sortCategoriesByNaturalComparison) {
         return;
     }
 
@@ -84,14 +80,15 @@ void KCategorizedSortFilterProxyModel::setSortCategoriesByNaturalComparison(bool
     invalidate();
 }
 
-bool KCategorizedSortFilterProxyModel::sortCategoriesByNaturalComparison() const
-{
+bool KCategorizedSortFilterProxyModel::sortCategoriesByNaturalComparison()
+    const {
     return d->sortCategoriesByNaturalComparison;
 }
 
 /*
 #ifndef KITEMVIEWS_NO_DEPRECATED
-int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a, const QString &b)
+int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a, const
+QString &b)
 {
     QCollator c;
     c.setNumericMode(true);
@@ -101,14 +98,14 @@ int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a, const QSt
 #endif
 */
 
-bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
-{
+bool KCategorizedSortFilterProxyModel::lessThan(
+    const QModelIndex& left, const QModelIndex& right) const {
     if (d->categorizedModel) {
         int compare = compareCategories(left, right);
 
-        if (compare > 0) { // left is greater than right
+        if (compare > 0) {  // left is greater than right
             return false;
-        } else if (compare < 0) { // left is less than right
+        } else if (compare < 0) {  // left is less than right
             return true;
         }
     }
@@ -116,15 +113,17 @@ bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex &left, const Q
     return subSortLessThan(left, right);
 }
 
-bool KCategorizedSortFilterProxyModel::subSortLessThan(const QModelIndex &left, const QModelIndex &right) const
-{
+bool KCategorizedSortFilterProxyModel::subSortLessThan(
+    const QModelIndex& left, const QModelIndex& right) const {
     return QSortFilterProxyModel::lessThan(left, right);
 }
 
-int KCategorizedSortFilterProxyModel::compareCategories(const QModelIndex &left, const QModelIndex &right) const
-{
-    QVariant l = (left.model() ? left.model()->data(left, CategorySortRole) : QVariant());
-    QVariant r = (right.model() ? right.model()->data(right, CategorySortRole) : QVariant());
+int KCategorizedSortFilterProxyModel::compareCategories(
+    const QModelIndex& left, const QModelIndex& right) const {
+    QVariant l = (left.model() ? left.model()->data(left, CategorySortRole)
+                               : QVariant());
+    QVariant r = (right.model() ? right.model()->data(right, CategorySortRole)
+                                : QVariant());
 
     Q_ASSERT(l.isValid());
     Q_ASSERT(r.isValid());

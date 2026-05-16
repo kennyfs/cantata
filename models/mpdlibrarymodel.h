@@ -26,30 +26,29 @@
 
 #include "sqllibrarymodel.h"
 
-class MpdLibraryModel : public SqlLibraryModel
-{
+class MpdLibraryModel : public SqlLibraryModel {
     Q_OBJECT
-public:
-    static MpdLibraryModel * self();
+   public:
+    static MpdLibraryModel* self();
     MpdLibraryModel();
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
     void setUseArtistImages(bool u);
     bool useArtistImages() const { return showArtistImages; }
-    void load(Configuration &config) override;
-    void save(Configuration &config) override;
+    void load(Configuration& config) override;
+    void save(Configuration& config) override;
     void listSongs();
     void cancelListing();
 
-Q_SIGNALS:
-    void songListing(const QList<Song> &songs, double pc);
+   Q_SIGNALS:
+    void songListing(const QList<Song>& songs, double pc);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void listNextChunk();
-    void cover(const Song &song, const QImage &img, const QString &file);
-    void coverUpdated(const Song &song, const QImage &img, const QString &file);
-    void artistImage(const Song &song, const QImage &img, const QString &file);
+    void cover(const Song& song, const QImage& img, const QString& file);
+    void coverUpdated(const Song& song, const QImage& img, const QString& file);
+    void artistImage(const Song& song, const QImage& img, const QString& file);
 
-private:
+   private:
     bool showArtistImages;
     int listingTotal;
     int listingCurrent;

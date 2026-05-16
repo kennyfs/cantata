@@ -26,11 +26,12 @@
 
 #include <QLineEdit>
 
-class LineEdit : public QLineEdit
-{
-public:
-    LineEdit(QWidget *parent = nullptr) : QLineEdit(parent) { setClearButtonEnabled(true); }
+class LineEdit : public QLineEdit {
+   public:
+    LineEdit(QWidget* parent = nullptr) : QLineEdit(parent) {
+        setClearButtonEnabled(true);
+    }
     void setReadOnly(bool e);
 };
 
-#endif // LIENEDIT_H
+#endif  // LIENEDIT_H

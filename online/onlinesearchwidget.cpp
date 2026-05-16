@@ -27,34 +27,30 @@
 #include "support/messagebox.h"
 #include <QTimer>
 
-OnlineSearchWidget::OnlineSearchWidget(OnlineSearchService *s, QWidget *p)
-    : SinglePageWidget(p)
-    , srv(s)
-{
-    statsLabel=new SqueezedTextLabel(this);
+OnlineSearchWidget::OnlineSearchWidget(OnlineSearchService* s, QWidget* p)
+    : SinglePageWidget(p), srv(s) {
+    statsLabel = new SqueezedTextLabel(this);
     view->setModel(s);
-    statsLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-    init(ReplacePlayQueue|AppendToPlayQueue, QList<QWidget *>() << statsLabel);
+    statsLabel->setSizePolicy(QSizePolicy::MinimumExpanding,
+                              QSizePolicy::Preferred);
+    init(ReplacePlayQueue | AppendToPlayQueue, QList<QWidget*>() << statsLabel);
     view->alwaysShowHeader();
     view->setPermanentSearch();
     view->setMode(ItemView::Mode_List);
     connect(view, SIGNAL(headerClicked(int)), SLOT(headerClicked(int)));
-    connect(srv, SIGNAL(statsUpdated(int, quint32)), this, SLOT(statsUpdated(int, quint32)));
+    connect(srv, SIGNAL(statsUpdated(int, quint32)), this,
+            SLOT(statsUpdated(int, quint32)));
     statsUpdated(0, 0);
 }
 
-OnlineSearchWidget::~OnlineSearchWidget()
-{
-}
+OnlineSearchWidget::~OnlineSearchWidget() {}
 
-void OnlineSearchWidget::showEvent(QShowEvent *e)
-{
+void OnlineSearchWidget::showEvent(QShowEvent* e) {
     SinglePageWidget::showEvent(e);
     view->focusSearch();
 }
 
-QStringList OnlineSearchWidget::selectedFiles(bool allowPlaylists) const
-{
+QStringList OnlineSearchWidget::selectedFiles(bool allowPlaylists) const {
     QModelIndexList selected = view->selectedIndexes();
     if (selected.isEmpty()) {
         return QStringList();
@@ -62,8 +58,7 @@ QStringList OnlineSearchWidget::selectedFiles(bool allowPlaylists) const
     return srv->filenames(selected, allowPlaylists);
 }
 
-QList<Song> OnlineSearchWidget::selectedSongs(bool allowPlaylists) const
-{
+QList<Song> OnlineSearchWidget::selectedSongs(bool allowPlaylists) const {
     QModelIndexList selected = view->selectedIndexes();
     if (selected.isEmpty()) {
         return QList<Song>();
@@ -71,20 +66,20 @@ QList<Song> OnlineSearchWidget::selectedSongs(bool allowPlaylists) const
     return srv->songs(selected, allowPlaylists);
 }
 
-void OnlineSearchWidget::headerClicked(int level)
-{
-    if (0==level) {
+void OnlineSearchWidget::headerClicked(int level) {
+    if (0 == level) {
         emit close();
     }
 }
 
-void OnlineSearchWidget::statsUpdated(int songs, quint32 time)
-{
-    statsLabel->setText(0==songs ? tr("No tracks found.") : tr("%n Tracks (%1)", "", songs).arg(Utils::formatDuration(time)));
+void OnlineSearchWidget::statsUpdated(int songs, quint32 time) {
+    statsLabel->setText(
+        0 == songs
+            ? tr("No tracks found.")
+            : tr("%n Tracks (%1)", "", songs).arg(Utils::formatDuration(time)));
 }
 
-void OnlineSearchWidget::doSearch()
-{
+void OnlineSearchWidget::doSearch() {
     srv->search(QString(), view->searchText());
 }
 

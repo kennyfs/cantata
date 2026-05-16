@@ -31,11 +31,10 @@
 #include <QStringList>
 #include "models/actionmodel.h"
 
-class RulesPlaylists : public ActionModel
-{
+class RulesPlaylists : public ActionModel {
     Q_OBJECT
 
-public:
+   public:
     enum Order {
         Order_AlbumArtist,
         Order_Artist,
@@ -51,15 +50,15 @@ public:
         Order_Count
     };
 
-    static Order toOrder(const QString &str);
+    static Order toOrder(const QString& str);
     static QString orderStr(Order order);
     static QString orderName(Order order);
 
     typedef QMap<QString, QString> Rule;
     struct Entry {
-        Entry(const QString &n=QString()) : name(n) { }
-        bool operator==(const Entry &o) const { return name==o.name; }
-        bool haveRating() const { return ratingFrom>=0 && ratingTo>0; }
+        Entry(const QString& n = QString()) : name(n) {}
+        bool operator==(const Entry& o) const { return name == o.name; }
+        bool haveRating() const { return ratingFrom >= 0 && ratingTo > 0; }
         QString name;
         QList<Rule> rules;
         bool includeUnrated = false;
@@ -97,42 +96,51 @@ public:
     static const QChar constRangeSep;
     static const QChar constKeyValSep;
 
-    RulesPlaylists(int icon, const QString &dir);
-    ~RulesPlaylists() override { }
+    RulesPlaylists(int icon, const QString& dir);
+    ~RulesPlaylists() override {}
 
-    virtual QString name() const =0;
-    virtual QString title() const =0;
-    virtual QString descr() const =0;
+    virtual QString name() const = 0;
+    virtual QString title() const = 0;
+    virtual QString descr() const = 0;
     virtual bool isDynamic() const { return false; }
-    const QIcon & icon() const { return icn; }
+    const QIcon& icon() const { return icn; }
     virtual bool isRemote() const { return false; }
     virtual int minTracks() const { return 10; }
     virtual int maxTracks() const { return 500; }
     virtual int defaultNumTracks() const { return 10; }
-    virtual bool saveRemote(const QString &string, const Entry &e) { Q_UNUSED(string); Q_UNUSED(e); return false; }
-    virtual void stop(bool sendClear=false) { Q_UNUSED(sendClear) }
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    virtual bool saveRemote(const QString& string, const Entry& e) {
+        Q_UNUSED(string);
+        Q_UNUSED(e);
+        return false;
+    }
+    virtual void stop(bool sendClear = false) { Q_UNUSED(sendClear) }
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex&) const override { return 1; }
-    bool hasChildren(const QModelIndex &parent) const override;
-    QModelIndex parent(const QModelIndex &index) const override;
-    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-    QVariant data(const QModelIndex &, int) const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
-    Entry entry(const QString &e);
-    Entry entry(int row) const { return row>=0 && row<entryList.count() ? entryList.at(row) : Entry(); }
-    bool exists(const QString &e) { return entryList.end()!=find(e); }
-    bool save(const Entry &e);
-    virtual void del(const QString &name);
+    bool hasChildren(const QModelIndex& parent) const override;
+    QModelIndex parent(const QModelIndex& index) const override;
+    QModelIndex index(int row, int column,
+                      const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex&, int) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    Entry entry(const QString& e);
+    Entry entry(int row) const {
+        return row >= 0 && row < entryList.count() ? entryList.at(row)
+                                                   : Entry();
+    }
+    bool exists(const QString& e) { return entryList.end() != find(e); }
+    bool save(const Entry& e);
+    virtual void del(const QString& name);
     QString current() const { return currentEntry; }
-    const QList<Entry> & entries() const { return entryList; }
+    const QList<Entry>& entries() const { return entryList; }
 
-protected:
-    QList<Entry>::Iterator find(const QString &e);
+   protected:
+    QList<Entry>::Iterator find(const QString& e);
     void loadLocal();
-    void updateEntry(const Entry &e);
+    void updateEntry(const Entry& e);
 
-protected:
+   protected:
     QIcon icn;
     QString rulesDir;
     QList<Entry> entryList;

@@ -32,25 +32,24 @@
 
 class QNetworkReply;
 
-class ApiKeys : public QObject
-{
+class ApiKeys : public QObject {
     Q_OBJECT
 
-public:
-    static ApiKeys * self();
+   public:
+    static ApiKeys* self();
 
     enum Service {
         LastFm,
         FanArt,
         ShoutCast,
-        //SoundCloud,
+        // SoundCloud,
 
         NumServices
     };
 
     struct Details {
-        Details(Service s, const QString &n, const QString &k, const QString &u)
-            : srv(s), name(n), key(k), url(u) { }
+        Details(Service s, const QString& n, const QString& k, const QString& u)
+            : srv(s), name(n), key(k), url(u) {}
         Service srv;
         QString name;
         QString key;
@@ -62,19 +61,20 @@ public:
     void load();
     void save();
     QList<Details> getDetails();
-    const QString &get(Service srv);
-    void set(Service srv, const QString &key);
-    void addKey(QUrlQuery &query, Service srv);
-    QString addKey(const QString &url, Service srv);
+    const QString& get(Service srv);
+    void set(Service srv, const QString& key);
+    void addKey(QUrlQuery& query, Service srv);
+    QString addKey(const QString& url, Service srv);
     void setLimitReached(Service srv);
     bool isLimitReached(Service srv);
-    bool isLimitReached(const QNetworkReply *job, Service srv);
+    bool isLimitReached(const QNetworkReply* job, Service srv);
 
-Q_SIGNALS:
-    void error(const QString &str);
+   Q_SIGNALS:
+    void error(const QString& str);
 
-private:
-    QMap<QString, time_t> limitReached; // Set of keys where API limit has been reached
+   private:
+    QMap<QString, time_t>
+        limitReached;  // Set of keys where API limit has been reached
     QString defaultKeys[NumServices];
     QString userKeys[NumServices];
     QString queryItems[NumServices];

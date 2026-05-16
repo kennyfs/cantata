@@ -24,28 +24,21 @@
 #include "qxtmediakeys.h"
 #include "qxt/qxtglobalshortcut.h"
 
-QxtMediaKeys::QxtMediaKeys(QObject *p)
-    : MultiMediaKeysInterface(p)
-{
-}
+QxtMediaKeys::QxtMediaKeys(QObject* p) : MultiMediaKeysInterface(p) {}
 
-bool QxtMediaKeys::activate()
-{
+bool QxtMediaKeys::activate() {
     createShortcuts();
-    return true; // Hmm... How to detect if this failed?
+    return true;  // Hmm... How to detect if this failed?
 }
 
-void QxtMediaKeys::deactivate()
-{
-    clear();
-}
+void QxtMediaKeys::deactivate() { clear(); }
 
-void QxtMediaKeys::createShortcuts()
-{
+void QxtMediaKeys::createShortcuts() {
     if (!shortcuts.isEmpty()) {
         return;
     }
-    QxtGlobalShortcut *shortcut = new QxtGlobalShortcut(Qt::Key_MediaPlay, this);
+    QxtGlobalShortcut* shortcut =
+        new QxtGlobalShortcut(Qt::Key_MediaPlay, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(playPause()));
     shortcuts.append(shortcut);
     shortcut = new QxtGlobalShortcut(Qt::Key_MediaStop, this);
@@ -59,11 +52,9 @@ void QxtMediaKeys::createShortcuts()
     shortcuts.append(shortcut);
 }
 
-void QxtMediaKeys::clear()
-{
+void QxtMediaKeys::clear() {
     if (!shortcuts.isEmpty()) {
         qDeleteAll(shortcuts);
         shortcuts.clear();
     }
 }
-

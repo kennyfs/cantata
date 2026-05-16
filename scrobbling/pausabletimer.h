@@ -27,14 +27,13 @@
 #include <QTimer>
 #include <QElapsedTimer>
 
-class PausableTimer : public QTimer
-{
-public:
+class PausableTimer : public QTimer {
+   public:
     PausableTimer();
     void start();
     void pause();
 
-private:
+   private:
     QElapsedTimer elapsedTimer;
     qint64 timePaused;
 };

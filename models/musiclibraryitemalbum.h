@@ -37,39 +37,42 @@ class QPixmap;
 class MusicLibraryItemArtist;
 class MusicLibraryItemSong;
 
-class MusicLibraryItemAlbum : public MusicLibraryItemContainer
-{
-public:
+class MusicLibraryItemAlbum : public MusicLibraryItemContainer {
+   public:
     static void setSortByDate(bool sd);
     static bool sortByDate();
 
-    static bool lessThan(const MusicLibraryItem *a, const MusicLibraryItem *b);
+    static bool lessThan(const MusicLibraryItem* a, const MusicLibraryItem* b);
 
-    MusicLibraryItemAlbum(const Song &song, MusicLibraryItemContainer *parent);
+    MusicLibraryItemAlbum(const Song& song, MusicLibraryItemContainer* parent);
     ~MusicLibraryItemAlbum() override;
 
-    QString displayData(bool full=false) const override;
+    QString displayData(bool full = false) const override;
     quint32 year() const { return m_year; }
     quint32 totalTime();
     quint32 trackCount();
-    void append(MusicLibraryItem *i) override;
+    void append(MusicLibraryItem* i) override;
     void remove(int row);
-    void remove(MusicLibraryItemSong *i);
-    void removeAll(const QSet<QString> &fileNames);
-    QMap<QString, Song> getSongs(const QSet<QString> &fileNames) const;
+    void remove(MusicLibraryItemSong* i);
+    void removeAll(const QSet<QString>& fileNames);
+    QMap<QString, Song> getSongs(const QSet<QString>& fileNames) const;
     Type itemType() const override { return Type_Album; }
     bool updateYear();
-    const QString & id() const { return m_id; }
-    const QString & albumId() const { return m_id.isEmpty() ? m_itemData : m_id; }
-    const QString & sortString() const { return m_sortString.isEmpty() ? m_itemData : m_sortString; }
+    const QString& id() const { return m_id; }
+    const QString& albumId() const {
+        return m_id.isEmpty() ? m_itemData : m_id;
+    }
+    const QString& sortString() const {
+        return m_sortString.isEmpty() ? m_itemData : m_sortString;
+    }
     bool hasSort() const { return !m_sortString.isEmpty(); }
     Song coverSong() const;
 
-private:
-    void setYear(const MusicLibraryItemSong *song);
+   private:
+    void setYear(const MusicLibraryItemSong* song);
     void updateStats();
 
-private:
+   private:
     quint16 m_year;
     quint16 m_yearOfTrack;
     quint16 m_yearOfDisc;

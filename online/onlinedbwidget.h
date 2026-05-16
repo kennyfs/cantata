@@ -28,33 +28,32 @@
 #include "widgets/singlepagewidget.h"
 #include "onlinedbservice.h"
 
-class OnlineDbWidget : public SinglePageWidget
-{
+class OnlineDbWidget : public SinglePageWidget {
     Q_OBJECT
-public:
-    OnlineDbWidget(OnlineDbService *s, QWidget *p);
+   public:
+    OnlineDbWidget(OnlineDbService* s, QWidget* p);
     ~OnlineDbWidget() override;
     QStringList selectedFiles(bool allowPlaylists) const override;
     QList<Song> selectedSongs(bool allowPlaylists) const override;
-    void showEvent(QShowEvent *e) override;
+    void showEvent(QShowEvent* e) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void groupByChanged();
     void firstTimePrompt();
     void headerClicked(int level);
     void configure();
-    void updateToPlayQueue(const QModelIndex &idx, bool replace);
+    void updateToPlayQueue(const QModelIndex& idx, bool replace);
     void addRandomAlbum();
     void modelReset();
 
-private:
+   private:
     void doSearch() override;
     void refresh() override;
     void controlActions() override;
 
-private:
+   private:
     QString configGroup;
-    OnlineDbService *srv;
+    OnlineDbService* srv;
 };
 
 #endif

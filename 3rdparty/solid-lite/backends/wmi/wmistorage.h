@@ -26,19 +26,15 @@
 #include "wmiblock.h"
 #include "wmiquery.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Wmi
-{
-class Storage : public Block, virtual public Solid::Ifaces::StorageDrive
-{
+namespace Solid {
+namespace Backends {
+namespace Wmi {
+class Storage : public Block, virtual public Solid::Ifaces::StorageDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
-public:
-    Storage(WmiDevice *device);
+   public:
+    Storage(WmiDevice* device);
     virtual ~Storage();
 
     virtual Solid::StorageDrive::Bus bus() const;
@@ -47,11 +43,12 @@ public:
     virtual bool isRemovable() const;
     virtual bool isHotpluggable() const;
     virtual qulonglong size() const;
-private:
+
+   private:
     WmiQuery::Item m_logicalDisk;
 };
-}
-}
-}
+}  // namespace Wmi
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_WMI_STORAGE_H
+#endif  // SOLID_BACKENDS_WMI_STORAGE_H

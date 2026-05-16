@@ -37,32 +37,40 @@
 class QMimeData;
 class MusicLibraryItemArtist;
 
-class MusicLibraryModel : public ActionModel
-{
+class MusicLibraryModel : public ActionModel {
     Q_OBJECT
-public:
-    MusicLibraryModel(QObject *parent=nullptr);
+   public:
+    MusicLibraryModel(QObject* parent = nullptr);
     ~MusicLibraryModel() override;
-    QModelIndex index(int, int, const QModelIndex & = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &) const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &i=QModelIndex()) const override { Q_UNUSED(i) return 1; }
-    QVariant data(const QModelIndex &, int) const override;
-    bool setData(const QModelIndex &idx, const QVariant &value, int role = Qt::EditRole) override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QModelIndex index(int, int,
+                      const QModelIndex& = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex&) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& i = QModelIndex()) const override {
+        Q_UNUSED(i)
+        return 1;
+    }
+    QVariant data(const QModelIndex&, int) const override;
+    bool setData(const QModelIndex& idx, const QVariant& value,
+                 int role = Qt::EditRole) override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
     void clear();
-    void setSongs(const QSet<Song> &songs);
-    void setSupportsAlbumArtistTag(bool s) { rootItem->setSupportsAlbumArtistTag(s); }
-    virtual int row(void *i) const { return rootItem->indexOf(static_cast<MusicLibraryItem *>(i)); }
+    void setSongs(const QSet<Song>& songs);
+    void setSupportsAlbumArtistTag(bool s) {
+        rootItem->setSupportsAlbumArtistTag(s);
+    }
+    virtual int row(void* i) const {
+        return rootItem->indexOf(static_cast<MusicLibraryItem*>(i));
+    }
 
-protected:
-    const MusicLibraryItemRoot * root(const MusicLibraryItem *item) const;
+   protected:
+    const MusicLibraryItemRoot* root(const MusicLibraryItem* item) const;
 
-private:
-    void setParentState(const QModelIndex &parent);
+   private:
+    void setParentState(const QModelIndex& parent);
 
-private:
-    MusicLibraryItemRoot *rootItem;
+   private:
+    MusicLibraryItemRoot* rootItem;
 
     friend class MusicLibraryItemRoot;
     friend class DevicesModel;

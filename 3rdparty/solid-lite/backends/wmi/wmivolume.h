@@ -25,19 +25,15 @@
 #include <solid-lite/ifaces/storagevolume.h>
 #include "wmiblock.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Wmi
-{
-class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
-{
+namespace Solid {
+namespace Backends {
+namespace Wmi {
+class Volume : public Block, virtual public Solid::Ifaces::StorageVolume {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageVolume)
 
-public:
-    Volume(WmiDevice *device);
+   public:
+    Volume(WmiDevice* device);
     virtual ~Volume();
 
     virtual bool isIgnored() const;
@@ -48,11 +44,11 @@ public:
     virtual qulonglong size() const;
     virtual QString encryptedContainerUdi() const;
 
-private:
+   private:
     WmiQuery::Item m_logicalDisk;
 };
-}
-}
-}
+}  // namespace Wmi
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_WMI_VOLUME_H
+#endif  // SOLID_BACKENDS_WMI_VOLUME_H

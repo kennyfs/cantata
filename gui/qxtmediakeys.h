@@ -29,21 +29,20 @@
 
 class QxtGlobalShortcut;
 
-class QxtMediaKeys : public MultiMediaKeysInterface
-{
-public:
-    QxtMediaKeys(QObject *p);
+class QxtMediaKeys : public MultiMediaKeysInterface {
+   public:
+    QxtMediaKeys(QObject* p);
     virtual ~QxtMediaKeys() { clear(); }
 
     bool activate();
     void deactivate();
 
-private:
+   private:
     void createShortcuts();
     void clear();
 
-private:
-    QList<QxtGlobalShortcut *> shortcuts;
+   private:
+    QList<QxtGlobalShortcut*> shortcuts;
 };
 
 #endif

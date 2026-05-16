@@ -29,36 +29,38 @@
 
 class Action;
 
-class LocalFolderBrowsePage : public SinglePageWidget
-{
+class LocalFolderBrowsePage : public SinglePageWidget {
     Q_OBJECT
-public:
-    LocalFolderBrowsePage(bool isHome, QWidget *p);
+   public:
+    LocalFolderBrowsePage(bool isHome, QWidget* p);
     ~LocalFolderBrowsePage() override;
 
     QString name() const { return model->name(); }
     QString title() const { return model->title(); }
     QString descr() const { return model->descr(); }
-    const QIcon & icon() const { return model->icon(); }
-    QList<Song> selectedSongs(bool allowPlaylists=false) const override;
+    const QIcon& icon() const { return model->icon(); }
+    QList<Song> selectedSongs(bool allowPlaylists = false) const override;
 
-private:
+   private:
     QString configGroup() const;
     void setView(int v) override;
-    void addSelectionToPlaylist(const QString &name=QString(), int action=MPDConnection::Append, quint8 priority=0, bool decreasePriority=false) override;
+    void addSelectionToPlaylist(const QString& name = QString(),
+                                int action = MPDConnection::Append,
+                                quint8 priority = 0,
+                                bool decreasePriority = false) override;
     void controlActions() override;
-    void focusSearch() override { }
+    void focusSearch() override {}
 
-private Q_SLOTS:
-    void itemDoubleClicked(const QModelIndex &);
+   private Q_SLOTS:
+    void itemDoubleClicked(const QModelIndex&);
     void headerClicked(int level);
     void openFileManager();
 
-private:
+   private:
     bool isHomeFolder;
-    LocalBrowseModel *model;
-    FileSystemProxyModel *proxy;
-    Action *browseAction;
+    LocalBrowseModel* model;
+    FileSystemProxyModel* proxy;
+    Action* browseAction;
 };
 
 #endif

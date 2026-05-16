@@ -27,20 +27,19 @@
 #include "mpdstatus.h"
 #include "mpdconnection.h"
 
-MPDStatus * MPDStatus::self()
-{
+MPDStatus* MPDStatus::self() {
     static MPDStatus instance;
     return &instance;
 }
 
-MPDStatus::MPDStatus()
-{
-    connect(MPDConnection::self(), SIGNAL(statusUpdated(const MPDStatusValues &)), this, SLOT(update(const MPDStatusValues &)), Qt::QueuedConnection);
+MPDStatus::MPDStatus() {
+    connect(MPDConnection::self(),
+            SIGNAL(statusUpdated(const MPDStatusValues&)), this,
+            SLOT(update(const MPDStatusValues&)), Qt::QueuedConnection);
 }
 
-void MPDStatus::update(const MPDStatusValues &v)
-{
-    values=v;
+void MPDStatus::update(const MPDStatusValues& v) {
+    values = v;
     setGuessedElapsed(v.timeElapsed);
     emit updated();
 }

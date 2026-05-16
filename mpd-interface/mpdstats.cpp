@@ -27,20 +27,18 @@
 #include "mpdstats.h"
 #include "mpdconnection.h"
 
-MPDStats * MPDStats::self()
-{
+MPDStats* MPDStats::self() {
     static MPDStats instance;
     return &instance;
 }
 
-MPDStats::MPDStats()
-{
-    connect(MPDConnection::self(), SIGNAL(statsUpdated(const MPDStatsValues &)), this, SLOT(update(const MPDStatsValues &)), Qt::QueuedConnection);
+MPDStats::MPDStats() {
+    connect(MPDConnection::self(), SIGNAL(statsUpdated(const MPDStatsValues&)),
+            this, SLOT(update(const MPDStatsValues&)), Qt::QueuedConnection);
 }
 
-void MPDStats::update(const MPDStatsValues &v)
-{
-    values=v;
+void MPDStats::update(const MPDStatsValues& v) {
+    values = v;
     emit updated();
 }
 

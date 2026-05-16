@@ -27,18 +27,17 @@
 #include <QWidget>
 #include "ui_proxysettings.h"
 
-class ProxySettings : public QWidget, public Ui::ProxySettings
-{
-  Q_OBJECT
+class ProxySettings : public QWidget, public Ui::ProxySettings {
+    Q_OBJECT
 
-public:
-    ProxySettings(QWidget *parent);
+   public:
+    ProxySettings(QWidget* parent);
     ~ProxySettings();
 
     void load();
     void save();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void toggleMode();
 };
 

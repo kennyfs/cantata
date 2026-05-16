@@ -34,25 +34,27 @@
 
 class Action;
 
-class DevicesPage : public SinglePageWidget
-{
+class DevicesPage : public SinglePageWidget {
     Q_OBJECT
 
-public:
-    DevicesPage(QWidget *p);
+   public:
+    DevicesPage(QWidget* p);
     ~DevicesPage() override;
 
     void clear();
     QString activeFsDeviceUdi() const;
     QStringList playableUrls() const;
-    QList<Song> selectedSongs(bool allowPlaylists=false) const override;
-    void addSelectionToPlaylist(const QString &name=QString(), int action=MPDConnection::Append, quint8 priority=0, bool decreasePriority=false) override;
+    QList<Song> selectedSongs(bool allowPlaylists = false) const override;
+    void addSelectionToPlaylist(const QString& name = QString(),
+                                int action = MPDConnection::Append,
+                                quint8 priority = 0,
+                                bool decreasePriority = false) override;
     void focusSearch() override { view->focusSearch(); }
     void refresh() override;
     void resort() { proxy.sort(); }
 
-public Q_SLOTS:
-    void itemDoubleClicked(const QModelIndex &);
+   public Q_SLOTS:
+    void itemDoubleClicked(const QModelIndex&);
     void searchItems();
     void controlActions() override;
     void copyToLibrary();
@@ -63,24 +65,25 @@ public Q_SLOTS:
     void forgetRemoteDevice();
     void sync();
     void toggleDevice();
-    void updated(const QModelIndex &idx);
-    void cdMatches(const QString &udi, const QList<CdAlbum> &albums);
+    void updated(const QModelIndex& idx);
+    void cdMatches(const QString& udi, const QList<CdAlbum>& albums);
     void editDetails();
 
-private:
-    Device * activeFsDevice() const;
+   private:
+    Device* activeFsDevice() const;
 
-Q_SIGNALS:
-    void addToDevice(const QString &from, const QString &to, const QList<Song> &songs);
-    void deleteSongs(const QString &from, const QList<Song> &songs);
+   Q_SIGNALS:
+    void addToDevice(const QString& from, const QString& to,
+                     const QList<Song>& songs);
+    void deleteSongs(const QString& from, const QList<Song>& songs);
 
-private:
+   private:
     MusicLibraryProxyModel proxy;
-    Action *copyAction;
-    Action *syncAction;
-    #ifdef ENABLE_REMOTE_DEVICES
-    Action *forgetDeviceAction;
-    #endif
+    Action* copyAction;
+    Action* syncAction;
+#ifdef ENABLE_REMOTE_DEVICES
+    Action* forgetDeviceAction;
+#endif
 };
 
 #endif

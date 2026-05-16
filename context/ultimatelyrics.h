@@ -28,28 +28,27 @@
 
 class UltimateLyricsProvider;
 
-class UltimateLyrics : public QObject
-{
+class UltimateLyrics : public QObject {
     Q_OBJECT
 
-public:
-    static UltimateLyrics * self();
-    UltimateLyrics() { }
+   public:
+    static UltimateLyrics* self();
+    UltimateLyrics() {}
 
-    UltimateLyricsProvider * getNext(int &index);
-    const QList<UltimateLyricsProvider *> getProviders();
+    UltimateLyricsProvider* getNext(int& index);
+    const QList<UltimateLyricsProvider*> getProviders();
     void release();
-    void setEnabled(const QStringList &enabled);
+    void setEnabled(const QStringList& enabled);
 
-Q_SIGNALS:
-    void lyricsReady(int id, const QString &data);
+   Q_SIGNALS:
+    void lyricsReady(int id, const QString& data);
 
-private:
-    UltimateLyricsProvider * providerByName(const QString &name) const;
+   private:
+    UltimateLyricsProvider* providerByName(const QString& name) const;
     void load();
 
-private:
-    QList<UltimateLyricsProvider *> providers;
+   private:
+    QList<UltimateLyricsProvider*> providers;
 };
 
-#endif // ULTIMATELYRICS_H
+#endif  // ULTIMATELYRICS_H

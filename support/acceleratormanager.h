@@ -17,7 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 #ifndef K_ACCELERATORMANAGER_H
 #define K_ACCELERATORMANAGER_H
 
@@ -31,12 +30,10 @@ class QString;
  * accelerators for any widget.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
-*/
+ */
 
-class AcceleratorManager
-{
-public:
-
+class AcceleratorManager {
+   public:
     /**
      * Manages the accelerators of a widget.
      *
@@ -59,15 +56,16 @@ public:
      *             accels and & before added accels
      */
 
-    static void manage(QWidget *widget, bool programmers_mode = false );
+    static void manage(QWidget* widget, bool programmers_mode = false);
 
     /** \internal returns the result of the last manage operation. */
-    static void last_manage(QString &added,  QString &changed,  QString &removed);
+    static void last_manage(QString& added, QString& changed, QString& removed);
 
     /**
-     * Use this method for a widget (and its children) you want no accels to be set on.
+     * Use this method for a widget (and its children) you want no accels to be
+     * set on.
      */
-    static void setNoAccel( QWidget *widget );
+    static void setNoAccel(QWidget* widget);
 };
 
-#endif // K_ACCELERATORMANAGER_H
+#endif  // K_ACCELERATORMANAGER_H

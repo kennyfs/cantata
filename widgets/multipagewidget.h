@@ -35,41 +35,42 @@ class SizeWidget;
 class QLabel;
 class Configuration;
 
-class MultiPageWidget : public StackedPageWidget
-{
+class MultiPageWidget : public StackedPageWidget {
     Q_OBJECT
 
-    struct Entry
-    {
-        Entry(SelectorButton *b=nullptr, QWidget *p=nullptr) : btn(b), page(p) { }
-        SelectorButton *btn;
-        QWidget *page;
+    struct Entry {
+        Entry(SelectorButton* b = nullptr, QWidget* p = nullptr)
+            : btn(b), page(p) {}
+        SelectorButton* btn;
+        QWidget* page;
     };
 
-public:
-    MultiPageWidget(QWidget *p);
+   public:
+    MultiPageWidget(QWidget* p);
     ~MultiPageWidget() override;
 
-    void load(Configuration &config);
-    void save(Configuration &config) const;
-    void setInfoText(const QString &text);
-    void addPage(const QString &name, const QString &icon, const QString &text, const QString &subText, QWidget *widget);
-    void addPage(const QString &name, const QIcon &icon, const QString &text, const QString &subText, QWidget *widget);
-    void removePage(const QString &name);
+    void load(Configuration& config);
+    void save(Configuration& config) const;
+    void setInfoText(const QString& text);
+    void addPage(const QString& name, const QString& icon, const QString& text,
+                 const QString& subText, QWidget* widget);
+    void addPage(const QString& name, const QIcon& icon, const QString& text,
+                 const QString& subText, QWidget* widget);
+    void removePage(const QString& name);
     void sortItems();
-    bool onMainPage() const { return mainPage==currentWidget(); }
+    bool onMainPage() const { return mainPage == currentWidget(); }
 
-public Q_SLOTS:
-    void updatePageSubText(const QString &name, const QString &text);
+   public Q_SLOTS:
+    void updatePageSubText(const QString& name, const QString& text);
     void showMainView();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void setPage();
 
-private:
-    QWidget *mainPage;
-    QWidget *view;
-    QLabel *infoLabel;
+   private:
+    QWidget* mainPage;
+    QWidget* view;
+    QLabel* infoLabel;
     QMap<QString, Entry> entries;
 };
 

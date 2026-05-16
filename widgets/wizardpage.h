@@ -29,16 +29,15 @@
 
 class QIcon;
 
-class WizardPage : public QWizardPage
-{
-public:
-    WizardPage(QWidget *parent = nullptr) : QWizardPage(parent) { }
-    ~WizardPage() override { }
+class WizardPage : public QWizardPage {
+   public:
+    WizardPage(QWidget* parent = nullptr) : QWizardPage(parent) {}
+    ~WizardPage() override {}
 
-    void setBackground(const QIcon &i);
-    void paintEvent(QPaintEvent *e) override;
+    void setBackground(const QIcon& i);
+    void paintEvent(QPaintEvent* e) override;
 
-private:
+   private:
     QPixmap pix;
 };
 

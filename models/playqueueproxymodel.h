@@ -30,16 +30,17 @@
 #include "proxymodel.h"
 #include "config.h"
 
-class PlayQueueProxyModel : public ProxyModel
-{
+class PlayQueueProxyModel : public ProxyModel {
     Q_OBJECT
 
-public:
-    PlayQueueProxyModel(QObject *parent = nullptr);
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+   public:
+    PlayQueueProxyModel(QObject* parent = nullptr);
+    bool filterAcceptsRow(int sourceRow,
+                          const QModelIndex& sourceParent) const override;
 
-    QMimeData *mimeData(const QModelIndexList &indexes) const override;
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row,
+                      int column, const QModelIndex& parent) override;
 };
 
 #endif

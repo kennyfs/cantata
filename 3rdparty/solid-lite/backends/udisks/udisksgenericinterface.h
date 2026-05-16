@@ -25,33 +25,30 @@
 #include <solid-lite/genericinterface.h>
 #include "udisksdeviceinterface.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 class UDisksDevice;
 
-class GenericInterface : public DeviceInterface, virtual public Solid::Ifaces::GenericInterface
-{
+class GenericInterface : public DeviceInterface,
+                         virtual public Solid::Ifaces::GenericInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::GenericInterface)
 
-public:
-    GenericInterface(UDisksDevice *device);
+   public:
+    GenericInterface(UDisksDevice* device);
     virtual ~GenericInterface();
 
-    virtual QVariant property(const QString &key) const;
+    virtual QVariant property(const QString& key) const;
     virtual QMap<QString, QVariant> allProperties() const;
-    virtual bool propertyExists(const QString &key) const;
+    virtual bool propertyExists(const QString& key) const;
 
-Q_SIGNALS:
-    void propertyChanged(const QMap<QString, int> &changes);
-    void conditionRaised(const QString &condition, const QString &reason);
+   Q_SIGNALS:
+    void propertyChanged(const QMap<QString, int>& changes);
+    void conditionRaised(const QString& condition, const QString& reason);
 };
-}
-}
-}
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_UDISKS_GENERICINTERFACE_H
+#endif  // SOLID_BACKENDS_UDISKS_GENERICINTERFACE_H

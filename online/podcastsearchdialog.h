@@ -40,153 +40,154 @@ class MessageWidget;
 class PageWidget;
 class PodcastService;
 
-namespace OpmlParser
-{
+namespace OpmlParser {
 struct Category;
 struct Podcast;
-}
+}  // namespace OpmlParser
 
-class PodcastPage : public QWidget
-{
+class PodcastPage : public QWidget {
     Q_OBJECT
-public:
-    PodcastPage(QWidget *p, const QString &n);
-    ~PodcastPage() override { cancel(); cancelImage(); }
-    
-    const QIcon & icon() const { return icn; }
-    const QString & name() const { return pageName; }
+   public:
+    PodcastPage(QWidget* p, const QString& n);
+    ~PodcastPage() override {
+        cancel();
+        cancelImage();
+    }
+
+    const QIcon& icon() const { return icn; }
+    const QString& name() const { return pageName; }
     QUrl currentRss() const;
 
-Q_SIGNALS:
-    void rssSelected(const QUrl &url);
-    void error(const QString &msg);
+   Q_SIGNALS:
+    void rssSelected(const QUrl& url);
+    void error(const QString& msg);
 
-protected:
-    void fetch(const QUrl &url);
-    void fetchImage(const QUrl &url);
+   protected:
+    void fetch(const QUrl& url);
+    void fetchImage(const QUrl& url);
     void cancel();
     void cancelImage();
-    void addPodcast(const QString &title, const QUrl &url, const QUrl &image, const QString &description, const QString &webPage, QTreeWidgetItem *p);
-    void addCategory(const OpmlParser::Category &cat, QTreeWidgetItem *p);
-    void addPodcast(const OpmlParser::Podcast &pod, QTreeWidgetItem *p);
+    void addPodcast(const QString& title, const QUrl& url, const QUrl& image,
+                    const QString& description, const QString& webPage,
+                    QTreeWidgetItem* p);
+    void addCategory(const OpmlParser::Category& cat, QTreeWidgetItem* p);
+    void addPodcast(const OpmlParser::Podcast& pod, QTreeWidgetItem* p);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void selectionChanged();
     void jobFinished();
     void imageJobFinished();
-    void openLink(const QUrl &url);
+    void openLink(const QUrl& url);
 
-private:
+   private:
     void updateText();
-    virtual void parseResonse(QIODevice *dev) = 0;
+    virtual void parseResonse(QIODevice* dev) = 0;
 
-protected:
+   protected:
     QString pageName;
-    Spinner *spinner;
-    Spinner *imageSpinner;
-    QTreeWidget *tree;
-    TextBrowser *text;
-    NetworkJob *job;
-    NetworkJob *imageJob;
+    Spinner* spinner;
+    Spinner* imageSpinner;
+    QTreeWidget* tree;
+    TextBrowser* text;
+    NetworkJob* job;
+    NetworkJob* imageJob;
     QIcon icn;
 };
 
-class PodcastSearchPage : public PodcastPage
-{
+class PodcastSearchPage : public PodcastPage {
     Q_OBJECT
-public:
-    PodcastSearchPage(QWidget *p, const QString &n, int i, const QUrl &qu, const QString &qk, const QStringList &other=QStringList());
-    ~PodcastSearchPage() override { }
-    
-    void showEvent(QShowEvent *e) override;
+   public:
+    PodcastSearchPage(QWidget* p, const QString& n, int i, const QUrl& qu,
+                      const QString& qk,
+                      const QStringList& other = QStringList());
+    ~PodcastSearchPage() override {}
 
-private:
-    void parseResonse(QIODevice *dev) override;
+    void showEvent(QShowEvent* e) override;
 
-private Q_SLOTS:
+   private:
+    void parseResonse(QIODevice* dev) override;
+
+   private Q_SLOTS:
     virtual void doSearch();
-    virtual void parse(const QVariant &data)=0;
+    virtual void parse(const QVariant& data) = 0;
 
-protected:
-    LineEdit *search;
-    QPushButton *searchButton;
+   protected:
+    LineEdit* search;
+    QPushButton* searchButton;
     QString currentSearch;
     QUrl queryUrl;
     QString queryKey;
     QStringList otherArgs;
 };
 
-class OpmlBrowsePage : public PodcastPage
-{
+class OpmlBrowsePage : public PodcastPage {
     Q_OBJECT
-public:
-    OpmlBrowsePage(QWidget *p, const QString &n, const QIcon &i, const QUrl &u);
-    ~OpmlBrowsePage() override { }
+   public:
+    OpmlBrowsePage(QWidget* p, const QString& n, const QIcon& i, const QUrl& u);
+    ~OpmlBrowsePage() override {}
 
-    void showEvent(QShowEvent *e) override;
+    void showEvent(QShowEvent* e) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void reload();
 
-private:
-    void parseResonse(QIODevice *dev) override;
+   private:
+    void parseResonse(QIODevice* dev) override;
 
-private:
+   private:
     bool loaded;
     QUrl url;
 };
 
-class PodcastUrlPage : public PodcastPage
-{
+class PodcastUrlPage : public PodcastPage {
     Q_OBJECT
-public:
-    PodcastUrlPage(QWidget *p);
-    ~PodcastUrlPage() override { }
+   public:
+    PodcastUrlPage(QWidget* p);
+    ~PodcastUrlPage() override {}
 
-    void showEvent(QShowEvent *e) override;
+    void showEvent(QShowEvent* e) override;
 
-private:
-    void parseResonse(QIODevice *dev) override;
-    void parse(QIODevice *dev);
+   private:
+    void parseResonse(QIODevice* dev) override;
+    void parse(QIODevice* dev);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void loadUrl();
     void openPath();
 
-protected:
-    LineEdit *urlEntry;
+   protected:
+    LineEdit* urlEntry;
     QUrl currentUrl;
 };
 
-class PodcastSearchDialog : public Dialog
-{
+class PodcastSearchDialog : public Dialog {
     Q_OBJECT
-public:
+   public:
     static int instanceCount();
     static QString constCacheDir;
     static QString constExt;
 
-    PodcastSearchDialog(PodcastService *s, QWidget *parent);
+    PodcastSearchDialog(PodcastService* s, QWidget* parent);
     ~PodcastSearchDialog() override;
 
-private Q_SLOTS:
-    void rssSelected(const QUrl &url);
-    void showError(const QString &msg);
-    void showInfo(const QString &msg);
+   private Q_SLOTS:
+    void rssSelected(const QUrl& url);
+    void showError(const QString& msg);
+    void showInfo(const QString& msg);
     void msgWidgetVisible(bool v);
     void pageChanged();
 
-private:
-    QList<PodcastPage *> loadDirectories(const QString &dir, bool isSystem, QSet<QString> &loaded);
+   private:
+    QList<PodcastPage*> loadDirectories(const QString& dir, bool isSystem,
+                                        QSet<QString>& loaded);
     void slotButtonClicked(int button) override;
 
-private:
+   private:
     QUrl currentUrl;
-    PageWidget *pageWidget;
-    MessageWidget *messageWidget;
-    QWidget *spacer;
-    PodcastService *service;
+    PageWidget* pageWidget;
+    MessageWidget* messageWidget;
+    QWidget* spacer;
+    PodcastService* service;
 };
 
 #endif
-

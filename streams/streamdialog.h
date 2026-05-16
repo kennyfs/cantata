@@ -32,29 +32,28 @@
 class QLabel;
 class BuddyLabel;
 
-class StreamDialog : public Dialog
-{
+class StreamDialog : public Dialog {
     Q_OBJECT
 
-public:
-    StreamDialog(QWidget *parent, bool addToPlayQueue=false);
+   public:
+    StreamDialog(QWidget* parent, bool addToPlayQueue = false);
 
-    void setEdit(const QString &editName, const QString &editUrl);
+    void setEdit(const QString& editName, const QString& editUrl);
     QString name() const { return nameEntry->text().trimmed(); }
     QString url() const { return urlEntry->text().trimmed(); }
     bool save() const { return !saveCheckbox || saveCheckbox->isChecked(); }
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void changed();
 
-private:
+   private:
     QString prevName;
     QString prevUrl;
-    QCheckBox *saveCheckbox;
-    LineEdit *nameEntry;
-    LineEdit *urlEntry;
-    BuddyLabel *nameLabel;
-    QLabel *statusText;
+    QCheckBox* saveCheckbox;
+    LineEdit* nameEntry;
+    LineEdit* urlEntry;
+    BuddyLabel* nameLabel;
+    QLabel* statusText;
     QSet<QString> urlHandlers;
 };
 

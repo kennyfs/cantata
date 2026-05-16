@@ -26,15 +26,13 @@
 #include <QPainter>
 #include <QLinearGradient>
 
-static int fixedWidth=0;
+static int fixedWidth = 0;
 
-SpacerWidget::SpacerWidget(QWidget *parent)
-    : QWidget(parent)
-{
-    if (0==fixedWidth) {
+SpacerWidget::SpacerWidget(QWidget* parent) : QWidget(parent) {
+    if (0 == fixedWidth) {
         ToolButton tb(parent);
         tb.ensurePolished();
-        fixedWidth=tb.sizeHint().width()*0.5;
+        fixedWidth = tb.sizeHint().width() * 0.5;
     }
     setFixedWidth(fixedWidth);
 }

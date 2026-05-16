@@ -33,34 +33,33 @@ class AudioCdDevice;
 class QTreeWidgetItem;
 struct CdAlbum;
 
-class AlbumDetailsDialog : public Dialog, Ui::AlbumDetails
-{
+class AlbumDetailsDialog : public Dialog, Ui::AlbumDetails {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    AlbumDetailsDialog(QWidget *parent);
+    AlbumDetailsDialog(QWidget* parent);
     virtual ~AlbumDetailsDialog();
-    void show(AudioCdDevice *dev);
+    void show(AudioCdDevice* dev);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void hideArtistColumn(bool hide);
     void applyVa();
     void revertVa();
     void capitalise();
     void adjustTrackNumbers();
-    void coverSelected(const QImage &img, const QString &fileName);
+    void coverSelected(const QImage& img, const QString& fileName);
 
-private:
+   private:
     void slotButtonClicked(int button);
-    Song toSong(QTreeWidgetItem *i, const CdAlbum &album);
-    void update(QTreeWidgetItem *i, const Song &s);
+    Song toSong(QTreeWidgetItem* i, const CdAlbum& album);
+    void update(QTreeWidgetItem* i, const Song& s);
     void setCover();
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject* object, QEvent* event);
     CdAlbum getAlbum() const;
 
-private:
+   private:
     QString udi;
     bool pressed;
     Covers::Image coverImage;

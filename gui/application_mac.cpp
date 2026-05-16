@@ -27,9 +27,8 @@
 #include <stdlib.h>
 #include <QDir>
 
-Application::Application(int &argc, char **argv)
-    : SingleApplication(argc, argv)
-{
+Application::Application(int& argc, char** argv)
+    : SingleApplication(argc, argv) {
     setAttribute(Qt::AA_DontShowIconsInMenus, true);
 
     // Set DYLD_LIBRARY_PATH so that Qt finds our openSSL libs
@@ -38,7 +37,7 @@ Application::Application(int &argc, char **argv)
 
     QByteArray ldPath = qgetenv("DYLD_LIBRARY_PATH");
     if (!ldPath.isEmpty()) {
-        ldPath=':'+ldPath;
+        ldPath = ':' + ldPath;
     }
-    ldPath = dir.absolutePath().toLocal8Bit()+ldPath;
+    ldPath = dir.absolutePath().toLocal8Bit() + ldPath;
 }

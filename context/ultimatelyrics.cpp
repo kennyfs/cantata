@@ -34,36 +34,37 @@
 
 GLOBAL_STATIC(UltimateLyrics, instance)
 
-static bool compareLyricProviders(const UltimateLyricsProvider *a, const UltimateLyricsProvider *b)
-{
+static bool compareLyricProviders(const UltimateLyricsProvider* a,
+                                  const UltimateLyricsProvider* b) {
     return a->getRelevance() < b->getRelevance();
 }
 
-static QString parseInvalidIndicator(QXmlStreamReader *reader)
-{
+static QString parseInvalidIndicator(QXmlStreamReader* reader) {
     QString ret = reader->attributes().value("value").toString();
     reader->skipCurrentElement();
     return ret;
 }
 
-static UltimateLyricsProvider::Rule parseRule(QXmlStreamReader *reader)
-{
+static UltimateLyricsProvider::Rule parseRule(QXmlStreamReader* reader) {
     UltimateLyricsProvider::Rule ret;
 
     while (!reader->atEnd()) {
         reader->readNext();
 
-        if (QXmlStreamReader::EndElement==reader->tokenType()) {
+        if (QXmlStreamReader::EndElement == reader->tokenType()) {
             break;
         }
 
-        if (QXmlStreamReader::StartElement==reader->tokenType()) {
-            if (QLatin1String("item")==reader->name()) {
+        if (QXmlStreamReader::StartElement == reader->tokenType()) {
+            if (QLatin1String("item") == reader->name()) {
                 QXmlStreamAttributes attr = reader->attributes();
                 if (attr.hasAttribute("tag")) {
-                    ret << UltimateLyricsProvider::RuleItem(attr.value("tag").toString(), QString());
+                    ret << UltimateLyricsProvider::RuleItem(
+                        attr.value("tag").toString(), QString());
                 } else if (attr.hasAttribute("begin")) {
-                    ret << UltimateLyricsProvider::RuleItem(attr.value("begin").toString(), attr.value("end").toString());
+                    ret << UltimateLyricsProvider::RuleItem(
+                        attr.value("begin").toString(),
+                        attr.value("end").toString());
                 }
             }
             reader->skipCurrentElement();
@@ -72,8 +73,7 @@ static UltimateLyricsProvider::Rule parseRule(QXmlStreamReader *reader)
     return ret;
 }
 
-static UltimateLyricsProvider * parseProvider(QXmlStreamReader *reader)
-{
+static UltimateLyricsProvider* parseProvider(QXmlStreamReader* reader) {
     QXmlStreamAttributes attributes = reader->attributes();
 
     UltimateLyricsProvider* scraper = new UltimateLyricsProvider;
@@ -84,19 +84,21 @@ static UltimateLyricsProvider * parseProvider(QXmlStreamReader *reader)
     while (!reader->atEnd()) {
         reader->readNext();
 
-        if (QXmlStreamReader::EndElement==reader->tokenType()) {
+        if (QXmlStreamReader::EndElement == reader->tokenType()) {
             break;
         }
 
-        if (QXmlStreamReader::StartElement==reader->tokenType()) {
-            if (QLatin1String("extract")==reader->name()) {
+        if (QXmlStreamReader::StartElement == reader->tokenType()) {
+            if (QLatin1String("extract") == reader->name()) {
                 scraper->addExtractRule(parseRule(reader));
-            } else if (QLatin1String("exclude")==reader->name()) {
+            } else if (QLatin1String("exclude") == reader->name()) {
                 scraper->addExcludeRule(parseRule(reader));
-            } else if (QLatin1String("invalidIndicator")==reader->name()) {
+            } else if (QLatin1String("invalidIndicator") == reader->name()) {
                 scraper->addInvalidIndicator(parseInvalidIndicator(reader));
-            } else if (QLatin1String("urlFormat")==reader->name()) {
-                scraper->addUrlFormat(reader->attributes().value("replace").toString(), reader->attributes().value("with").toString());
+            } else if (QLatin1String("urlFormat") == reader->name()) {
+                scraper->addUrlFormat(
+                    reader->attributes().value("replace").toString(),
+                    reader->attributes().value("with").toString());
                 reader->skipCurrentElement();
             } else {
                 reader->skipCurrentElement();
@@ -106,23 +108,21 @@ static UltimateLyricsProvider * parseProvider(QXmlStreamReader *reader)
     return scraper;
 }
 
-void UltimateLyrics::release()
-{
-    for (UltimateLyricsProvider *provider: providers) {
+void UltimateLyrics::release() {
+    for (UltimateLyricsProvider* provider : providers) {
         delete provider;
     }
     providers.clear();
 }
 
-const QList<UltimateLyricsProvider *> UltimateLyrics::getProviders()
-{
+const QList<UltimateLyricsProvider*> UltimateLyrics::getProviders() {
     load();
     return providers;
 }
 
-UltimateLyricsProvider * UltimateLyrics::providerByName(const QString &name) const
-{
-    for (UltimateLyricsProvider *provider: providers) {
+UltimateLyricsProvider* UltimateLyrics::providerByName(
+    const QString& name) const {
+    for (UltimateLyricsProvider* provider : providers) {
         if (provider->getName() == name) {
             return provider;
         }
@@ -130,14 +130,13 @@ UltimateLyricsProvider * UltimateLyrics::providerByName(const QString &name) con
     return nullptr;
 }
 
-UltimateLyricsProvider * UltimateLyrics::getNext(int &index)
-{
+UltimateLyricsProvider* UltimateLyrics::getNext(int& index) {
     load();
     index++;
-    if (index>-1 && index<providers.count()) {
-        for (int i=index; i<providers.count(); ++i) {
+    if (index > -1 && index < providers.count()) {
+        for (int i = index; i < providers.count(); ++i) {
             if (providers.at(i)->isEnabled()) {
-                index=i;
+                index = i;
                 return providers.at(i);
             }
         }
@@ -145,18 +144,19 @@ UltimateLyricsProvider * UltimateLyrics::getNext(int &index)
     return nullptr;
 }
 
-void UltimateLyrics::load()
-{
+void UltimateLyrics::load() {
     if (!providers.isEmpty()) {
         return;
     }
 
     QStringList files;
-    QString userDir=Utils::dataDir();
+    QString userDir = Utils::dataDir();
 
     if (!userDir.isEmpty()) {
-        QFileInfoList files=QDir(userDir).entryInfoList(QStringList() << QLatin1String("lyrics_*.xml"), QDir::NoDotAndDotDot|QDir::Files);
-        for (const QFileInfo &f: files) {
+        QFileInfoList files = QDir(userDir).entryInfoList(
+            QStringList() << QLatin1String("lyrics_*.xml"),
+            QDir::NoDotAndDotDot | QDir::Files);
+        for (const QFileInfo& f : files) {
             files.append(f.absoluteFilePath());
         }
     }
@@ -165,21 +165,23 @@ void UltimateLyrics::load()
 
     QSet<QString> providerNames;
 
-    for (const auto &f: files) {
+    for (const auto& f : files) {
         QFile file(f);
         if (file.open(QIODevice::ReadOnly)) {
             QXmlStreamReader reader(&file);
             while (!reader.atEnd()) {
                 reader.readNext();
 
-                if (QLatin1String("provider")==reader.name()) {
-                    QString name=reader.attributes().value("name").toString();
+                if (QLatin1String("provider") == reader.name()) {
+                    QString name = reader.attributes().value("name").toString();
 
                     if (!providerNames.contains(name)) {
-                        UltimateLyricsProvider *provider = parseProvider(&reader);
+                        UltimateLyricsProvider* provider =
+                            parseProvider(&reader);
                         if (provider) {
                             providers << provider;
-                            connect(provider, SIGNAL(lyricsReady(int,QString)), this, SIGNAL(lyricsReady(int,QString)));
+                            connect(provider, SIGNAL(lyricsReady(int, QString)),
+                                    this, SIGNAL(lyricsReady(int, QString)));
                             providerNames.insert(name);
                         }
                     }
@@ -191,16 +193,15 @@ void UltimateLyrics::load()
     setEnabled(Settings::self()->lyricProviders());
 }
 
-void UltimateLyrics::setEnabled(const QStringList &enabled)
-{
-    for (UltimateLyricsProvider *provider: providers) {
+void UltimateLyrics::setEnabled(const QStringList& enabled) {
+    for (UltimateLyricsProvider* provider : providers) {
         provider->setEnabled(false);
         provider->setRelevance(0xFFFF);
     }
 
-    int relevance=0;
-    for (const QString &p: enabled) {
-        UltimateLyricsProvider *provider=providerByName(p);
+    int relevance = 0;
+    for (const QString& p : enabled) {
+        UltimateLyricsProvider* provider = providerByName(p);
         if (provider) {
             provider->setEnabled(true);
             provider->setRelevance(relevance++);

@@ -25,23 +25,22 @@
 #define POWERMANAGEMENT_H
 
 #include <QObject>
-    
-class PowerManagement : public QObject
-{
+
+class PowerManagement : public QObject {
     Q_OBJECT
 
-public:
-    static PowerManagement * self();
+   public:
+    static PowerManagement* self();
     PowerManagement();
 
-    void setInhibitSuspend(bool i) { inhibitSuspendWhilstPlaying=i; }
+    void setInhibitSuspend(bool i) { inhibitSuspendWhilstPlaying = i; }
     bool inhibitSuspend() const { return inhibitSuspendWhilstPlaying; }
     void emitResuming();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void resuming();
 
-private:
+   private:
     bool inhibitSuspendWhilstPlaying;
 };
 

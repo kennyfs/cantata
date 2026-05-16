@@ -32,68 +32,67 @@ class Thread;
 class QXmlStreamReader;
 struct Song;
 
-class OnlineXmlParser : public QObject
-{
+class OnlineXmlParser : public QObject {
     Q_OBJECT
-public:
+   public:
     OnlineXmlParser();
     ~OnlineXmlParser() override;
-    void start(NetworkJob *job);
-    virtual int parse(QXmlStreamReader &xml) = 0;
-Q_SIGNALS:
-    void songs(QList<Song> *s);
-    void coverUrl(const QString &artist, const QString &album, const QString &cover);
+    void start(NetworkJob* job);
+    virtual int parse(QXmlStreamReader& xml) = 0;
+   Q_SIGNALS:
+    void songs(QList<Song>* s);
+    void coverUrl(const QString& artist, const QString& album,
+                  const QString& cover);
     void startUpdate();
     void endUpdate();
     void abortUpdate();
     void stats(int numArtists);
     void complete();
-    void error(const QString &msg);
-    void startParsing(NetworkJob *job);
+    void error(const QString& msg);
+    void startParsing(NetworkJob* job);
 
-private Q_SLOTS:
-    void doParsing(NetworkJob *job);
+   private Q_SLOTS:
+    void doParsing(NetworkJob* job);
 
-private:
-    Thread *thread;
+   private:
+    Thread* thread;
 };
 
-class OnlineDbService : public SqlLibraryModel, public OnlineService
-{
+class OnlineDbService : public SqlLibraryModel, public OnlineService {
     Q_OBJECT
-public:
-    OnlineDbService(LibraryDb *d, QObject *p);
-    ~OnlineDbService() override { }
+   public:
+    OnlineDbService(LibraryDb* d, QObject* p);
+    ~OnlineDbService() override {}
 
     void createDb();
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
     bool previouslyDownloaded() const;
-    bool isDownloading() { return nullptr!=job; }
+    bool isDownloading() { return nullptr != job; }
     void open();
     void download(bool redownload);
-    virtual OnlineXmlParser * createParser() = 0;
+    virtual OnlineXmlParser* createParser() = 0;
     virtual QUrl listingUrl() const = 0;
-    virtual void configure(QWidget *p) =0;
+    virtual void configure(QWidget* p) = 0;
     virtual int averageSize() const = 0;
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void abort();
 
-Q_SIGNALS:
-    void error(const QString &msg);
+   Q_SIGNALS:
+    void error(const QString& msg);
 
-private Q_SLOTS:
-    void cover(const Song &song, const QImage &img, const QString &file);
-    void updateStatus(const QString &msg);
+   private Q_SLOTS:
+    void cover(const Song& song, const QImage& img, const QString& file);
+    void updateStatus(const QString& msg);
     void downloadPercent(int pc);
     void downloadFinished();
     void updateStats();
 
-protected:
+   protected:
     int lastPc;
     QString status;
     QString stats;
-    NetworkJob *job;
+    NetworkJob* job;
 };
 
 #endif

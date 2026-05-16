@@ -27,38 +27,36 @@
 #include "models/sqllibrarymodel.h"
 #include "onlinedbservice.h"
 
-class JamendoXmlParser : public OnlineXmlParser
-{
-public:
-    int parse(QXmlStreamReader &xml) override;
-private:
-    void parseArtist(QList<Song> *songList, QXmlStreamReader &xml);
-    void parseAlbum(Song &song, QList<Song> *songList, QXmlStreamReader &xml);
-    void parseSong(Song &song, const QString &albumGenre, QXmlStreamReader &xml);
+class JamendoXmlParser : public OnlineXmlParser {
+   public:
+    int parse(QXmlStreamReader& xml) override;
+
+   private:
+    void parseArtist(QList<Song>* songList, QXmlStreamReader& xml);
+    void parseAlbum(Song& song, QList<Song>* songList, QXmlStreamReader& xml);
+    void parseSong(Song& song, const QString& albumGenre,
+                   QXmlStreamReader& xml);
 };
 
-class JamendoService : public OnlineDbService
-{
+class JamendoService : public OnlineDbService {
     Q_OBJECT
-public:
-    enum Format {
-        FMT_MP3,
-        FMT_Ogg
-    };
+   public:
+    enum Format { FMT_MP3, FMT_Ogg };
 
-    JamendoService(QObject *p);
-    QVariant data(const QModelIndex &index, int role) const override;
+    JamendoService(QObject* p);
+    QVariant data(const QModelIndex& index, int role) const override;
     QString name() const override;
     QString title() const override;
     QString descr() const override;
-    OnlineXmlParser * createParser() override;
+    OnlineXmlParser* createParser() override;
     QUrl listingUrl() const override;
-    void configure(QWidget *p) override;
+    void configure(QWidget* p) override;
     int averageSize() const override { return 100; }
-private:
-    Song & fixPath(Song &s) const override;
 
-private:
+   private:
+    Song& fixPath(Song& s) const override;
+
+   private:
     Format format;
 };
 

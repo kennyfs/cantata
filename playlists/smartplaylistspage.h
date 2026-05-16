@@ -31,19 +31,36 @@
 class Action;
 class QLabel;
 
-class SmartPlaylistsPage : public SinglePageWidget
-{
+class SmartPlaylistsPage : public SinglePageWidget {
     Q_OBJECT
 
     struct Command {
-        Command(const RulesPlaylists::Entry &e=RulesPlaylists::Entry(), int a=0, quint8 prio=0, bool dec=false, quint32 i=0)
-            : playlist(e.name), action(a), priority(prio), decreasePriority(dec), includeUnrated(e.includeUnrated),
-              ratingFrom(e.ratingFrom), ratingTo(e.ratingTo),
-              minDuration(e.minDuration), maxDuration(e.maxDuration), maxAge(e.maxAge), numTracks(e.numTracks), order(e.order),
-              orderAscending(e.orderAscending), id(i) { }
+        Command(const RulesPlaylists::Entry& e = RulesPlaylists::Entry(),
+                int a = 0, quint8 prio = 0, bool dec = false, quint32 i = 0)
+            : playlist(e.name),
+              action(a),
+              priority(prio),
+              decreasePriority(dec),
+              includeUnrated(e.includeUnrated),
+              ratingFrom(e.ratingFrom),
+              ratingTo(e.ratingTo),
+              minDuration(e.minDuration),
+              maxDuration(e.maxDuration),
+              maxAge(e.maxAge),
+              numTracks(e.numTracks),
+              order(e.order),
+              orderAscending(e.orderAscending),
+              id(i) {}
         bool isEmpty() const { return playlist.isEmpty(); }
-        void clear() { playlist.clear(); includeRules.clear(); excludeRules.clear(); songs.clear(); toCheck.clear(); checking.clear(); }
-        bool haveRating() const { return ratingFrom>=0 && ratingTo>0; }
+        void clear() {
+            playlist.clear();
+            includeRules.clear();
+            excludeRules.clear();
+            songs.clear();
+            toCheck.clear();
+            checking.clear();
+        }
+        bool haveRating() const { return ratingFrom >= 0 && ratingTo > 0; }
 
         QString playlist;
 
@@ -74,38 +91,40 @@ class SmartPlaylistsPage : public SinglePageWidget
         QStringList toCheck;
     };
 
-public:
-    SmartPlaylistsPage(QWidget *p);
+   public:
+    SmartPlaylistsPage(QWidget* p);
     ~SmartPlaylistsPage() override;
-    void setView(int) override { }
+    void setView(int) override {}
 
-Q_SIGNALS:
-    void search(const QByteArray &query, const QString &id);
-    void getRating(const QString &file);
-    void error(const QString &str);
+   Q_SIGNALS:
+    void search(const QByteArray& query, const QString& id);
+    void getRating(const QString& file);
+    void error(const QString& str);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void addNew();
     void edit();
     void remove();
     void headerClicked(int level);
-    void searchResponse(const QString &id, const QList<Song> &songs);
-    void rating(const QString &file, quint8 val);
+    void searchResponse(const QString& id, const QList<Song>& songs);
+    void rating(const QString& file, quint8 val);
 
-private:
+   private:
     void doSearch() override;
     void controlActions() override;
     void enableWidgets(bool enable);
     void filterCommand();
     void addSongsToPlayQueue();
-    void addSelectionToPlaylist(const QString &name, int action, quint8 priority, bool decreasePriority) override;
+    void addSelectionToPlaylist(const QString& name, int action,
+                                quint8 priority,
+                                bool decreasePriority) override;
 
-private:
+   private:
     PlaylistProxyModel proxy;
-    Action *addAction;
-    Action *editAction;
-    Action *removeAction;
-    QList<QWidget *> controls;
+    Action* addAction;
+    Action* editAction;
+    Action* removeAction;
+    QList<QWidget*> controls;
     Command command;
 };
 

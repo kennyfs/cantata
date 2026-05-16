@@ -30,8 +30,8 @@
 
 #include <solid-lite/genericinterface.h>
 #include <solid-lite/ifaces/genericinterface.h>
-//#include <solid-lite/processor.h>
-//#include <solid-lite/ifaces/processor.h>
+// #include <solid-lite/processor.h>
+// #include <solid-lite/ifaces/processor.h>
 #include <solid-lite/block.h>
 #include <solid-lite/ifaces/block.h>
 #include <solid-lite/storageaccess.h>
@@ -44,253 +44,223 @@
 #include <solid-lite/ifaces/storagevolume.h>
 #include <solid-lite/opticaldisc.h>
 #include <solid-lite/ifaces/opticaldisc.h>
-//#include <solid-lite/camera.h>
-//#include <solid-lite/ifaces/camera.h>
+// #include <solid-lite/camera.h>
+// #include <solid-lite/ifaces/camera.h>
 #include <solid-lite/portablemediaplayer.h>
 #include <solid-lite/ifaces/portablemediaplayer.h>
-//#include <solid-lite/networkinterface.h>
-//#include <solid-lite/ifaces/networkinterface.h>
-//#include <solid-lite/networkshare.h>
-//#include <solid-lite/ifaces/networkshare.h>
-//#include <solid-lite/acadapter.h>
-//#include <solid-lite/ifaces/acadapter.h>
-//#include <solid-lite/battery.h>
-//#include <solid-lite/ifaces/battery.h>
-//#include <solid-lite/button.h>
-//#include <solid-lite/ifaces/button.h>
-//#include <solid-lite/audiointerface.h>
-//#include <solid-lite/ifaces/audiointerface.h>
-//#include <solid-lite/dvbinterface.h>
-//#include <solid-lite/ifaces/dvbinterface.h>
-//#include <solid-lite/video.h>
-//#include <solid-lite/ifaces/video.h>
-//#include <solid-lite/serialinterface.h>
-//#include <solid-lite/ifaces/serialinterface.h>
-//#include <solid-lite/smartcardreader.h>
-//#include <solid-lite/ifaces/smartcardreader.h>
-//#include <solid-lite/internetgateway.h>
-//#include <solid-lite/ifaces/internetgateway.h>
+// #include <solid-lite/networkinterface.h>
+// #include <solid-lite/ifaces/networkinterface.h>
+// #include <solid-lite/networkshare.h>
+// #include <solid-lite/ifaces/networkshare.h>
+// #include <solid-lite/acadapter.h>
+// #include <solid-lite/ifaces/acadapter.h>
+// #include <solid-lite/battery.h>
+// #include <solid-lite/ifaces/battery.h>
+// #include <solid-lite/button.h>
+// #include <solid-lite/ifaces/button.h>
+// #include <solid-lite/audiointerface.h>
+// #include <solid-lite/ifaces/audiointerface.h>
+// #include <solid-lite/dvbinterface.h>
+// #include <solid-lite/ifaces/dvbinterface.h>
+// #include <solid-lite/video.h>
+// #include <solid-lite/ifaces/video.h>
+// #include <solid-lite/serialinterface.h>
+// #include <solid-lite/ifaces/serialinterface.h>
+// #include <solid-lite/smartcardreader.h>
+// #include <solid-lite/ifaces/smartcardreader.h>
+// #include <solid-lite/internetgateway.h>
+// #include <solid-lite/ifaces/internetgateway.h>
 
-
-Solid::Device::Device(const QString &udi)
-{
-    DeviceManagerPrivate *manager
-        = static_cast<DeviceManagerPrivate *>(Solid::DeviceNotifier::instance());
+Solid::Device::Device(const QString& udi) {
+    DeviceManagerPrivate* manager =
+        static_cast<DeviceManagerPrivate*>(Solid::DeviceNotifier::instance());
     d = manager->findRegisteredDevice(udi);
 }
 
-Solid::Device::Device(const Device &device)
-    : d(device.d)
-{
-}
+Solid::Device::Device(const Device& device) : d(device.d) {}
 
-Solid::Device::~Device()
-{
-}
+Solid::Device::~Device() {}
 
-Solid::Device &Solid::Device::operator=(const Solid::Device &device)
-{
+Solid::Device& Solid::Device::operator=(const Solid::Device& device) {
     d = device.d;
     return *this;
 }
 
-bool Solid::Device::isValid() const
-{
-    return d->backendObject()!=nullptr;
+bool Solid::Device::isValid() const { return d->backendObject() != nullptr; }
+
+QString Solid::Device::udi() const { return d->udi(); }
+
+QString Solid::Device::parentUdi() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QString(),
+                      parentUdi());
 }
 
-QString Solid::Device::udi() const
-{
-    return d->udi();
-}
-
-QString Solid::Device::parentUdi() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), parentUdi());
-}
-
-Solid::Device Solid::Device::parent() const
-{
+Solid::Device Solid::Device::parent() const {
     QString udi = parentUdi();
 
-    if (udi.isEmpty())
-    {
+    if (udi.isEmpty()) {
         return Device();
-    }
-    else
-    {
+    } else {
         return Device(udi);
     }
 }
 
-QString Solid::Device::vendor() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), vendor());
+QString Solid::Device::vendor() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QString(), vendor());
 }
 
-QString Solid::Device::product() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), product());
+QString Solid::Device::product() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QString(),
+                      product());
 }
 
-QString Solid::Device::icon() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), icon());
+QString Solid::Device::icon() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QString(), icon());
 }
 
-QStringList Solid::Device::emblems() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QStringList(), emblems());
+QStringList Solid::Device::emblems() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QStringList(),
+                      emblems());
 }
 
-QString Solid::Device::description() const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), description());
+QString Solid::Device::description() const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), QString(),
+                      description());
 }
 
-bool Solid::Device::isDeviceInterface(const DeviceInterface::Type &type) const
-{
-    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), false, queryDeviceInterface(type));
+bool Solid::Device::isDeviceInterface(const DeviceInterface::Type& type) const {
+    return_SOLID_CALL(Ifaces::Device*, d->backendObject(), false,
+                      queryDeviceInterface(type));
 }
 
 #define deviceinterface_cast(IfaceType, DevType, backendObject) \
-    (qobject_cast<IfaceType *>(backendObject) ? new DevType(backendObject) : 0)
+    (qobject_cast<IfaceType*>(backendObject) ? new DevType(backendObject) : 0)
 
-Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type)
-{
-    const Solid::DeviceInterface *interface = const_cast<const Device *>(this)->asDeviceInterface(type);
-    return const_cast<Solid::DeviceInterface *>(interface);
+Solid::DeviceInterface* Solid::Device::asDeviceInterface(
+    const DeviceInterface::Type& type) {
+    const Solid::DeviceInterface* interface =
+        const_cast<const Device*>(this)->asDeviceInterface(type);
+    return const_cast<Solid::DeviceInterface*>(interface);
 }
 
-const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type) const
-{
-    Ifaces::Device *device = qobject_cast<Ifaces::Device *>(d->backendObject());
+const Solid::DeviceInterface* Solid::Device::asDeviceInterface(
+    const DeviceInterface::Type& type) const {
+    Ifaces::Device* device = qobject_cast<Ifaces::Device*>(d->backendObject());
 
-    if (device!=nullptr)
-    {
-        DeviceInterface *iface = d->interface(type);
+    if (device != nullptr) {
+        DeviceInterface* iface = d->interface(type);
 
-        if (iface!=nullptr) {
+        if (iface != nullptr) {
             return iface;
         }
 
-        QObject *dev_iface = device->createDeviceInterface(type);
+        QObject* dev_iface = device->createDeviceInterface(type);
 
-        if (dev_iface!=nullptr)
-        {
-            switch (type)
-            {
-            case DeviceInterface::GenericInterface:
-                iface = deviceinterface_cast(Ifaces::GenericInterface, GenericInterface, dev_iface);
-                break;
-            //case DeviceInterface::Processor:
-            //    iface = deviceinterface_cast(Ifaces::Processor, Processor, dev_iface);
-            //    break;
-            case DeviceInterface::Block:
-                iface = deviceinterface_cast(Ifaces::Block, Block, dev_iface);
-                break;
-            case DeviceInterface::StorageAccess:
-                iface = deviceinterface_cast(Ifaces::StorageAccess, StorageAccess, dev_iface);
-                break;
-            case DeviceInterface::StorageDrive:
-                iface = deviceinterface_cast(Ifaces::StorageDrive, StorageDrive, dev_iface);
-                break;
-            case DeviceInterface::OpticalDrive:
-                iface = deviceinterface_cast(Ifaces::OpticalDrive, OpticalDrive, dev_iface);
-                break;
-            case DeviceInterface::StorageVolume:
-                iface = deviceinterface_cast(Ifaces::StorageVolume, StorageVolume, dev_iface);
-                break;
-            case DeviceInterface::OpticalDisc:
-                iface = deviceinterface_cast(Ifaces::OpticalDisc, OpticalDisc, dev_iface);
-                break;
-            //case DeviceInterface::Camera:
-            //    iface = deviceinterface_cast(Ifaces::Camera, Camera, dev_iface);
-            //    break;
-            case DeviceInterface::PortableMediaPlayer:
-                iface = deviceinterface_cast(Ifaces::PortableMediaPlayer, PortableMediaPlayer, dev_iface);
-                break;
-            /*case DeviceInterface::NetworkInterface:
-                iface = deviceinterface_cast(Ifaces::NetworkInterface, NetworkInterface, dev_iface);
-                break;
-            case DeviceInterface::AcAdapter:
-                iface = deviceinterface_cast(Ifaces::AcAdapter, AcAdapter, dev_iface);
-                break;
-            case DeviceInterface::Battery:
-                iface = deviceinterface_cast(Ifaces::Battery, Battery, dev_iface);
-                break;
-            case DeviceInterface::Button:
-                iface = deviceinterface_cast(Ifaces::Button, Button, dev_iface);
-                break;
-            case DeviceInterface::AudioInterface:
-                iface = deviceinterface_cast(Ifaces::AudioInterface, AudioInterface, dev_iface);
-                break;
-            case DeviceInterface::DvbInterface:
-                iface = deviceinterface_cast(Ifaces::DvbInterface, DvbInterface, dev_iface);
-                break;
-            case DeviceInterface::Video:
-                iface = deviceinterface_cast(Ifaces::Video, Video, dev_iface);
-                break;
-            case DeviceInterface::SerialInterface:
-                iface = deviceinterface_cast(Ifaces::SerialInterface, SerialInterface, dev_iface);
-                break;
-            case DeviceInterface::SmartCardReader:
-                iface = deviceinterface_cast(Ifaces::SmartCardReader, SmartCardReader, dev_iface);
-                break;
-            case DeviceInterface::InternetGateway:
-                iface = deviceinterface_cast(Ifaces::InternetGateway, InternetGateway, dev_iface);
-                break;
-            case DeviceInterface::NetworkShare:
-                iface = deviceinterface_cast(Ifaces::NetworkShare, NetworkShare, dev_iface);
-                break;
-            */
-            case DeviceInterface::Unknown:
-            case DeviceInterface::Last:
-                break;
+        if (dev_iface != nullptr) {
+            switch (type) {
+                case DeviceInterface::GenericInterface:
+                    iface = deviceinterface_cast(Ifaces::GenericInterface,
+                                                 GenericInterface, dev_iface);
+                    break;
+                // case DeviceInterface::Processor:
+                //     iface = deviceinterface_cast(Ifaces::Processor,
+                //     Processor, dev_iface); break;
+                case DeviceInterface::Block:
+                    iface =
+                        deviceinterface_cast(Ifaces::Block, Block, dev_iface);
+                    break;
+                case DeviceInterface::StorageAccess:
+                    iface = deviceinterface_cast(Ifaces::StorageAccess,
+                                                 StorageAccess, dev_iface);
+                    break;
+                case DeviceInterface::StorageDrive:
+                    iface = deviceinterface_cast(Ifaces::StorageDrive,
+                                                 StorageDrive, dev_iface);
+                    break;
+                case DeviceInterface::OpticalDrive:
+                    iface = deviceinterface_cast(Ifaces::OpticalDrive,
+                                                 OpticalDrive, dev_iface);
+                    break;
+                case DeviceInterface::StorageVolume:
+                    iface = deviceinterface_cast(Ifaces::StorageVolume,
+                                                 StorageVolume, dev_iface);
+                    break;
+                case DeviceInterface::OpticalDisc:
+                    iface = deviceinterface_cast(Ifaces::OpticalDisc,
+                                                 OpticalDisc, dev_iface);
+                    break;
+                // case DeviceInterface::Camera:
+                //     iface = deviceinterface_cast(Ifaces::Camera, Camera,
+                //     dev_iface); break;
+                case DeviceInterface::PortableMediaPlayer:
+                    iface =
+                        deviceinterface_cast(Ifaces::PortableMediaPlayer,
+                                             PortableMediaPlayer, dev_iface);
+                    break;
+                /*case DeviceInterface::NetworkInterface:
+                    iface = deviceinterface_cast(Ifaces::NetworkInterface,
+                NetworkInterface, dev_iface); break; case
+                DeviceInterface::AcAdapter: iface =
+                deviceinterface_cast(Ifaces::AcAdapter, AcAdapter, dev_iface);
+                    break;
+                case DeviceInterface::Battery:
+                    iface = deviceinterface_cast(Ifaces::Battery, Battery,
+                dev_iface); break; case DeviceInterface::Button: iface =
+                deviceinterface_cast(Ifaces::Button, Button, dev_iface); break;
+                case DeviceInterface::AudioInterface:
+                    iface = deviceinterface_cast(Ifaces::AudioInterface,
+                AudioInterface, dev_iface); break; case
+                DeviceInterface::DvbInterface: iface =
+                deviceinterface_cast(Ifaces::DvbInterface, DvbInterface,
+                dev_iface); break; case DeviceInterface::Video: iface =
+                deviceinterface_cast(Ifaces::Video, Video, dev_iface); break;
+                case DeviceInterface::SerialInterface:
+                    iface = deviceinterface_cast(Ifaces::SerialInterface,
+                SerialInterface, dev_iface); break; case
+                DeviceInterface::SmartCardReader: iface =
+                deviceinterface_cast(Ifaces::SmartCardReader, SmartCardReader,
+                dev_iface); break; case DeviceInterface::InternetGateway: iface
+                = deviceinterface_cast(Ifaces::InternetGateway, InternetGateway,
+                dev_iface); break; case DeviceInterface::NetworkShare: iface =
+                deviceinterface_cast(Ifaces::NetworkShare, NetworkShare,
+                dev_iface); break;
+                */
+                case DeviceInterface::Unknown:
+                case DeviceInterface::Last:
+                    break;
             }
         }
 
-        if (iface!=nullptr)
-        {
+        if (iface != nullptr) {
             // Lie on the constness since we're simply doing caching here
-            const_cast<Device *>(this)->d->setInterface(type, iface);
+            const_cast<Device*>(this)->d->setInterface(type, iface);
             iface->d_ptr->setDevicePrivate(d.data());
         }
 
         return iface;
-    }
-    else
-    {
+    } else {
         return nullptr;
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////
 
+Solid::DevicePrivate::DevicePrivate(const QString& udi)
+    : QObject(), QSharedData(), m_udi(udi) {}
 
-Solid::DevicePrivate::DevicePrivate(const QString &udi)
-    : QObject(), QSharedData(), m_udi(udi)
-{
-}
-
-Solid::DevicePrivate::~DevicePrivate()
-{
-    for (DeviceInterface *iface: m_ifaces) {
+Solid::DevicePrivate::~DevicePrivate() {
+    for (DeviceInterface* iface : m_ifaces) {
         delete iface->d_ptr->backendObject();
     }
     setBackendObject(nullptr);
 }
 
-void Solid::DevicePrivate::_k_destroyed(QObject *object)
-{
+void Solid::DevicePrivate::_k_destroyed(QObject* object) {
     Q_UNUSED(object);
     setBackendObject(nullptr);
 }
 
-void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
-{
-
+void Solid::DevicePrivate::setBackendObject(Ifaces::Device* object) {
     if (m_backendObject) {
         m_backendObject.data()->disconnect(this);
     }
@@ -299,12 +269,12 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     m_backendObject = object;
 
     if (object) {
-        connect(object, SIGNAL(destroyed(QObject*)),
-                this, SLOT(_k_destroyed(QObject*)));
+        connect(object, SIGNAL(destroyed(QObject*)), this,
+                SLOT(_k_destroyed(QObject*)));
     }
 
     if (!m_ifaces.isEmpty()) {
-        for (DeviceInterface *iface: m_ifaces) {
+        for (DeviceInterface* iface : m_ifaces) {
             delete iface;
         }
 
@@ -313,15 +283,14 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     }
 }
 
-Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::Type &type) const
-{
+Solid::DeviceInterface* Solid::DevicePrivate::interface(
+    const DeviceInterface::Type& type) const {
     return m_ifaces[type];
 }
 
-void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface)
-{
-    if(m_ifaces.isEmpty())
-        ref.ref();
+void Solid::DevicePrivate::setInterface(const DeviceInterface::Type& type,
+                                        DeviceInterface* interface) {
+    if (m_ifaces.isEmpty()) ref.ref();
     m_ifaces[type] = interface;
 }
 

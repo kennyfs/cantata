@@ -29,35 +29,37 @@
 #include <QMenu>
 
 class QMenu;
-class SelectorLabel : public QLabel
-{
+class SelectorLabel : public QLabel {
     Q_OBJECT
-public:
-    SelectorLabel(QWidget *p);
-    void setUseArrow(bool a) { useArrow=a; }
-    void clear() { if (menu) menu->clear(); }
-    void addItem(const QString &text, const QString &data, const QString &tt=QString());
-    bool event(QEvent *e) override;
+   public:
+    SelectorLabel(QWidget* p);
+    void setUseArrow(bool a) { useArrow = a; }
+    void clear() {
+        if (menu) menu->clear();
+    }
+    void addItem(const QString& text, const QString& data,
+                 const QString& tt = QString());
+    bool event(QEvent* e) override;
     int currentIndex() const { return current; }
     void setCurrentIndex(int v);
     QString itemData(int index) const;
-    QAction * action(int index) const;
+    QAction* action(int index) const;
     int count() const { return menu ? menu->actions().count() : 0; }
-    void setColor(const QColor &col) { textColor=col; }
-    void setBold(bool b) { bold=b; }
+    void setColor(const QColor& col) { textColor = col; }
+    void setBold(bool b) { bold = b; }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void activated(int);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void itemSelected();
 
-private:
+   private:
     QColor textColor;
     int current;
     bool useArrow;
     bool bold;
-    QMenu *menu;
+    QMenu* menu;
 };
 
 #endif

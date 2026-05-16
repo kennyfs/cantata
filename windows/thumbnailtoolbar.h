@@ -31,27 +31,26 @@
 
 class QWinThumbnailToolButton;
 class Action;
-class ThumbnailToolBar : public QWinThumbnailToolBar
-{
-public:
-    ThumbnailToolBar(QWidget *w);
-    virtual ~ThumbnailToolBar() { }
+class ThumbnailToolBar : public QWinThumbnailToolBar {
+   public:
+    ThumbnailToolBar(QWidget* w);
+    virtual ~ThumbnailToolBar() {}
 
     void readSettings();
-    void updateCurrentSong(const Song &song);
-    void updateStatus(MPDStatus * const status);
+    void updateCurrentSong(const Song& song);
+    void updateStatus(MPDStatus* const status);
 
-private:
+   private:
     void update();
-    QWinThumbnailToolButton * createButton(Action *act);
+    QWinThumbnailToolButton* createButton(Action* act);
 
-private:
+   private:
     Song currentSong;
     QPointer<MPDStatus> status;
-    QWinThumbnailToolButton *prevButton;
-    QWinThumbnailToolButton *playPauseButton;
-    QWinThumbnailToolButton *stopButton;
-    QWinThumbnailToolButton *nextButton;
+    QWinThumbnailToolButton* prevButton;
+    QWinThumbnailToolButton* playPauseButton;
+    QWinThumbnailToolButton* stopButton;
+    QWinThumbnailToolButton* nextButton;
 };
 
 #endif

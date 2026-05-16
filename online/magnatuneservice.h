@@ -28,21 +28,21 @@
 #include "onlinedbservice.h"
 #include <QMap>
 
-class MagnatuneXmlParser : public OnlineXmlParser
-{
-public:
-    int parse(QXmlStreamReader &xml) override;
-private:
-    Song parseSong(QXmlStreamReader &xml);
-private:
+class MagnatuneXmlParser : public OnlineXmlParser {
+   public:
+    int parse(QXmlStreamReader& xml) override;
+
+   private:
+    Song parseSong(QXmlStreamReader& xml);
+
+   private:
     QSet<QString> artists;
     QSet<QString> albumUrls;
 };
 
-class MagnatuneService : public OnlineDbService
-{
+class MagnatuneService : public OnlineDbService {
     Q_OBJECT
-public:
+   public:
     enum MemberShip {
         MB_None,
         MB_Streaming,
@@ -61,22 +61,23 @@ public:
         DL_Count
     };
 
-    static QString membershipStr(MemberShip f, bool trans=false);
-    static QString downloadTypeStr(DownloadType f, bool trans=false);
+    static QString membershipStr(MemberShip f, bool trans = false);
+    static QString downloadTypeStr(DownloadType f, bool trans = false);
 
-    MagnatuneService(QObject *p);
-    QVariant data(const QModelIndex &index, int role) const override;
+    MagnatuneService(QObject* p);
+    QVariant data(const QModelIndex& index, int role) const override;
     QString name() const override;
     QString title() const override;
     QString descr() const override;
-    OnlineXmlParser * createParser() override;
+    OnlineXmlParser* createParser() override;
     QUrl listingUrl() const override;
-    void configure(QWidget *p) override;
+    void configure(QWidget* p) override;
     int averageSize() const override { return 10; }
-private:
-    Song & fixPath(Song &s) const override;
 
-private:
+   private:
+    Song& fixPath(Song& s) const override;
+
+   private:
     MemberShip membership;
     DownloadType download;
     QString username;

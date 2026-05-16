@@ -20,7 +20,4 @@
 
 #include "opticaldrive.h"
 
-Solid::Ifaces::OpticalDrive::~OpticalDrive()
-{
-}
-
+Solid::Ifaces::OpticalDrive::~OpticalDrive() {}

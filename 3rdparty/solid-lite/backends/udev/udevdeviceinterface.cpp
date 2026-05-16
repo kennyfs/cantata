@@ -22,13 +22,9 @@
 
 using namespace Solid::Backends::UDev;
 
-DeviceInterface::DeviceInterface(UDevDevice *device)
-    : QObject(device), m_device(device)
-{
-}
+DeviceInterface::DeviceInterface(UDevDevice* device)
+    : QObject(device), m_device(device) {}
 
-DeviceInterface::~DeviceInterface()
-{
-}
+DeviceInterface::~DeviceInterface() {}
 
 #include "backends/udev/moc_udevdeviceinterface.cpp"

@@ -28,22 +28,21 @@
 #include "support/lineedit.h"
 #include "mpd-interface/song.h"
 
-class LyricsDialog : public Dialog
-{
+class LyricsDialog : public Dialog {
     Q_OBJECT
 
-public:
-    LyricsDialog(const Song &s, QWidget *parent);
+   public:
+    LyricsDialog(const Song& s, QWidget* parent);
 
     Song song() const;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void changed();
 
-private:
+   private:
     Song prev;
-    LineEdit *titleEntry;
-    LineEdit *artistEntry;
+    LineEdit* titleEntry;
+    LineEdit* artistEntry;
 };
 
 #endif

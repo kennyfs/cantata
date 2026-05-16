@@ -48,47 +48,46 @@ class ScrobblingSettings;
 class CustomActionsSettings;
 class ApiKeysSettings;
 
-class PreferencesDialog : public ConfigDialog
-{
+class PreferencesDialog : public ConfigDialog {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    PreferencesDialog(QWidget *parent);
+    PreferencesDialog(QWidget* parent);
     ~PreferencesDialog() override;
 
-private:
+   private:
     void save() override;
     void cancel() override;
 
-public Q_SLOTS:
-    void showPage(const QString &page);
+   public Q_SLOTS:
+    void showPage(const QString& page);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void writeSettings();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void settingsSaved();
 
-private:
-    ServerSettings *server;
-    PlaybackSettings *playback;
-    InterfaceSettings *interface;
-    ContextSettings *context;
-    #ifdef ENABLE_PROXY_CONFIG
-    ProxySettings *proxy;
-    #endif
-    ShortcutsSettingsPage *shortcuts;
-    CacheSettings *cache;
-    #if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
-    AudioCdSettings *audiocd;
-    #endif
-    #ifdef ENABLE_SCROBBLING
-    ScrobblingSettings *scrobbling;
-    #endif
-    CustomActionsSettings *custom;
-    ApiKeysSettings *apiKeys;
+   private:
+    ServerSettings* server;
+    PlaybackSettings* playback;
+    InterfaceSettings* interface;
+    ContextSettings* context;
+#ifdef ENABLE_PROXY_CONFIG
+    ProxySettings* proxy;
+#endif
+    ShortcutsSettingsPage* shortcuts;
+    CacheSettings* cache;
+#if defined CDDB_FOUND || defined MUSICBRAINZ5_FOUND
+    AudioCdSettings* audiocd;
+#endif
+#ifdef ENABLE_SCROBBLING
+    ScrobblingSettings* scrobbling;
+#endif
+    CustomActionsSettings* custom;
+    ApiKeysSettings* apiKeys;
 };
 
 #endif

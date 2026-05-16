@@ -26,14 +26,15 @@
 
 #include "proxymodel.h"
 
-class StreamsProxyModel : public ProxyModel
-{
-public:
-    StreamsProxyModel(QObject *parent = nullptr);
+class StreamsProxyModel : public ProxyModel {
+   public:
+    StreamsProxyModel(QObject* parent = nullptr);
 
-    bool filterAcceptsItem(const void *i, QStringList strings) const;
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+    bool filterAcceptsItem(const void* i, QStringList strings) const;
+    bool filterAcceptsRow(int sourceRow,
+                          const QModelIndex& sourceParent) const override;
+    bool lessThan(const QModelIndex& left,
+                  const QModelIndex& right) const override;
 };
 
 #endif

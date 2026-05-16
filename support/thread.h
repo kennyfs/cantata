@@ -27,38 +27,37 @@
 #include <QThread>
 
 class QTimer;
-// ThreadCleaner *needs* to reside in the GUI thread. When a 'Thread' is created it will connect
-// its finished signal to threadFinished(), this then calls deleteLater() to ensure that the
-// thread is finished before it is deleted - and is deleted in the gui thread.
+// ThreadCleaner *needs* to reside in the GUI thread. When a 'Thread' is created
+// it will connect its finished signal to threadFinished(), this then calls
+// deleteLater() to ensure that the thread is finished before it is deleted -
+// and is deleted in the gui thread.
 class Thread;
-class ThreadCleaner : public QObject
-{
+class ThreadCleaner : public QObject {
     Q_OBJECT
-public:
+   public:
     static void enableDebug();
-    static ThreadCleaner * self();
-    ThreadCleaner() { }
-    ~ThreadCleaner() override { }
+    static ThreadCleaner* self();
+    ThreadCleaner() {}
+    ~ThreadCleaner() override {}
 
     // This function must *ONLY* be called from GUI thread...
     void stopAll();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void threadFinished();
 
-private:
-    void add(Thread *thread);
+   private:
+    void add(Thread* thread);
 
-private:
-    QList<Thread *> threads;
+   private:
+    QList<Thread*> threads;
     friend class Thread;
 };
 
-class Thread : public QThread
-{
+class Thread : public QThread {
     Q_OBJECT
-public:
-    Thread(const QString &name, QObject *p=nullptr);
+   public:
+    Thread(const QString& name, QObject* p = nullptr);
     ~Thread() override;
 
     // Make QThread::msleep accessible!
@@ -66,10 +65,10 @@ public:
 
     void run() override;
 
-    QTimer * createTimer(QObject *parent=nullptr);
-    void deleteTimer(QTimer *timer);
+    QTimer* createTimer(QObject* parent = nullptr);
+    void deleteTimer(QTimer* timer);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void stop() { quit(); }
 };
 

@@ -20,7 +20,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
- 
+
 #ifndef CONTEXT_WIDGET_H
 #define CONTEXT_WIDGET_H
 
@@ -43,99 +43,96 @@ class QButtonGroup;
 class QWheelEvent;
 class OnlineView;
 
-class ViewSelector : public QWidget
-{
+class ViewSelector : public QWidget {
     Q_OBJECT
-public:
-    ViewSelector(QWidget *p);
-    ~ViewSelector() override { }
-    void addItem(const QString &label, const QVariant &data);
+   public:
+    ViewSelector(QWidget* p);
+    ~ViewSelector() override {}
+    void addItem(const QString& label, const QVariant& data);
     QVariant itemData(int index) const;
     int count() { return buttons.count(); }
     int currentIndex() const;
     void setCurrentIndex(int index);
 
-private:
-    void wheelEvent(QWheelEvent *ev) override;
-    void paintEvent(QPaintEvent *) override;
+   private:
+    void wheelEvent(QWheelEvent* ev) override;
+    void paintEvent(QPaintEvent*) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void buttonActivated();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void activated(int);
 
-private:
-    QButtonGroup *group;
-    QList<QToolButton *> buttons;
+   private:
+    QButtonGroup* group;
+    QList<QToolButton*> buttons;
 };
 
-class ThinSplitter : public QSplitter
-{
+class ThinSplitter : public QSplitter {
     Q_OBJECT
-public:
-    ThinSplitter(QWidget *parent);
-    QSplitterHandle *createHandle() override;
+   public:
+    ThinSplitter(QWidget* parent);
+    QSplitterHandle* createHandle() override;
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void reset();
 
-private:
-    QAction *resetAct;
+   private:
+    QAction* resetAct;
 };
 
-class ContextWidget : public QWidget
-{
+class ContextWidget : public QWidget {
     Q_OBJECT
     Q_PROPERTY(float fade READ fade WRITE setFade)
 
-public:
+   public:
     static void enableDebug();
 
     static const QLatin1String constBackdropFileName;
     static const QLatin1String constCacheDir;
 
-    ContextWidget(QWidget *parent=nullptr);
+    ContextWidget(QWidget* parent = nullptr);
 
     void readConfig();
     void saveConfig();
     void useDarkBackground(bool u);
-    void update(const Song &s);
-    void showEvent(QShowEvent *e) override;
-    void paintEvent(QPaintEvent *e) override;
+    void update(const Song& s);
+    void showEvent(QShowEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
     float fade() { return fadeValue; }
     void setFade(double value);
     void updateImage(QImage img);
     void search();
 
-private:
+   private:
     void updatePalette();
 
-Q_SIGNALS:
-    void findArtist(const QString &artist);
-    void findAlbum(const QString &artist, const QString &album);
-    void playSong(const QString &file);
+   Q_SIGNALS:
+    void findArtist(const QString& artist);
+    void findAlbum(const QString& artist, const QString& album);
+    void playSong(const QString& file);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void musicbrainzResponse();
     void fanArtResponse();
     void downloadResponse();
 
-private:
+   private:
     void setWide(bool w);
-    void resizeEvent(QResizeEvent *e) override;
+    void resizeEvent(QResizeEvent* e) override;
     void cancel();
-    void updateBackdrop(bool force=false);
+    void updateBackdrop(bool force = false);
     void getBackdrop();
     void getFanArtBackdrop();
-    void getMusicbrainzId(const QString &artist);
+    void getMusicbrainzId(const QString& artist);
     void createBackdrop();
     void resizeBackdrop();
-    NetworkJob * getReply(QObject *obj);
+    NetworkJob* getReply(QObject* obj);
 
-private:
+   private:
     bool shown;
-    NetworkJob *job;
+    NetworkJob* job;
     bool alwaysCollapsed;
     int backdropType;
     int backdropOpacity;
@@ -148,20 +145,20 @@ private:
     QPixmap currentBackdrop;
     QString currentArtist;
     QString updateArtist;
-    ArtistView *artist;
-    AlbumView *album;
-    SongView *song;
+    ArtistView* artist;
+    AlbumView* album;
+    SongView* song;
     QColor appLinkColor;
     double fadeValue;
     QPropertyAnimation animator;
     int minWidth;
     bool isWide;
-    QStackedWidget *mainStack;
-    QStackedWidget *stack;
-    QWidget *standardContext;
-    OnlineView *onlineContext;
-    ThinSplitter *splitter;
-    ViewSelector *viewSelector;
+    QStackedWidget* mainStack;
+    QStackedWidget* stack;
+    QWidget* standardContext;
+    OnlineView* onlineContext;
+    ThinSplitter* splitter;
+    ViewSelector* viewSelector;
 };
 
 #endif

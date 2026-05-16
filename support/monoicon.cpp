@@ -36,77 +36,83 @@
 #include <QApplication>
 #include <QPalette>
 
-class MonoIconEngine : public QIconEngine
-{
-public:
-    MonoIconEngine(const QString &file, FontAwesome::icon fa, const QColor &col, const QColor &sel)
-        : fileName(file)
-        , fontAwesomeIcon(fa)
-        , color(col)
-        , selectedColor(sel)
-    {
-    }
+class MonoIconEngine : public QIconEngine {
+   public:
+    MonoIconEngine(const QString& file, FontAwesome::icon fa, const QColor& col,
+                   const QColor& sel)
+        : fileName(file), fontAwesomeIcon(fa), color(col), selectedColor(sel) {}
 
     ~MonoIconEngine() override {}
 
-    MonoIconEngine * clone() const override
-    {
-        return new MonoIconEngine(fileName, fontAwesomeIcon, color, selectedColor);
+    MonoIconEngine* clone() const override {
+        return new MonoIconEngine(fileName, fontAwesomeIcon, color,
+                                  selectedColor);
     }
 
-    void paint(QPainter *painter, const QRect &rect, QIcon::Mode mode, QIcon::State state) override
-    {
+    void paint(QPainter* painter, const QRect& rect, QIcon::Mode mode,
+               QIcon::State state) override {
         Q_UNUSED(state)
 
-        QColor col=QIcon::Selected==mode ? selectedColor : color;
-        if (QIcon::Selected==mode && !col.isValid()) {
-            #ifdef Q_OS_MAC
-            col=Utils::clampColor(OSXStyle::self()->viewPalette().highlightedText().color());
-            #else
-            col=Utils::clampColor(QApplication::palette().highlightedText().color());
-            #endif
+        QColor col = QIcon::Selected == mode ? selectedColor : color;
+        if (QIcon::Selected == mode && !col.isValid()) {
+#ifdef Q_OS_MAC
+            col = Utils::clampColor(
+                OSXStyle::self()->viewPalette().highlightedText().color());
+#else
+            col = Utils::clampColor(
+                QApplication::palette().highlightedText().color());
+#endif
         }
-        QString key=(fileName.isEmpty() ? QString::number(fontAwesomeIcon) : fileName)+
-                    QLatin1Char('-')+QString::number(rect.width())+QLatin1Char('-')+QString::number(rect.height())+QLatin1Char('-')+col.name();
+        QString key =
+            (fileName.isEmpty() ? QString::number(fontAwesomeIcon) : fileName) +
+            QLatin1Char('-') + QString::number(rect.width()) +
+            QLatin1Char('-') + QString::number(rect.height()) +
+            QLatin1Char('-') + col.name();
         QPixmap pix;
 
         if (!QPixmapCache::find(key, &pix)) {
-            pix=QPixmap(rect.width(), rect.height());
+            pix = QPixmap(rect.width(), rect.height());
             pix.fill(Qt::transparent);
             QPainter p(&pix);
 
             if (fileName.isEmpty()) {
                 QString fontName;
-                if (FontAwesome::ex_one==fontAwesomeIcon) {
-                    fontName="serif";
+                if (FontAwesome::ex_one == fontAwesomeIcon) {
+                    fontName = "serif";
                 } else {
                     // Load fontawesome, if it is not already loaded
                     if (fontAwesomeFontName.isEmpty()) {
                         Q_INIT_RESOURCE(support);
 
-                        QStringList loadedFontFamilies = QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/font.ttf"));
+                        QStringList loadedFontFamilies =
+                            QFontDatabase::applicationFontFamilies(
+                                QFontDatabase::addApplicationFont(
+                                    ":/font.ttf"));
                         if (!loadedFontFamilies.empty()) {
                             fontAwesomeFontName = loadedFontFamilies.at(0);
                         }
                     }
-                    fontName=fontAwesomeFontName;
+                    fontName = fontAwesomeFontName;
                 }
 
                 QFont font(fontName);
-                int pixelSize=rect.height();
-                if (FontAwesome::ex_one==fontAwesomeIcon) {
+                int pixelSize = rect.height();
+                if (FontAwesome::ex_one == fontAwesomeIcon) {
                     font.setBold(true);
-                } else if (pixelSize>10) {
-                    static const int constScale=14;
+                } else if (pixelSize > 10) {
+                    static const int constScale = 14;
 
-                    if (pixelSize>=(constScale*2)) {
-                        pixelSize=((pixelSize/constScale)*constScale);
+                    if (pixelSize >= (constScale * 2)) {
+                        pixelSize = ((pixelSize / constScale) * constScale);
                     } else {
-                        static const int constHalfScale=constScale/2;
-                        pixelSize=((pixelSize/constScale)*constScale)+((pixelSize%constScale)>=constHalfScale ? constHalfScale : 0);
-                        if (pixelSize%constScale) {
-                            if (FontAwesome::list==fontAwesomeIcon) {
-                                pixelSize-=2;
+                        static const int constHalfScale = constScale / 2;
+                        pixelSize = ((pixelSize / constScale) * constScale) +
+                                    ((pixelSize % constScale) >= constHalfScale
+                                         ? constHalfScale
+                                         : 0);
+                        if (pixelSize % constScale) {
+                            if (FontAwesome::list == fontAwesomeIcon) {
+                                pixelSize -= 2;
                             }
                         }
                     }
@@ -118,19 +124,26 @@ public:
                 p.setFont(font);
                 p.setPen(col);
                 p.setRenderHint(QPainter::Antialiasing, true);
-                if (FontAwesome::ex_one==fontAwesomeIcon) {
-                    QString str=QString::number(fontAwesomeIcon);
-                    p.drawText(QRect(0, 0, rect.width(), rect.height()), str, QTextOption(Qt::AlignHCenter|Qt::AlignVCenter));
-                    p.drawText(QRect(1, 0, rect.width(), rect.height()), str, QTextOption(Qt::AlignHCenter|Qt::AlignVCenter));
+                if (FontAwesome::ex_one == fontAwesomeIcon) {
+                    QString str = QString::number(fontAwesomeIcon);
+                    p.drawText(
+                        QRect(0, 0, rect.width(), rect.height()), str,
+                        QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+                    p.drawText(
+                        QRect(1, 0, rect.width(), rect.height()), str,
+                        QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
                 } else {
-                    p.drawText(QRect(0, 0, rect.width(), rect.height()), QString(QChar(static_cast<int>(fontAwesomeIcon))), QTextOption(Qt::AlignCenter|Qt::AlignVCenter));
+                    p.drawText(
+                        QRect(0, 0, rect.width(), rect.height()),
+                        QString(QChar(static_cast<int>(fontAwesomeIcon))),
+                        QTextOption(Qt::AlignCenter | Qt::AlignVCenter));
                 }
             } else {
                 QSvgRenderer renderer;
                 QFile f(fileName);
                 QByteArray bytes;
                 if (f.open(QIODevice::ReadOnly)) {
-                    bytes=f.readAll();
+                    bytes = f.readAll();
                 }
                 if (!bytes.isEmpty()) {
                     bytes.replace("#000", col.name().toLatin1());
@@ -140,18 +153,18 @@ public:
             }
             QPixmapCache::insert(key, pix);
         }
-        if (QIcon::Disabled==mode) {
+        if (QIcon::Disabled == mode) {
             painter->save();
-            painter->setOpacity(painter->opacity()*0.35);
+            painter->setOpacity(painter->opacity() * 0.35);
         }
         painter->drawPixmap(rect.topLeft(), pix);
-        if (QIcon::Disabled==mode) {
+        if (QIcon::Disabled == mode) {
             painter->restore();
         }
     }
 
-    QPixmap pixmap(const QSize &size, QIcon::Mode mode, QIcon::State state) override
-    {
+    QPixmap pixmap(const QSize& size, QIcon::Mode mode,
+                   QIcon::State state) override {
         QPixmap pix(size);
         pix.fill(Qt::transparent);
         QPainter painter(&pix);
@@ -159,7 +172,7 @@ public:
         return pix;
     }
 
-private:
+   private:
     QString fileName;
     FontAwesome::icon fontAwesomeIcon;
     QColor color;
@@ -171,12 +184,12 @@ QString MonoIconEngine::fontAwesomeFontName;
 
 const QColor MonoIcon::constRed(196, 32, 32);
 
-QIcon MonoIcon::icon(const QString &fileName, const QColor &col, const QColor &sel)
-{
+QIcon MonoIcon::icon(const QString& fileName, const QColor& col,
+                     const QColor& sel) {
     return QIcon(new MonoIconEngine(fileName, (FontAwesome::icon)0, col, sel));
 }
 
-QIcon MonoIcon::icon(const FontAwesome::icon icon, const QColor &col, const QColor &sel)
-{
+QIcon MonoIcon::icon(const FontAwesome::icon icon, const QColor& col,
+                     const QColor& sel) {
     return QIcon(new MonoIconEngine(QString(), icon, col, sel));
 }

@@ -30,27 +30,26 @@
 
 class SqueezedTextLabel;
 
-class OnlineSearchWidget : public SinglePageWidget
-{
+class OnlineSearchWidget : public SinglePageWidget {
     Q_OBJECT
-public:
-    OnlineSearchWidget(OnlineSearchService *s, QWidget *p);
+   public:
+    OnlineSearchWidget(OnlineSearchService* s, QWidget* p);
     ~OnlineSearchWidget() override;
     QStringList selectedFiles(bool allowPlaylists) const override;
     QList<Song> selectedSongs(bool allowPlaylists) const override;
-    void setView(int) override { }
-    void showEvent(QShowEvent *e) override;
+    void setView(int) override {}
+    void showEvent(QShowEvent* e) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void headerClicked(int level);
     void statsUpdated(int songs, quint32 time);
 
-private:
+   private:
     void doSearch() override;
 
-private:
-    OnlineSearchService *srv;
-    SqueezedTextLabel *statsLabel;
+   private:
+    OnlineSearchService* srv;
+    SqueezedTextLabel* statsLabel;
 };
 
 #endif

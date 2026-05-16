@@ -29,19 +29,15 @@
 #include <QtDBus/QDBusError>
 #include <QtDBus/QDBusVariant>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
-class Cdrom : public Storage, virtual public Solid::Ifaces::OpticalDrive
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
+class Cdrom : public Storage, virtual public Solid::Ifaces::OpticalDrive {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::OpticalDrive)
 
-public:
-    Cdrom(HalDevice *device);
+   public:
+    Cdrom(HalDevice* device);
     ~Cdrom() override;
 
     Solid::OpticalDrive::MediumTypes supportedMedia() const override;
@@ -50,28 +46,29 @@ public:
     QList<int> writeSpeeds() const override;
     bool eject() override;
 
-Q_SIGNALS:
-    void ejectPressed(const QString &udi) override;
-    void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi) override;
-    void ejectRequested(const QString &udi);
+   Q_SIGNALS:
+    void ejectPressed(const QString& udi) override;
+    void ejectDone(Solid::ErrorType error, QVariant errorData,
+                   const QString& udi) override;
+    void ejectRequested(const QString& udi);
 
-private Q_SLOTS:
-    void slotCondition(const QString &name, const QString &reason);
-    void slotDBusReply(const QDBusMessage &reply);
-    void slotDBusError(const QDBusError &error);
+   private Q_SLOTS:
+    void slotCondition(const QString& name, const QString& reason);
+    void slotDBusReply(const QDBusMessage& reply);
+    void slotDBusError(const QDBusError& error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void slotEjectRequested();
-    void slotEjectDone(int error, const QString &errorString);
+    void slotEjectDone(int error, const QString& errorString);
 
-private:
+   private:
     bool callHalDriveEject();
     bool callSystemEject();
 
     bool m_ejectInProgress;
-    QProcess *m_process;
+    QProcess* m_process;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_CDROM_H
+#endif  // SOLID_BACKENDS_HAL_CDROM_H

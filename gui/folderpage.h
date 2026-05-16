@@ -31,26 +31,25 @@
 class MpdBrowsePage;
 class LocalFolderBrowsePage;
 
-class FolderPage : public MultiPageWidget
-{
+class FolderPage : public MultiPageWidget {
     Q_OBJECT
-public:
-    FolderPage(QWidget *p);
+   public:
+    FolderPage(QWidget* p);
     ~FolderPage() override;
 
     // TODO: Act on all pages...
     void setEnabled(bool e) { mpdBrowse->setEnabled(e); }
     bool isEnabled() const { return mpdBrowse->isEnabled(); }
 
-    MpdBrowsePage *mpd() { return mpdBrowse; }
+    MpdBrowsePage* mpd() { return mpdBrowse; }
 
-    #ifdef ENABLE_DEVICES_SUPPORT
-    void addSelectionToDevice(const QString &udi) override;
-    #endif
+#ifdef ENABLE_DEVICES_SUPPORT
+    void addSelectionToDevice(const QString& udi) override;
+#endif
 
-private:
-    MpdBrowsePage *mpdBrowse;
-    LocalFolderBrowsePage *homeBrowse;
+   private:
+    MpdBrowsePage* mpdBrowse;
+    LocalFolderBrowsePage* homeBrowse;
 };
 
 #endif

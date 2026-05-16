@@ -26,32 +26,35 @@
 
 #include "searchmodel.h"
 
-class MpdSearchModel : public SearchModel
-{
+class MpdSearchModel : public SearchModel {
     Q_OBJECT
 
-public:
-    MpdSearchModel(QObject *parent = nullptr);
+   public:
+    MpdSearchModel(QObject* parent = nullptr);
     ~MpdSearchModel() override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
     void clear() override;
-    void search(const QString &key, const QString &value) override;
+    void search(const QString& key, const QString& value) override;
 
-Q_SIGNALS:
-    void search(const QString &field, const QString &value, int id);
-    void getRating(const QString &file) const;
+   Q_SIGNALS:
+    void search(const QString& field, const QString& value, int id);
+    void getRating(const QString& file) const;
 
-private Q_SLOTS:
-    void searchFinished(int id, const QList<Song> &result);
-    void coverLoaded(const Song &song, int s);
-    void ratingResult(const QString &file, quint8 r);
+   private Q_SLOTS:
+    void searchFinished(int id, const QList<Song>& result);
+    void coverLoaded(const Song& song, int s);
+    void ratingResult(const QString& file, quint8 r);
 
-private:
+   private:
     void clearItems();
-    const Song * toSong(const QModelIndex &index) const { return index.isValid() ? static_cast<const Song *>(index.internalPointer()) : nullptr; }
+    const Song* toSong(const QModelIndex& index) const {
+        return index.isValid()
+                   ? static_cast<const Song*>(index.internalPointer())
+                   : nullptr;
+    }
 
-private:
+   private:
     int currentId;
 };
 

@@ -27,36 +27,31 @@
 #include <QVariant>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace IOKit
-{
+namespace Solid {
+namespace Backends {
+namespace IOKit {
 class IOKitManagerPrivate;
 
-class IOKitManager : public Solid::Ifaces::DeviceManager
-{
+class IOKitManager : public Solid::Ifaces::DeviceManager {
     Q_OBJECT
 
-public:
-    IOKitManager(QObject *parent);
+   public:
+    IOKitManager(QObject* parent);
     virtual ~IOKitManager();
 
-    virtual QString udiPrefix() const ;
+    virtual QString udiPrefix() const;
     virtual QSet<Solid::DeviceInterface::Type> supportedInterfaces() const;
 
     virtual QStringList allDevices();
-    virtual QStringList devicesFromQuery(const QString &parentUdi,
+    virtual QStringList devicesFromQuery(const QString& parentUdi,
                                          Solid::DeviceInterface::Type type);
-    virtual QObject *createDevice(const QString &udi);
+    virtual QObject* createDevice(const QString& udi);
 
-private:
-    IOKitManagerPrivate *d;
+   private:
+    IOKitManagerPrivate* d;
 };
-}
-}
-}
+}  // namespace IOKit
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_IOKIT_IOKITMANAGER_H
-
+#endif  // SOLID_BACKENDS_IOKIT_IOKITMANAGER_H

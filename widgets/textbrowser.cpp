@@ -29,48 +29,48 @@
 #include <QStyle>
 #include <QTimer>
 
-TextBrowser::TextBrowser(QWidget *p)
-    : QTextBrowser(p)
-    , timer(nullptr)
-    , lastImageSize(0)
-    , fullWidthImg(false)
-    , haveImg(false)
-{
-}
+TextBrowser::TextBrowser(QWidget* p)
+    : QTextBrowser(p),
+      timer(nullptr),
+      lastImageSize(0),
+      fullWidthImg(false),
+      haveImg(false) {}
 
-// QTextEdit/QTextBrowser seems to do FastTransformation when scaling images, and this looks bad.
-QVariant TextBrowser::loadResource(int type, const QUrl &name)
-{
-    if (QTextDocument::ImageResource==type) {
+// QTextEdit/QTextBrowser seems to do FastTransformation when scaling images,
+// and this looks bad.
+QVariant TextBrowser::loadResource(int type, const QUrl& name) {
+    if (QTextDocument::ImageResource == type) {
         QImage img;
-        if ((name.scheme().isEmpty() || QLatin1String("file")==name.scheme())) {
+        if ((name.scheme().isEmpty() ||
+             QLatin1String("file") == name.scheme())) {
             img.load(name.path());
             if (img.isNull()) {
-                // Failed to load, perhaps extension is wrong? If so try to guess from plain data without hint from file name.
+                // Failed to load, perhaps extension is wrong? If so try to
+                // guess from plain data without hint from file name.
                 QFile file(name.path());
                 if (file.open(QIODevice::ReadOnly)) {
-                    QByteArray data=file.readAll();
+                    QByteArray data = file.readAll();
                     img.loadFromData(data);
                 }
             }
-        } else if (QLatin1String("data")==name.scheme()) {
-            QByteArray encoded=name.toEncoded();
+        } else if (QLatin1String("data") == name.scheme()) {
+            QByteArray encoded = name.toEncoded();
             static const QString constStart("data:image/png;base64,");
-            encoded=QByteArray::fromBase64(encoded.mid(constStart.length()));
+            encoded = QByteArray::fromBase64(encoded.mid(constStart.length()));
             img.loadFromData(encoded);
         }
         if (!img.isNull()) {
-            haveImg=true;
-            return img.scaled(imageSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            haveImg = true;
+            return img.scaled(imageSize(), Qt::KeepAspectRatio,
+                              Qt::SmoothTransformation);
         }
     }
     return QTextBrowser::loadResource(type, name);
 }
 
-void TextBrowser::setFullWidthImage(bool s)
-{
-    if (s!=fullWidthImg) {
-        fullWidthImg=s;
+void TextBrowser::setFullWidthImage(bool s) {
+    if (s != fullWidthImg) {
+        fullWidthImg = s;
         verticalScrollBar()->removeEventFilter(this);
         if (fullWidthImg) {
             verticalScrollBar()->installEventFilter(this);
@@ -81,64 +81,60 @@ void TextBrowser::setFullWidthImage(bool s)
     }
 }
 
-void TextBrowser::setPal(const QPalette &pal)
-{
+void TextBrowser::setPal(const QPalette& pal) {
     setPalette(pal);
     verticalScrollBar()->setPalette(pal);
     horizontalScrollBar()->setPalette(pal);
 }
 
-void TextBrowser::resizeEvent(QResizeEvent *e)
-{
+void TextBrowser::resizeEvent(QResizeEvent* e) {
     handleSizeChange();
     QTextBrowser::resizeEvent(e);
 }
 
-bool TextBrowser::eventFilter(QObject *obj, QEvent *ev)
-{
-    if (obj==verticalScrollBar() && (QEvent::Show==ev->type() || QEvent::Hide==ev->type())) {
+bool TextBrowser::eventFilter(QObject* obj, QEvent* ev) {
+    if (obj == verticalScrollBar() &&
+        (QEvent::Show == ev->type() || QEvent::Hide == ev->type())) {
         handleSizeChange();
     }
     return QTextBrowser::eventFilter(obj, ev);
 }
 
-void TextBrowser::refreshHtml()
-{
-    setHtml(toHtml());
-}
+void TextBrowser::refreshHtml() { setHtml(toHtml()); }
 
-void TextBrowser::handleSizeChange()
-{
+void TextBrowser::handleSizeChange() {
     if (haveImg) {
-        int imgSize=imageSize().width();
-        if (imgSize!=lastImageSize) {
+        int imgSize = imageSize().width();
+        if (imgSize != lastImageSize) {
             if (timer) {
                 timer->stop();
             } else {
-                timer=new QTimer(this);
+                timer = new QTimer(this);
                 timer->setSingleShot(true);
                 connect(timer, SIGNAL(timeout()), SLOT(refreshHtml()));
             }
-            lastImageSize=imgSize;
+            lastImageSize = imgSize;
             timer->start();
         }
     }
 }
 
-QSize TextBrowser::imageSize() const
-{
+QSize TextBrowser::imageSize() const {
     QSize sz;
 
-    int sbarSpacing = style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing);
-    if (sbarSpacing<0) {
-        sz=size()-QSize(4, 0);
+    int sbarSpacing =
+        style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing);
+    if (sbarSpacing < 0) {
+        sz = size() - QSize(4, 0);
     } else {
-        QScrollBar *sb=verticalScrollBar();
-        int sbarWidth=sb && sb->isVisible() ? 0 : style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-        sz=size()-QSize(4 + sbarSpacing + sbarWidth, 0);
+        QScrollBar* sb = verticalScrollBar();
+        int sbarWidth = sb && sb->isVisible()
+                            ? 0
+                            : style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+        sz = size() - QSize(4 + sbarSpacing + sbarWidth, 0);
     }
-    if (fullWidthImg || sz.width()<=picSize().width()) {
-        return sz.width()<32 || sz.height()<32 ? QSize(32, 32) : sz;
+    if (fullWidthImg || sz.width() <= picSize().width()) {
+        return sz.width() < 32 || sz.height() < 32 ? QSize(32, 32) : sz;
     }
     return picSize();
 }

@@ -27,30 +27,31 @@
 #include <QMenu>
 #include <QList>
 
-class MirrorMenu : public QMenu
-{
+class MirrorMenu : public QMenu {
     Q_OBJECT
-public:
-    MirrorMenu(QWidget *p);
-    void addAction(QAction *act);
-    QAction * addAction(const QString &text);
-    QAction * addAction(const QIcon &icon, const QString &text);
-    QAction * addAction(const QString &text, const QObject *receiver, const char *member, const QKeySequence &shortcut = 0);
-    QAction * addAction(const QIcon &icon, const QString &text, const QObject *receiver, const char *member, const QKeySequence &shortcut = 0);
-    void removeAction(QAction *act);
+   public:
+    MirrorMenu(QWidget* p);
+    void addAction(QAction* act);
+    QAction* addAction(const QString& text);
+    QAction* addAction(const QIcon& icon, const QString& text);
+    QAction* addAction(const QString& text, const QObject* receiver,
+                       const char* member, const QKeySequence& shortcut = 0);
+    QAction* addAction(const QIcon& icon, const QString& text,
+                       const QObject* receiver, const char* member,
+                       const QKeySequence& shortcut = 0);
+    void removeAction(QAction* act);
     void clear();
-    QMenu * duplicate(QWidget *p);
+    QMenu* duplicate(QWidget* p);
 
-private:
+   private:
     void updateMenus();
-    void updateMenu(QMenu *menu);
+    void updateMenu(QMenu* menu);
 
-private Q_SLOTS:
-    void menuDestroyed(QObject *obj);
+   private Q_SLOTS:
+    void menuDestroyed(QObject* obj);
 
-private:
-    QList<QMenu *> menus;
+   private:
+    QList<QMenu*> menus;
 };
 
 #endif
-

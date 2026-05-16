@@ -23,14 +23,11 @@
 
 #include "deviceinterface_p.h"
 
-namespace Solid
-{
-    class GenericInterfacePrivate : public DeviceInterfacePrivate
-    {
-    public:
-        GenericInterfacePrivate()
-            : DeviceInterfacePrivate() { }
-    };
-}
+namespace Solid {
+class GenericInterfacePrivate : public DeviceInterfacePrivate {
+   public:
+    GenericInterfacePrivate() : DeviceInterfacePrivate() {}
+};
+}  // namespace Solid
 
 #endif

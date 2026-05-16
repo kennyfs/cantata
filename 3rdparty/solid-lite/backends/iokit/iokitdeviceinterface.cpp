@@ -22,13 +22,9 @@
 
 using namespace Solid::Backends::IOKit;
 
-DeviceInterface::DeviceInterface(IOKitDevice *device)
-    : QObject(device), m_device(device)
-{
-}
+DeviceInterface::DeviceInterface(IOKitDevice* device)
+    : QObject(device), m_device(device) {}
 
-DeviceInterface::~DeviceInterface()
-{
-}
+DeviceInterface::~DeviceInterface() {}
 
 #include "backends/iokit/moc_iokitdeviceinterface.cpp"

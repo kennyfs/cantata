@@ -27,17 +27,16 @@
 #include "support/dialog.h"
 #include <QComboBox>
 
-class JamendoSettingsDialog : public Dialog
-{
+class JamendoSettingsDialog : public Dialog {
     Q_OBJECT
-public:
-    JamendoSettingsDialog(QWidget *parent);
+   public:
+    JamendoSettingsDialog(QWidget* parent);
 
     bool run(bool mp3);
     int format() const { return fmt->currentIndex(); }
 
-private:
-    QComboBox *fmt;
+   private:
+    QComboBox* fmt;
 };
 
 #endif

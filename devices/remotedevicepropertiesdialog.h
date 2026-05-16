@@ -32,28 +32,30 @@ class FilenameSchemeDialog;
 class DevicePropertiesWidget;
 class RemoteDevicePropertiesWidget;
 
-class RemoteDevicePropertiesDialog : public Dialog
-{
+class RemoteDevicePropertiesDialog : public Dialog {
     Q_OBJECT
 
-public:
-    RemoteDevicePropertiesDialog(QWidget *parent);
-    void show(const DeviceOptions &opts, const RemoteFsDevice::Details &det, int props, int disabledProps=0, bool creating=false, bool isConnected=false);
+   public:
+    RemoteDevicePropertiesDialog(QWidget* parent);
+    void show(const DeviceOptions& opts, const RemoteFsDevice::Details& det,
+              int props, int disabledProps = 0, bool creating = false,
+              bool isConnected = false);
 
-Q_SIGNALS:
-    void updatedSettings(const DeviceOptions &opts, const RemoteFsDevice::Details &det);
+   Q_SIGNALS:
+    void updatedSettings(const DeviceOptions& opts,
+                         const RemoteFsDevice::Details& det);
     void cancelled();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void enableOkButton();
 
-private:
+   private:
     void slotButtonClicked(int button);
 
-private:
-    QTabWidget *tab;
-    RemoteDevicePropertiesWidget *remoteProp;
-    DevicePropertiesWidget *devProp;
+   private:
+    QTabWidget* tab;
+    RemoteDevicePropertiesWidget* remoteProp;
+    DevicePropertiesWidget* devProp;
     bool isCreate;
 };
 

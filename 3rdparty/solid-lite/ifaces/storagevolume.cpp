@@ -20,7 +20,4 @@
 
 #include "storagevolume.h"
 
-Solid::Ifaces::StorageVolume::~StorageVolume()
-{
-}
-
+Solid::Ifaces::StorageVolume::~StorageVolume() {}

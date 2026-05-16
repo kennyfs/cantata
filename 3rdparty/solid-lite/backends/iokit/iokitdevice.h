@@ -24,21 +24,17 @@
 #include <solid-lite/ifaces/device.h>
 #include <IOKit/IOKitLib.h>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace IOKit
-{
+namespace Solid {
+namespace Backends {
+namespace IOKit {
 class IOKitDevicePrivate;
 class IOKitManager;
 
-class IOKitDevice : public Solid::Ifaces::Device
-{
+class IOKitDevice : public Solid::Ifaces::Device {
     Q_OBJECT
 
-public:
-    IOKitDevice(const QString &udi);
+   public:
+    IOKitDevice(const QString& udi);
     virtual ~IOKitDevice();
 
     virtual QString udi() const;
@@ -50,26 +46,28 @@ public:
     virtual QStringList emblems() const;
     virtual QString description() const;
 
-    virtual QVariant property(const QString &key) const;
+    virtual QVariant property(const QString& key) const;
 
     virtual QMap<QString, QVariant> allProperties() const;
 
-    virtual bool propertyExists(const QString &key) const;
+    virtual bool propertyExists(const QString& key) const;
 
-    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
-    virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
+    virtual bool queryDeviceInterface(
+        const Solid::DeviceInterface::Type& type) const;
+    virtual QObject* createDeviceInterface(
+        const Solid::DeviceInterface::Type& type);
 
-Q_SIGNALS:
-    void propertyChanged(const QMap<QString,int> &changes);
-    void conditionRaised(const QString &condition, const QString &reason);
+   Q_SIGNALS:
+    void propertyChanged(const QMap<QString, int>& changes);
+    void conditionRaised(const QString& condition, const QString& reason);
 
-private:
+   private:
     friend class IOKitManager;
-    IOKitDevice(const QString &udi, const io_registry_entry_t &entry);
-    IOKitDevicePrivate * const d;
+    IOKitDevice(const QString& udi, const io_registry_entry_t& entry);
+    IOKitDevicePrivate* const d;
 };
-}
-}
-}
+}  // namespace IOKit
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_IOKIT_IOKITDEVICE_H
+#endif  // SOLID_BACKENDS_IOKIT_IOKITDEVICE_H

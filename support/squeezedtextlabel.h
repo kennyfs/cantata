@@ -28,13 +28,15 @@
 #include <QFontMetrics>
 class QResizeEvent;
 
-class SqueezedTextLabel : public QLabel
-{
-public:
-    SqueezedTextLabel(QWidget *p);
+class SqueezedTextLabel : public QLabel {
+   public:
+    SqueezedTextLabel(QWidget* p);
 
-    void setText(const QString &text) { originalText=text; elideText(); }
-    const QString & fullText() const { return originalText; }
+    void setText(const QString& text) {
+        originalText = text;
+        elideText();
+    }
+    const QString& fullText() const { return originalText; }
     void setTextElideMode(Qt::TextElideMode mode);
 
     QSize minimumSizeHint() const override {
@@ -43,15 +45,18 @@ public:
         return sh;
     }
 
-    QSize sizeHint() const override { return QSize(fontMetrics().horizontalAdvance(originalText), QLabel::sizeHint().height()); }
-    void resizeEvent(QResizeEvent *) override { elideText(); }
+    QSize sizeHint() const override {
+        return QSize(fontMetrics().horizontalAdvance(originalText),
+                     QLabel::sizeHint().height());
+    }
+    void resizeEvent(QResizeEvent*) override { elideText(); }
 
-private:
+   private:
     void elideText();
 
-private:
+   private:
     QString originalText;
     Qt::TextElideMode elideMode;
 };
 
-#endif // SQUEEZEDTEXTLABEL_H
+#endif  // SQUEEZEDTEXTLABEL_H

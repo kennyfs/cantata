@@ -26,21 +26,20 @@
 
 #include <QString>
 
-class FreeSpaceInfo
-{
-public:
-    FreeSpaceInfo(const QString &path=QString());
+class FreeSpaceInfo {
+   public:
+    FreeSpaceInfo(const QString& path = QString());
 
-    void setPath(const QString &path);
-    void setDirty() { isDirty=true; }
+    void setPath(const QString& path);
+    void setDirty() { isDirty = true; }
     quint64 size();
     quint64 used();
-    const QString & path() const { return location; }
+    const QString& path() const { return location; }
 
-private:
+   private:
     void update();
 
-private:
+   private:
     QString location;
     bool isDirty;
     quint64 totalSize;

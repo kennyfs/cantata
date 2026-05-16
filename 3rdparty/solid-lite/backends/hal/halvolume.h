@@ -24,19 +24,15 @@
 #include <solid-lite/ifaces/storagevolume.h>
 #include "halblock.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
-class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
+class Volume : public Block, virtual public Solid::Ifaces::StorageVolume {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::StorageVolume)
 
-public:
-    Volume(HalDevice *device);
+   public:
+    Volume(HalDevice* device);
     ~Volume() override;
 
     bool isIgnored() const override;
@@ -47,8 +43,8 @@ public:
     qulonglong size() const override;
     QString encryptedContainerUdi() const override;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_VOLUME_H
+#endif  // SOLID_BACKENDS_HAL_VOLUME_H

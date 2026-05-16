@@ -30,49 +30,49 @@
 
 #include <QPushButton>
 
-class ServerSettings : public QWidget, private Ui::ServerSettings
-{
+class ServerSettings : public QWidget, private Ui::ServerSettings {
     Q_OBJECT
 
     struct Collection {
-        Collection(const MPDConnectionDetails &d=MPDConnectionDetails(), const DeviceOptions &n=DeviceOptions())
-            : details(d), namingOpts(n) { }
+        Collection(const MPDConnectionDetails& d = MPDConnectionDetails(),
+                   const DeviceOptions& n = DeviceOptions())
+            : details(d), namingOpts(n) {}
         MPDConnectionDetails details;
         DeviceOptions namingOpts;
     };
 
-public:
-    ServerSettings(QWidget *p);
-    ~ServerSettings() override { }
+   public:
+    ServerSettings(QWidget* p);
+    ~ServerSettings() override {}
 
     void load();
     void save();
     void cancel();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void showDetails(int index);
     void add();
     void remove();
     void nameChanged();
     void basicDirChanged();
-    #ifdef AVAHI_FOUND
+#ifdef AVAHI_FOUND
     void detectMPDs();
     void adoptServerSettings(QString ip, QString port);
-    #endif
+#endif
 
-private:
-    void setDetails(const MPDConnectionDetails &details);
+   private:
+    void setDetails(const MPDConnectionDetails& details);
     MPDConnectionDetails getDetails() const;
-    QString generateName(int ignore=-1) const;
+    QString generateName(int ignore = -1) const;
 
-private:
+   private:
     QList<Collection> collections;
     Collection prevBasic;
     bool haveBasicCollection;
     int prevIndex;
-    #ifdef AVAHI_FOUND
-    QPushButton *discoveryButton;
-    #endif
+#ifdef AVAHI_FOUND
+    QPushButton* discoveryButton;
+#endif
 };
 
 #endif

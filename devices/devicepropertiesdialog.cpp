@@ -24,47 +24,46 @@
 #include "devicepropertiesdialog.h"
 #include "devicepropertieswidget.h"
 
-DevicePropertiesDialog::DevicePropertiesDialog(QWidget *parent)
-    : Dialog(parent)
-{
-    setButtons(Ok|Cancel);
+DevicePropertiesDialog::DevicePropertiesDialog(QWidget* parent)
+    : Dialog(parent) {
+    setButtons(Ok | Cancel);
     setCaption(tr("Device Properties"));
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::WindowModal);
-    devProp=new DevicePropertiesWidget(this);
+    devProp = new DevicePropertiesWidget(this);
     devProp->showRemoteConnectionNote(false);
     setMainWidget(devProp);
     setMinimumWidth(600);
 }
 
-void DevicePropertiesDialog::show(const QString &path, const DeviceOptions &opts, const QList<DeviceStorage> &storage, int props, int disabledProps)
-{
+void DevicePropertiesDialog::show(const QString& path,
+                                  const DeviceOptions& opts,
+                                  const QList<DeviceStorage>& storage,
+                                  int props, int disabledProps) {
     devProp->update(path, opts, storage, props, disabledProps);
     connect(devProp, SIGNAL(updated()), SLOT(enableOkButton()));
     Dialog::show();
     enableButtonOk(false);
 }
 
-void DevicePropertiesDialog::enableOkButton()
-{
+void DevicePropertiesDialog::enableOkButton() {
     enableButtonOk(devProp->isSaveable() && devProp->isModified());
 }
 
-void DevicePropertiesDialog::slotButtonClicked(int button)
-{
+void DevicePropertiesDialog::slotButtonClicked(int button) {
     switch (button) {
-    case Ok:
-        emit updatedSettings(devProp->music(), devProp->settings());
-        break;
-    case Cancel:
-        emit cancelled();
-        reject();
-        break;
-    default:
-        break;
+        case Ok:
+            emit updatedSettings(devProp->music(), devProp->settings());
+            break;
+        case Cancel:
+            emit cancelled();
+            reject();
+            break;
+        default:
+            break;
     }
 
-    if (Ok==button) {
+    if (Ok == button) {
         accept();
     }
 

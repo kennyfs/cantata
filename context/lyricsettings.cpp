@@ -27,44 +27,40 @@
 #include "config.h"
 #include "gui/settings.h"
 
-LyricSettings::LyricSettings(QWidget *p)
-    : ToggleList(p)
-    , loadedXml(false)
-{
-    label->setText(tr("Choose the websites you want to use when searching for lyrics."));
+LyricSettings::LyricSettings(QWidget* p) : ToggleList(p), loadedXml(false) {
+    label->setText(
+        tr("Choose the websites you want to use when searching for lyrics."));
 }
 
-void LyricSettings::load()
-{
-}
+void LyricSettings::load() {}
 
-void LyricSettings::save()
-{
+void LyricSettings::save() {
     if (!loadedXml) {
         return;
     }
 
     QStringList enabled;
-    for (int i=0; i<selected->count(); ++i) {
+    for (int i = 0; i < selected->count(); ++i) {
         enabled.append(selected->item(i)->data(Qt::UserRole).toString());
     }
 
     UltimateLyrics::self()->setEnabled(enabled);
 }
 
-void LyricSettings::showEvent(QShowEvent *e)
-{
+void LyricSettings::showEvent(QShowEvent* e) {
     if (!loadedXml) {
-        const QList<UltimateLyricsProvider *> &lprov=UltimateLyrics::self()->getProviders();
+        const QList<UltimateLyricsProvider*>& lprov =
+            UltimateLyrics::self()->getProviders();
 
         available->clear();
         selected->clear();
-        for (const UltimateLyricsProvider *provider: lprov) {
-            QListWidgetItem *item = new QListWidgetItem(provider->isEnabled() ? selected : available);
+        for (const UltimateLyricsProvider* provider : lprov) {
+            QListWidgetItem* item = new QListWidgetItem(
+                provider->isEnabled() ? selected : available);
             item->setText(provider->displayName());
             item->setData(Qt::UserRole, provider->getName());
         }
-        loadedXml=true;
+        loadedXml = true;
     }
     QWidget::showEvent(e);
 }

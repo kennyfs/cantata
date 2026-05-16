@@ -48,19 +48,19 @@ extern "C" {
 #endif
 }
 
-class CdParanoia
-{
-public:
-    explicit CdParanoia(const QString &device, bool full, bool noSkip, bool playback, int offset);
+class CdParanoia {
+   public:
+    explicit CdParanoia(const QString& device, bool full, bool noSkip,
+                        bool playback, int offset);
     ~CdParanoia();
 
     inline operator bool() const { return !dev.isEmpty(); }
 
     void setParanoiaMode(int mode);
     void setFullParanoiaMode(bool f) { setParanoiaMode(f ? 3 : 0); }
-    void setMaxRetries(int m) { maxRetries=m; }
+    void setMaxRetries(int m) { maxRetries = m; }
 
-    qint16 * read();
+    qint16* read();
     int seek(long sector, int mode);
 
     int firstSectorOfTrack(int track);
@@ -69,24 +69,24 @@ public:
 
     int lengthOfTrack(int n);
     int numOfFramesOfTrack(int n);
-    double sizeOfTrack(int n); //in MiB
+    double sizeOfTrack(int n);  // in MiB
     int frameOffsetOfTrack(int n);
     bool isAudioTrack(int n);
     void reset() { init(); }
 
-private:
+   private:
     bool init();
     void free();
 
-private:
+   private:
     QString dev;
-    #ifdef CDIOPARANOIA_FOUND
-    cdrom_drive_t *drive;
-    cdrom_paranoia_t *paranoia;
-    #else
-    cdrom_drive *drive;
-    cdrom_paranoia *paranoia;
-    #endif
+#ifdef CDIOPARANOIA_FOUND
+    cdrom_drive_t* drive;
+    cdrom_paranoia_t* paranoia;
+#else
+    cdrom_drive* drive;
+    cdrom_paranoia* paranoia;
+#endif
     int paranoiaMode;
     bool neverSkip;
     int maxRetries;

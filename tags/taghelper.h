@@ -29,26 +29,25 @@
 
 class QLocalSocket;
 
-class TagHelper : public QObject
-{
+class TagHelper : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
 
-    TagHelper(const QString &sockName, int parent);
+    TagHelper(const QString& sockName, int parent);
     ~TagHelper() override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void dataReady();
     void checkParent();
 
-private:
+   private:
     void process();
 
-private:
+   private:
     int parentPid;
-    QLocalSocket *socket;
+    QLocalSocket* socket;
     qint32 dataSize;
     QByteArray data;
 };

@@ -26,11 +26,11 @@
 
 #include "models/proxymodel.h"
 
-class PlaylistProxyModel : public ProxyModel
-{
-public:
-    PlaylistProxyModel(QObject *parent = nullptr);
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+class PlaylistProxyModel : public ProxyModel {
+   public:
+    PlaylistProxyModel(QObject* parent = nullptr);
+    bool filterAcceptsRow(int sourceRow,
+                          const QModelIndex& sourceParent) const override;
 };
 
 #endif

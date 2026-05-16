@@ -27,19 +27,18 @@
 #include <QLabel>
 #include <QCursor>
 
-class UrlLabel : public QLabel
-{
+class UrlLabel : public QLabel {
     Q_OBJECT
 
-public:
-    UrlLabel(QWidget *p);
-    ~UrlLabel() override { }
+   public:
+    UrlLabel(QWidget* p);
+    ~UrlLabel() override {}
 
-    void setText(const QString &t);
-    void setProperty(const char *name, const QVariant &value);
+    void setText(const QString& t);
+    void setProperty(const char* name, const QVariant& value);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void leftClickedUrl();
 };
 
-#endif // URLLABEL_H
+#endif  // URLLABEL_H

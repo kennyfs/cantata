@@ -32,20 +32,19 @@
 class QListWidgetItem;
 class UltimateLyricsProvider;
 
-class LyricSettings : public ToggleList
-{
+class LyricSettings : public ToggleList {
     Q_OBJECT
-public:
-    LyricSettings(QWidget *p);
-    ~LyricSettings() override { }
+   public:
+    LyricSettings(QWidget* p);
+    ~LyricSettings() override {}
 
     void load();
     void save();
 
-    void showEvent(QShowEvent *e) override;
+    void showEvent(QShowEvent* e) override;
 
-private:
+   private:
     bool loadedXml;
 };
 
-#endif // LYRICSETTINGS_H
+#endif  // LYRICSETTINGS_H

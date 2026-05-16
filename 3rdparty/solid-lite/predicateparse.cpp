@@ -18,11 +18,10 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
+extern "C" {
 #include "predicateparse.h"
 
-void PredicateParse_mainParse(const char *_code);
+void PredicateParse_mainParse(const char* _code);
 }
 
 #include "predicate.h"
@@ -33,39 +32,34 @@ void PredicateParse_mainParse(const char *_code);
 #include <QStringList>
 #include <QThreadStorage>
 
-namespace Solid
-{
-namespace PredicateParse
-{
+namespace Solid {
+namespace PredicateParse {
 
-struct ParsingData
-{
-    ParsingData()
-        : result(nullptr)
-    {}
+struct ParsingData {
+    ParsingData() : result(nullptr) {}
 
-    Solid::Predicate *result;
+    Solid::Predicate* result;
     QByteArray buffer;
 };
 
-}
-}
+}  // namespace PredicateParse
+}  // namespace Solid
 
-SOLID_GLOBAL_STATIC(QThreadStorage<Solid::PredicateParse::ParsingData *>, s_parsingData)
+SOLID_GLOBAL_STATIC(QThreadStorage<Solid::PredicateParse::ParsingData*>,
+                    s_parsingData)
 
-Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
-{
-    Solid::PredicateParse::ParsingData *data = new Solid::PredicateParse::ParsingData();
+Solid::Predicate Solid::Predicate::fromString(const QString& predicate) {
+    Solid::PredicateParse::ParsingData* data =
+        new Solid::PredicateParse::ParsingData();
     s_parsingData->setLocalData(data);
-    #if QT_VERSION < 0x050000
+#if QT_VERSION < 0x050000
     data->buffer = predicate.toAscii();
-    #else
+#else
     data->buffer = predicate.toLatin1();
-    #endif
+#endif
     PredicateParse_mainParse(data->buffer.constData());
     Predicate result;
-    if (data->result)
-    {
+    if (data->result) {
         result = Predicate(*data->result);
         delete data->result;
     }
@@ -73,35 +67,30 @@ Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
     return result;
 }
 
-
-void PredicateParse_setResult(void *result)
-{
-    Solid::PredicateParse::ParsingData *data = s_parsingData->localData();
-    data->result = (Solid::Predicate *) result;
+void PredicateParse_setResult(void* result) {
+    Solid::PredicateParse::ParsingData* data = s_parsingData->localData();
+    data->result = (Solid::Predicate*)result;
 }
 
-void PredicateParse_errorDetected(const char* s)
-{
+void PredicateParse_errorDetected(const char* s) {
     qWarning("ERROR from solid predicate parser: %s", s);
     s_parsingData->localData()->result = nullptr;
 }
 
-void PredicateParse_destroy(void *pred)
-{
-    Solid::PredicateParse::ParsingData *data = s_parsingData->localData();
-    Solid::Predicate *p = (Solid::Predicate *) pred;
+void PredicateParse_destroy(void* pred) {
+    Solid::PredicateParse::ParsingData* data = s_parsingData->localData();
+    Solid::Predicate* p = (Solid::Predicate*)pred;
     if (p != data->result) {
         delete p;
     }
 }
 
-void *PredicateParse_newAtom(char *interface, char *property, void *value)
-{
+void* PredicateParse_newAtom(char* interface, char* property, void* value) {
     QString iface(interface);
     QString prop(property);
-    QVariant *val = (QVariant *)value;
+    QVariant* val = (QVariant*)value;
 
-    Solid::Predicate *result = new Solid::Predicate(iface, prop, *val);
+    Solid::Predicate* result = new Solid::Predicate(iface, prop, *val);
 
     delete val;
     free(interface);
@@ -110,13 +99,13 @@ void *PredicateParse_newAtom(char *interface, char *property, void *value)
     return result;
 }
 
-void *PredicateParse_newMaskAtom(char *interface, char *property, void *value)
-{
+void* PredicateParse_newMaskAtom(char* interface, char* property, void* value) {
     QString iface(interface);
     QString prop(property);
-    QVariant *val = (QVariant *)value;
+    QVariant* val = (QVariant*)value;
 
-    Solid::Predicate *result = new Solid::Predicate(iface, prop, *val, Solid::Predicate::Mask);
+    Solid::Predicate* result =
+        new Solid::Predicate(iface, prop, *val, Solid::Predicate::Mask);
 
     delete val;
     free(interface);
@@ -125,28 +114,24 @@ void *PredicateParse_newMaskAtom(char *interface, char *property, void *value)
     return result;
 }
 
-
-void *PredicateParse_newIsAtom(char *interface)
-{
+void* PredicateParse_newIsAtom(char* interface) {
     QString iface(interface);
 
-    Solid::Predicate *result = new Solid::Predicate(iface);
+    Solid::Predicate* result = new Solid::Predicate(iface);
 
     free(interface);
 
     return result;
 }
 
+void* PredicateParse_newAnd(void* pred1, void* pred2) {
+    Solid::Predicate* result = new Solid::Predicate();
 
-void *PredicateParse_newAnd(void *pred1, void *pred2)
-{
-    Solid::Predicate *result = new Solid::Predicate();
+    Solid::PredicateParse::ParsingData* data = s_parsingData->localData();
+    Solid::Predicate* p1 = (Solid::Predicate*)pred1;
+    Solid::Predicate* p2 = (Solid::Predicate*)pred2;
 
-    Solid::PredicateParse::ParsingData *data = s_parsingData->localData();
-    Solid::Predicate *p1 = (Solid::Predicate *)pred1;
-    Solid::Predicate *p2 = (Solid::Predicate *)pred2;
-
-    if (p1==data->result || p2==data->result) {
+    if (p1 == data->result || p2 == data->result) {
         data->result = nullptr;
     }
 
@@ -158,16 +143,14 @@ void *PredicateParse_newAnd(void *pred1, void *pred2)
     return result;
 }
 
+void* PredicateParse_newOr(void* pred1, void* pred2) {
+    Solid::Predicate* result = new Solid::Predicate();
 
-void *PredicateParse_newOr(void *pred1, void *pred2)
-{
-    Solid::Predicate *result = new Solid::Predicate();
+    Solid::PredicateParse::ParsingData* data = s_parsingData->localData();
+    Solid::Predicate* p1 = (Solid::Predicate*)pred1;
+    Solid::Predicate* p2 = (Solid::Predicate*)pred2;
 
-    Solid::PredicateParse::ParsingData *data = s_parsingData->localData();
-    Solid::Predicate *p1 = (Solid::Predicate *)pred1;
-    Solid::Predicate *p2 = (Solid::Predicate *)pred2;
-
-    if (p1==data->result || p2==data->result) {
+    if (p1 == data->result || p2 == data->result) {
         data->result = nullptr;
     }
 
@@ -179,9 +162,7 @@ void *PredicateParse_newOr(void *pred1, void *pred2)
     return result;
 }
 
-
-void *PredicateParse_newStringValue(char *val)
-{
+void* PredicateParse_newStringValue(char* val) {
     QString s(val);
 
     free(val);
@@ -189,34 +170,20 @@ void *PredicateParse_newStringValue(char *val)
     return new QVariant(s);
 }
 
-
-void *PredicateParse_newBoolValue(int val)
-{
+void* PredicateParse_newBoolValue(int val) {
     bool b = (val != 0);
     return new QVariant(b);
 }
 
+void* PredicateParse_newNumValue(int val) { return new QVariant(val); }
 
-void *PredicateParse_newNumValue(int val)
-{
-    return new QVariant(val);
-}
+void* PredicateParse_newDoubleValue(double val) { return new QVariant(val); }
 
-
-void *PredicateParse_newDoubleValue(double val)
-{
-    return new QVariant(val);
-}
-
-
-void *PredicateParse_newEmptyStringListValue()
-{
+void* PredicateParse_newEmptyStringListValue() {
     return new QVariant(QStringList());
 }
 
-
-void *PredicateParse_newStringListValue(char *name)
-{
+void* PredicateParse_newStringListValue(char* name) {
     QStringList list;
     list << QString(name);
 
@@ -225,10 +192,8 @@ void *PredicateParse_newStringListValue(char *name)
     return new QVariant(list);
 }
 
-
-void *PredicateParse_appendStringListValue(char *name, void *list)
-{
-    QVariant *variant = (QVariant *)list;
+void* PredicateParse_appendStringListValue(char* name, void* list) {
+    QVariant* variant = (QVariant*)list;
 
     QStringList new_list = variant->toStringList();
 
@@ -240,8 +205,9 @@ void *PredicateParse_appendStringListValue(char *name, void *list)
     return new QVariant(new_list);
 }
 
-void PredicateLexer_unknownToken(const char* text)
-{
-    qWarning("ERROR from solid predicate parser: unrecognized token '%s' in predicate '%s'\n",
-             text, s_parsingData->localData()->buffer.constData());
+void PredicateLexer_unknownToken(const char* text) {
+    qWarning(
+        "ERROR from solid predicate parser: unrecognized token '%s' in "
+        "predicate '%s'\n",
+        text, s_parsingData->localData()->buffer.constData());
 }

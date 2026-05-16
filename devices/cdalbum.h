@@ -29,8 +29,11 @@
 #include "mpd-interface/song.h"
 
 struct CdAlbum {
-    CdAlbum() : isDefault(false), year(0), disc(0)  { }
-    bool isNull() const { return 0==year && 0==disc && tracks.isEmpty() && name.isEmpty() && artist.isEmpty() && composer.isEmpty() && genre.isEmpty(); }
+    CdAlbum() : isDefault(false), year(0), disc(0) {}
+    bool isNull() const {
+        return 0 == year && 0 == disc && tracks.isEmpty() && name.isEmpty() &&
+               artist.isEmpty() && composer.isEmpty() && genre.isEmpty();
+    }
     bool isDefault;
     QString name;
     QString artist;

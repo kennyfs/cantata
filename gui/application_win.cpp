@@ -25,19 +25,18 @@
 #include "config.h"
 #include <windows.h>
 
-Application::Application(int &argc, char **argv)
-    : SingleApplication(argc, argv)
-{
+Application::Application(int& argc, char** argv)
+    : SingleApplication(argc, argv) {
     installNativeEventFilter(this);
     setAttribute(Qt::AA_DontShowIconsInMenus, true);
 }
 
-bool Application::nativeEventFilter(const QByteArray &, void *message, long *result)
-{
-    MSG *msg = static_cast<MSG *>(message);
-    if (msg && WM_POWERBROADCAST==msg->message && PBT_APMRESUMEAUTOMATIC==msg->wParam) {
+bool Application::nativeEventFilter(const QByteArray&, void* message,
+                                    long* result) {
+    MSG* msg = static_cast<MSG*>(message);
+    if (msg && WM_POWERBROADCAST == msg->message &&
+        PBT_APMRESUMEAUTOMATIC == msg->wParam) {
         emit reconnect();
     }
     return false;
 }
-

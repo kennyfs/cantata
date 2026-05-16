@@ -24,22 +24,18 @@
 #include "device.h"
 #include <QStringList>
 
-TranscodingJob::TranscodingJob(const Encoders::Encoder &enc, int val, const QString &src, const QString &dest, const DeviceOptions &d, int co, const Song &s)
-    : CopyJob(src, dest, d, co, s)
-    , encoder(enc)
-    , value(val)
-    , process(nullptr)
-    , duration(-1)
-{
-}
+TranscodingJob::TranscodingJob(const Encoders::Encoder& enc, int val,
+                               const QString& src, const QString& dest,
+                               const DeviceOptions& d, int co, const Song& s)
+    : CopyJob(src, dest, d, co, s),
+      encoder(enc),
+      value(val),
+      process(nullptr),
+      duration(-1) {}
 
-TranscodingJob::~TranscodingJob()
-{
-    delete process;
-}
+TranscodingJob::~TranscodingJob() { delete process; }
 
-void TranscodingJob::run()
-{
+void TranscodingJob::run() {
     QString src(updateTagsLocal());
     if (src.isEmpty()) {
         return;
@@ -48,29 +44,29 @@ void TranscodingJob::run()
     if (stopRequested) {
         emit result(Device::Cancelled);
     } else {
-        QStringList parameters=encoder.params(value, src, destFile);
+        QStringList parameters = encoder.params(value, src, destFile);
         process = new QProcess;
         process->setProcessChannelMode(QProcess::MergedChannels);
         process->setReadChannel(QProcess::StandardOutput);
-        connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processOutput()));
-        connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished(int, QProcess::ExitStatus)));
-        QString cmd=parameters.takeFirst();
+        connect(process, SIGNAL(readyReadStandardOutput()), this,
+                SLOT(processOutput()));
+        connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this,
+                SLOT(finished(int, QProcess::ExitStatus)));
+        QString cmd = parameters.takeFirst();
         process->start(cmd, parameters);
     }
 }
 
-void TranscodingJob::stop()
-{
+void TranscodingJob::stop() {
     if (process) {
         process->close();
         process->deleteLater();
-        process=nullptr;
+        process = nullptr;
         emit result(Device::Cancelled);
     }
 }
 
-void TranscodingJob::finished(int exitCode, QProcess::ExitStatus exitStatus)
-{
+void TranscodingJob::finished(int exitCode, QProcess::ExitStatus exitStatus) {
     Q_UNUSED(exitStatus)
     if (!process) {
         return;
@@ -79,76 +75,73 @@ void TranscodingJob::finished(int exitCode, QProcess::ExitStatus exitStatus)
         emit result(Device::Cancelled);
         return;
     }
-    if (0==exitCode) {
+    if (0 == exitCode) {
         updateTagsDest();
         copyCover(srcFile);
     }
-    emit result(0==exitCode ? Device::Ok : Device::TranscodeFailed);
+    emit result(0 == exitCode ? Device::Ok : Device::TranscodeFailed);
 }
 
-void TranscodingJob::processOutput()
-{
+void TranscodingJob::processOutput() {
     if (stopRequested) {
         emit result(Device::Cancelled);
         return;
     }
     QString output = process->readAllStandardOutput().data();
-    if(output.simplified().isEmpty()) {
+    if (output.simplified().isEmpty()) {
         return;
     }
 
     if (!data.isEmpty()) {
-        output=data+output;
+        output = data + output;
     }
-    if (-1==duration) {
+    if (-1 == duration) {
         duration = computeDuration(output);
     }
 
-    if (duration>0) {
+    if (duration > 0) {
         qint64 prog = computeProgress(output);
-        if (prog>-1) {
-            setPercent((prog*100)/duration);
+        if (prog > -1) {
+            setPercent((prog * 100) / duration);
         }
     }
 
     if (!output.endsWith('\n') && !output.endsWith('\r')) {
-        int last=output.lastIndexOf('\n');
-        if (-1==last) {
-            last=output.lastIndexOf('\r');
+        int last = output.lastIndexOf('\n');
+        if (-1 == last) {
+            last = output.lastIndexOf('\r');
         }
-        if (last>-1) {
-            data=output.mid(last+1);
+        if (last > -1) {
+            data = output.mid(last + 1);
         } else {
-            data=output;
+            data = output;
         }
     }
 }
 
-inline qint64 TranscodingJob::computeDuration(const QString &output)
-{
-    //We match something like "Duration: 00:04:33.60"
+inline qint64 TranscodingJob::computeDuration(const QString& output) {
+    // We match something like "Duration: 00:04:33.60"
     QRegExp matchDuration("Duration: (\\d{2,}):(\\d{2}):(\\d{2})\\.(\\d{2})");
 
-    if(output.contains(matchDuration)) {
-        //duration is in csec
+    if (output.contains(matchDuration)) {
+        // duration is in csec
         return matchDuration.cap(1).toLong() * 60 * 60 * 100 +
-               matchDuration.cap(2).toInt()  * 60 * 100 +
-               matchDuration.cap(3).toInt()  * 100 +
+               matchDuration.cap(2).toInt() * 60 * 100 +
+               matchDuration.cap(3).toInt() * 100 +
                matchDuration.cap(4).toInt();
     } else {
         return -1;
     }
 }
 
-inline qint64 TranscodingJob::computeProgress(const QString &output)
-{
-    //Output is like size=     323kB time=18.10 bitrate= 146.0kbits/s
-    //We're going to use the "time" column, which counts the elapsed time in seconds.
+inline qint64 TranscodingJob::computeProgress(const QString& output) {
+    // Output is like size=     323kB time=18.10 bitrate= 146.0kbits/s
+    // We're going to use the "time" column, which counts the elapsed time in
+    // seconds.
     QRegExp matchTime("time=(\\d+)\\.(\\d{2})");
 
-    if(output.contains(matchTime)) {
-        return matchTime.cap(1).toLong() * 100 +
-               matchTime.cap(2).toInt();
+    if (output.contains(matchTime)) {
+        return matchTime.cap(1).toLong() * 100 + matchTime.cap(2).toInt();
     } else {
         return -1;
     }

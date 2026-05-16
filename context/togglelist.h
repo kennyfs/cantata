@@ -28,21 +28,20 @@
 
 class Spinner;
 
-class ToggleList : public QWidget, protected Ui::ToggleList
-{
+class ToggleList : public QWidget, protected Ui::ToggleList {
     Q_OBJECT
-    
-public:
-    ToggleList(QWidget *p);
 
-protected Q_SLOTS:
+   public:
+    ToggleList(QWidget* p);
+
+   protected Q_SLOTS:
     void moveUp();
     void moveDown();
     void move(int d);
     void add();
     void remove();
-    void availableChanged(QListWidgetItem *item);
-    void selectedChanged(QListWidgetItem *item);
+    void availableChanged(QListWidgetItem* item);
+    void selectedChanged(QListWidgetItem* item);
 };
 
 #endif

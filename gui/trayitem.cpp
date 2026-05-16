@@ -41,15 +41,15 @@
 #endif
 
 #ifndef Q_OS_MAC
-class VolumeSliderEventHandler : public QObject
-{
-public:
-    VolumeSliderEventHandler(QObject *p) : QObject(p) { }
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override
-    {
-        if (QEvent::Wheel==event->type()) {
-            int numDegrees = static_cast<QWheelEvent *>(event)->angleDelta().y() / 8;
+class VolumeSliderEventHandler : public QObject {
+   public:
+    VolumeSliderEventHandler(QObject* p) : QObject(p) {}
+
+   protected:
+    bool eventFilter(QObject* obj, QEvent* event) override {
+        if (QEvent::Wheel == event->type()) {
+            int numDegrees =
+                static_cast<QWheelEvent*>(event)->angleDelta().y() / 8;
             int numSteps = numDegrees / 15;
             if (numSteps > 0) {
                 for (int i = 0; i < numSteps; ++i) {
@@ -68,59 +68,61 @@ protected:
 };
 #endif
 
-TrayItem::TrayItem(MainWindow *p)
+TrayItem::TrayItem(MainWindow* p)
     : QObject(p)
-    #ifndef Q_OS_MAC
-    , mw(p)
-    , trayItem(nullptr)
-    , trayItemMenu(nullptr)
-    #ifdef QT_QTDBUS_FOUND
-    , notification(nullptr)
-    #endif
-    , connectionsAction(nullptr)
-    , partitionsAction(nullptr)
-    , outputsAction(nullptr)
-    #endif
+#ifndef Q_OS_MAC
+      ,
+      mw(p),
+      trayItem(nullptr),
+      trayItemMenu(nullptr)
+#ifdef QT_QTDBUS_FOUND
+      ,
+      notification(nullptr)
+#endif
+      ,
+      connectionsAction(nullptr),
+      partitionsAction(nullptr),
+      outputsAction(nullptr)
+#endif
 {
 }
 
-void TrayItem::showMessage(const QString &title, const QString &text, const QImage &img)
-{
-    #ifdef Q_OS_MAC
+void TrayItem::showMessage(const QString& title, const QString& text,
+                           const QImage& img) {
+#ifdef Q_OS_MAC
     MacNotify::showMessage(title, text, img);
-    #elif defined QT_QTDBUS_FOUND
+#elif defined QT_QTDBUS_FOUND
     if (!notification) {
-        notification=new Notify(this);
+        notification = new Notify(this);
     }
     notification->show(title, text, img);
-    #else
+#else
     Q_UNUSED(img)
     if (trayItem) {
         trayItem->showMessage(title, text, QSystemTrayIcon::Information, 5000);
     }
-    #endif
+#endif
 }
 
-static Action * copyAction(Action *orig)
-{
-    Action *newAction=new Action(orig->parent());
+static Action* copyAction(Action* orig) {
+    Action* newAction = new Action(orig->parent());
     newAction->setText(Utils::strippedText(orig->text()));
     newAction->setIcon(orig->icon());
     QObject::connect(newAction, SIGNAL(triggered()), orig, SIGNAL(triggered()));
-    QObject::connect(newAction, SIGNAL(triggered(bool)), orig, SIGNAL(triggered(bool)));
+    QObject::connect(newAction, SIGNAL(triggered(bool)), orig,
+                     SIGNAL(triggered(bool)));
     return newAction;
 }
 
-void TrayItem::setup()
-{
-    #ifndef Q_OS_MAC
+void TrayItem::setup() {
+#ifndef Q_OS_MAC
     if (!Settings::self()->useSystemTray() || !Utils::useSystemTray()) {
         if (trayItem) {
             trayItem->setVisible(false);
             trayItem->deleteLater();
-            trayItem=nullptr;
+            trayItem = nullptr;
             trayItemMenu->deleteLater();
-            trayItemMenu=nullptr;
+            trayItemMenu = nullptr;
         }
         return;
     }
@@ -129,22 +131,26 @@ void TrayItem::setup()
         return;
     }
 
-    #ifndef Q_OS_MAC
-    connectionsAction=new Action(Utils::strippedText(mw->connectionsAction->text()), this);
+#ifndef Q_OS_MAC
+    connectionsAction =
+        new Action(Utils::strippedText(mw->connectionsAction->text()), this);
     connectionsAction->setVisible(false);
-    partitionsAction=new Action(Utils::strippedText(mw->partitionsAction->text()), this);
+    partitionsAction =
+        new Action(Utils::strippedText(mw->partitionsAction->text()), this);
     partitionsAction->setVisible(false);
-    outputsAction=new Action(Utils::strippedText(mw->outputsAction->text()), this);
+    outputsAction =
+        new Action(Utils::strippedText(mw->outputsAction->text()), this);
     outputsAction->setVisible(false);
     updateConnections();
     updatePartitions();
     updateOutputs();
-    #endif
+#endif
 
-    // What systems DONT have a system tray? Also, isSytemTrayAvailable is checked in config dialog, so
-    // useSystemTray should not be set if there is none.
-    // Checking here seems to cause the icon not to appear if Cantata is autostarted in Plasma5 - #759
-    //if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+    // What systems DONT have a system tray? Also, isSytemTrayAvailable is
+    // checked in config dialog, so useSystemTray should not be set if there is
+    // none. Checking here seems to cause the icon not to appear if Cantata is
+    // autostarted in Plasma5 - #759
+    // if (!QSystemTrayIcon::isSystemTrayAvailable()) {
     //    return;
     //}
 
@@ -156,106 +162,117 @@ void TrayItem::setup()
     trayItemMenu->addAction(StdActions::self()->stopPlaybackAction);
     trayItemMenu->addAction(StdActions::self()->stopAfterCurrentTrackAction);
     trayItemMenu->addAction(StdActions::self()->nextTrackAction);
-    #ifndef Q_OS_MAC
+#ifndef Q_OS_MAC
     trayItemMenu->addSeparator();
     trayItemMenu->addAction(connectionsAction);
     trayItemMenu->addAction(partitionsAction);
     trayItemMenu->addAction(outputsAction);
-    #endif
+#endif
     trayItemMenu->addSeparator();
     trayItemMenu->addAction(mw->restoreAction);
     trayItemMenu->addSeparator();
     trayItemMenu->addAction(copyAction(mw->quitAction));
     trayItem->setContextMenu(trayItemMenu);
-    #if defined Q_OS_MAC || defined Q_OS_WIN
+#if defined Q_OS_MAC || defined Q_OS_WIN
     QIcon icon;
-    icon.addFile(CANTATA_SYS_ICONS_DIR+"cantata.png");
-    #else
-    QIcon icon=QIcon::fromTheme(Utils::Gnome==Utils::currentDe() ? "cantata-symbolic" : "cantata");
-    // Bug: 660 If installed to non-standard folder, QIcon::fromTheme does not seem to find icon. Therefore
-    // add icon files here...
+    icon.addFile(CANTATA_SYS_ICONS_DIR + "cantata.png");
+#else
+    QIcon icon = QIcon::fromTheme(
+        Utils::Gnome == Utils::currentDe() ? "cantata-symbolic" : "cantata");
+    // Bug: 660 If installed to non-standard folder, QIcon::fromTheme does not
+    // seem to find icon. Therefore add icon files here...
     if (icon.isNull()) {
-        QStringList sizes=QStringList() << "16" << "22" << "24" << "32" << "48" << "64";
-        for (const QString &s: sizes) {
-            icon.addFile(QLatin1String(ICON_INSTALL_PREFIX "/")+s+QLatin1Char('x')+s+QLatin1String("/apps/cantata.png"));
+        QStringList sizes = QStringList()
+                            << "16" << "22" << "24" << "32" << "48" << "64";
+        for (const QString& s : sizes) {
+            icon.addFile(QLatin1String(ICON_INSTALL_PREFIX "/") + s +
+                         QLatin1Char('x') + s +
+                         QLatin1String("/apps/cantata.png"));
         }
 
-        icon.addFile(QLatin1String(ICON_INSTALL_PREFIX "/scalable/apps/cantata.svg"));
+        icon.addFile(
+            QLatin1String(ICON_INSTALL_PREFIX "/scalable/apps/cantata.svg"));
     }
-    #endif
+#endif
     trayItem->setIcon(icon);
     trayItem->setToolTip(tr("Cantata"));
     trayItem->show();
-    connect(trayItem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayItemClicked(QSystemTrayIcon::ActivationReason)));
-    #endif
+    connect(trayItem, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayItemClicked(QSystemTrayIcon::ActivationReason)));
+#endif
 }
 
-void TrayItem::trayItemClicked(QSystemTrayIcon::ActivationReason reason)
-{
-    #ifdef Q_OS_MAC
+void TrayItem::trayItemClicked(QSystemTrayIcon::ActivationReason reason) {
+#ifdef Q_OS_MAC
     Q_UNUSED(reason)
-    #else
+#else
     switch (reason) {
-    case QSystemTrayIcon::Trigger:
-        if (mw->isHidden()) {
-            mw->restoreWindow();
-        } else {
-            mw->hideWindow();
-        }
-        break;
-    case QSystemTrayIcon::MiddleClick:
-        mw->playPauseTrack();
-        break;
-    default:
-        break;
+        case QSystemTrayIcon::Trigger:
+            if (mw->isHidden()) {
+                mw->restoreWindow();
+            } else {
+                mw->hideWindow();
+            }
+            break;
+        case QSystemTrayIcon::MiddleClick:
+            mw->playPauseTrack();
+            break;
+        default:
+            break;
     }
-    #endif
+#endif
 }
 
-void TrayItem::songChanged(const Song &song, bool isPlaying)
-{
-    #ifdef Q_OS_MAC
+void TrayItem::songChanged(const Song& song, bool isPlaying) {
+#ifdef Q_OS_MAC
     if (Settings::self()->showPopups()) {
-        bool useable=song.isStandardStream()
-                        ? !song.title.isEmpty() && !song.name().isEmpty()
-                        : !song.title.isEmpty() && !song.artist.isEmpty() && !song.album.isEmpty();
+        bool useable = song.isStandardStream()
+                           ? !song.title.isEmpty() && !song.name().isEmpty()
+                           : !song.title.isEmpty() && !song.artist.isEmpty() &&
+                                 !song.album.isEmpty();
         if (useable) {
-            MacNotify::showMessage(song.mainText(), song.subText(), CurrentCover::self()->image());
+            MacNotify::showMessage(song.mainText(), song.subText(),
+                                   CurrentCover::self()->image());
         }
     }
-    #else
+#else
     if (Settings::self()->showPopups() || trayItem) {
-        bool useable=song.isStandardStream()
-                        ? !song.title.isEmpty() && !song.name().isEmpty()
-                        : !song.title.isEmpty() && !song.artist.isEmpty() && !song.album.isEmpty();
+        bool useable = song.isStandardStream()
+                           ? !song.title.isEmpty() && !song.name().isEmpty()
+                           : !song.title.isEmpty() && !song.artist.isEmpty() &&
+                                 !song.album.isEmpty();
         if (useable) {
             if (trayItem) {
-                trayItem->setToolTip(QLatin1String("Cantata\n\n")+song.mainText()+"\n"+song.subText());
-                #if defined Q_OS_WIN || defined Q_OS_MAC || !defined QT_QTDBUS_FOUND
-                // The pure Qt implementation needs both the tray icon and the setting checked.
+                trayItem->setToolTip(QLatin1String("Cantata\n\n") +
+                                     song.mainText() + "\n" + song.subText());
+#if defined Q_OS_WIN || defined Q_OS_MAC || !defined QT_QTDBUS_FOUND
+                // The pure Qt implementation needs both the tray icon and the
+                // setting checked.
                 if (Settings::self()->showPopups() && isPlaying) {
-                    trayItem->showMessage(song.mainText(), song.subText(), QSystemTrayIcon::Information, 5000);
+                    trayItem->showMessage(song.mainText(), song.subText(),
+                                          QSystemTrayIcon::Information, 5000);
                 }
-                #endif
+#endif
             }
-            #ifdef QT_QTDBUS_FOUND
+#ifdef QT_QTDBUS_FOUND
             if (Settings::self()->showPopups() && isPlaying) {
                 if (!notification) {
-                    notification=new Notify(this);
+                    notification = new Notify(this);
                 }
-                notification->show(song.mainText(), song.subText(), CurrentCover::self()->image(), Notify::LowUrgency);
+                notification->show(song.mainText(), song.subText(),
+                                   CurrentCover::self()->image(),
+                                   Notify::LowUrgency);
             }
-            #endif
+#endif
         } else if (trayItem) {
             trayItem->setToolTip(QLatin1String("Cantata"));
         }
     }
-    #endif
+#endif
 }
 
 #ifndef Q_OS_MAC
-static void copyMenu(Action *from, Action *to)
-{
+static void copyMenu(Action* from, Action* to) {
     if (!to) {
         return;
     }
@@ -264,35 +281,32 @@ static void copyMenu(Action *from, Action *to)
         if (!to->menu()) {
             to->setMenu(new QMenu(nullptr));
         }
-        QMenu *m=to->menu();
+        QMenu* m = to->menu();
         m->clear();
 
-        for (QAction *act: from->menu()->actions()) {
+        for (QAction* act : from->menu()->actions()) {
             m->addAction(act);
         }
     }
 }
 #endif
 
-void TrayItem::updateConnections()
-{
-    #ifndef Q_OS_MAC
+void TrayItem::updateConnections() {
+#ifndef Q_OS_MAC
     copyMenu(mw->connectionsAction, connectionsAction);
-    #endif
+#endif
 }
 
-void TrayItem::updatePartitions()
-{
-    #ifndef Q_OS_MAC
+void TrayItem::updatePartitions() {
+#ifndef Q_OS_MAC
     copyMenu(mw->partitionsAction, partitionsAction);
-    #endif
+#endif
 }
 
-void TrayItem::updateOutputs()
-{
-    #ifndef Q_OS_MAC
+void TrayItem::updateOutputs() {
+#ifndef Q_OS_MAC
     copyMenu(mw->outputsAction, outputsAction);
-    #endif
+#endif
 }
 
 #include "moc_trayitem.cpp"

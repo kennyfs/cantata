@@ -43,18 +43,27 @@ class PausableTimer;
 struct Song;
 struct MPDStatusValues;
 
-class Scrobbler : public QObject
-{
-	Q_OBJECT
-public:
+class Scrobbler : public QObject {
+    Q_OBJECT
+   public:
     struct Track {
-        Track() : track(0), length(0), timestamp(0) { }
-        Track(const Song &s);
-        bool operator==(const Track &o) const { return track==o.track && title==o.title && artist==o.artist &&
-                                                albumartist==o.albumartist && album==o.album; }
-        bool operator!=(const Track &o) const { return !(*this==o); }
-        void clear() { title=artist=albumartist=album=QString(); track=length=0; timestamp=0; }
-        bool isEmpty() { return 0==track && 0==length && 0==timestamp && title.isEmpty() && artist.isEmpty() && albumartist.isEmpty() && album.isEmpty(); }
+        Track() : track(0), length(0), timestamp(0) {}
+        Track(const Song& s);
+        bool operator==(const Track& o) const {
+            return track == o.track && title == o.title && artist == o.artist &&
+                   albumartist == o.albumartist && album == o.album;
+        }
+        bool operator!=(const Track& o) const { return !(*this == o); }
+        void clear() {
+            title = artist = albumartist = album = QString();
+            track = length = 0;
+            timestamp = 0;
+        }
+        bool isEmpty() {
+            return 0 == track && 0 == length && 0 == timestamp &&
+                   title.isEmpty() && artist.isEmpty() &&
+                   albumartist.isEmpty() && album.isEmpty();
+        }
         QString title;
         QString artist;
         QString albumartist;
@@ -64,30 +73,35 @@ public:
         time_t timestamp;
     };
 
-    static Scrobbler * self();
+    static Scrobbler* self();
     static void enableDebug();
     static const QLatin1String constCacheDir;
     static const QLatin1String constCacheFile;
 
-    static bool viaMpd(const QString &sc) { return !sc.startsWith("http"); }
+    static bool viaMpd(const QString& sc) { return !sc.startsWith("http"); }
 
     Scrobbler();
     ~Scrobbler() override;
 
-    QMap<QString, QString> availableScrobblers() { loadScrobblers(); return scrobblers; }
+    QMap<QString, QString> availableScrobblers() {
+        loadScrobblers();
+        return scrobblers;
+    }
     void stop();
     bool isEnabled() const { return scrobblingEnabled; }
     bool isLoveEnabled() const { return loveIsEnabled; }
     bool lovedTrack() const { return lovePending || loveSent; }
-    bool haveLoginDetails() const { return !userName.isEmpty() && !password.isEmpty(); }
-    void setDetails(const QString &s, const QString &u, const QString &p);
-    const QString & user() const { return userName; }
-    const QString & pass() const { return password; }
-    const QString & activeScrobbler() const { return scrobbler; }
+    bool haveLoginDetails() const {
+        return !userName.isEmpty() && !password.isEmpty();
+    }
+    void setDetails(const QString& s, const QString& u, const QString& p);
+    const QString& user() const { return userName; }
+    const QString& pass() const { return password; }
+    const QString& activeScrobbler() const { return scrobbler; }
     bool isAuthenticated() const { return !sessionKey.isEmpty(); }
 
-Q_SIGNALS:
-    void error(const QString &msg);
+   Q_SIGNALS:
+    void error(const QString& msg);
     void authenticated(bool a);
     void enabled(bool e);
     void loveEnabled(bool e);
@@ -95,15 +109,16 @@ Q_SIGNALS:
     void scrobblerChanged();
 
     // send love via client message...
-    void clientMessage(const QString &client, const QString &msg, const QString &clientName);
+    void clientMessage(const QString& client, const QString& msg,
+                       const QString& clientName);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void love();
     void setEnabled(bool e);
     void setLoveEnabled(bool e);
 
-private Q_SLOTS:
-    void setSong(const Song &s);
+   private Q_SLOTS:
+    void setSong(const Song& s);
     void scrobbleCurrent();
     void scrobbleQueued();
     void scrobbleNowPlaying();
@@ -111,11 +126,11 @@ private Q_SLOTS:
     void authenticate();
     void authResp();
     void scrobbleFinished();
-    void mpdStateUpdated(bool songChanged=false);
-    void mpdStatusUpdated(const MPDStatusValues &vals);
-    void clientMessageFailed(const QString &client, const QString &msg);
+    void mpdStateUpdated(bool songChanged = false);
+    void mpdStatusUpdated(const MPDStatusValues& vals);
+    void clientMessageFailed(const QString& client, const QString& msg);
 
-private:
+   private:
     void setActive();
     void loadSettings();
     bool ensureAuthenticated();
@@ -127,7 +142,7 @@ private:
     void loadScrobblers();
     QString scrobblerUrl();
 
-private:
+   private:
     bool scrobblingEnabled;
     bool loveIsEnabled;
     QMap<QString, QString> scrobblers;
@@ -137,13 +152,13 @@ private:
     QString sessionKey;
     QQueue<Track> songQueue;
     QQueue<Track> lastScrobbledSongs;
-    Track inactiveSong; // Song set whilst inactive
+    Track inactiveSong;  // Song set whilst inactive
     Track currentSong;
-    PausableTimer * scrobbleTimer;
-    QTimer * retryTimer;
-    PausableTimer * nowPlayingTimer;
+    PausableTimer* scrobbleTimer;
+    QTimer* retryTimer;
+    PausableTimer* nowPlayingTimer;
     time_t lastNowPlaying;
-    QTimer * hardFailTimer;
+    QTimer* hardFailTimer;
     bool nowPlayingIsPending;
     bool lovePending;
     bool nowPlayingSent;
@@ -153,8 +168,8 @@ private:
     int failedCount;
     MPDState lastState;
 
-    QNetworkReply *authJob;
-    QNetworkReply *scrobbleJob;
+    QNetworkReply* authJob;
+    QNetworkReply* scrobbleJob;
 };
 
 #endif

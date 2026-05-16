@@ -32,16 +32,16 @@ class OtherSettings;
 
 class ContextSettings : public QTabWidget {
     Q_OBJECT
-public:
-    ContextSettings(QWidget *p=nullptr);
-    ~ContextSettings() override { }
+   public:
+    ContextSettings(QWidget* p = nullptr);
+    ~ContextSettings() override {}
     void load();
     void save();
-    
-private:
-    WikipediaSettings *wiki;
-    LyricSettings *lyrics;
-    OtherSettings *other;
+
+   private:
+    WikipediaSettings* wiki;
+    LyricSettings* lyrics;
+    OtherSettings* other;
 };
 
 #endif

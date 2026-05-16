@@ -26,18 +26,17 @@
 
 #include "ui_othersettings.h"
 
-class OtherSettings : public QWidget, private Ui::OtherSettings
-{
+class OtherSettings : public QWidget, private Ui::OtherSettings {
     Q_OBJECT
 
-public:
-    OtherSettings(QWidget *p);
-    ~OtherSettings() override { }
+   public:
+    OtherSettings(QWidget* p);
+    ~OtherSettings() override {}
 
     void load();
     void save();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void toggleWikiNote();
     void setContextBackdropOpacityLabel();
     void setContextBackdropBlurLabel();

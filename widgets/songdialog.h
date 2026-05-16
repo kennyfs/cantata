@@ -27,18 +27,18 @@
 #include "support/dialog.h"
 #include "mpd-interface/song.h"
 
-class SongDialog : public Dialog
-{
+class SongDialog : public Dialog {
     Q_OBJECT
-public:
+   public:
     static void enableDebug();
 
-    SongDialog(QWidget *parent, const QString &name=QString(), const QSize &defSize=QSize())
-        : Dialog(parent, name, defSize) { }
-    ~SongDialog() override { }
+    SongDialog(QWidget* parent, const QString& name = QString(),
+               const QSize& defSize = QSize())
+        : Dialog(parent, name, defSize) {}
+    ~SongDialog() override {}
 
-protected:
-    bool songsOk(const QList<Song> &songs, const QString &base, bool isMpd);
+   protected:
+    bool songsOk(const QList<Song>& songs, const QString& base, bool isMpd);
 };
 
 #endif

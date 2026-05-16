@@ -47,44 +47,44 @@
 #include "network/networkproxyfactory.h"
 #include "config.h"
 
-void Application::init()
-{
-    #if defined Q_OS_WIN
-    ProxyStyle *proxy=new ProxyStyle(ProxyStyle::VF_Side);
-    #elif defined Q_OS_MAC
-    ProxyStyle *proxy=new ProxyStyle(ProxyStyle::VF_Side|ProxyStyle::VF_Top);
-    #else
-    ProxyStyle *proxy=new ProxyStyle(0);
-    #endif
+void Application::init() {
+#if defined Q_OS_WIN
+    ProxyStyle* proxy = new ProxyStyle(ProxyStyle::VF_Side);
+#elif defined Q_OS_MAC
+    ProxyStyle* proxy =
+        new ProxyStyle(ProxyStyle::VF_Side | ProxyStyle::VF_Top);
+#else
+    ProxyStyle* proxy = new ProxyStyle(0);
+#endif
     QString theme = Settings::self()->style();
     if (!theme.isEmpty()) {
-        QStyle *s=QApplication::setStyle(theme);
+        QStyle* s = QApplication::setStyle(theme);
         if (s) {
             proxy->setBaseStyle(s);
         }
     }
     qApp->setStyle(proxy);
 
-    #ifdef Q_OS_WIN
-    // Qt does not seem to consistently apply the application font under Windows.
-    // To work-around this, set the application font to that used for a listview.
-    // Issues #1097 and #1109
+#ifdef Q_OS_WIN
+    // Qt does not seem to consistently apply the application font under
+    // Windows. To work-around this, set the application font to that used for a
+    // listview. Issues #1097 and #1109
     QListView view;
     view.ensurePolished();
     QApplication::setFont(view.font());
-    #endif
+#endif
 
     // Ensure these objects are created in the GUI thread...
     ThreadCleaner::self();
     MPDStatus::self();
     MPDStats::self();
-    #ifdef ENABLE_TAGLIB
+#ifdef ENABLE_TAGLIB
     TagHelperIface::self();
-    #endif
+#endif
     NetworkProxyFactory::self();
-    #ifdef ENABLE_SCROBBLING
+#ifdef ENABLE_SCROBBLING
     Scrobbler::self();
-    #endif
+#endif
     MpdLibraryModel::self();
     PlaylistsModel::self();
     StreamsModel::self();
@@ -101,8 +101,7 @@ void Application::init()
     ActionItemDelegate::setup();
 }
 
-void Application::fixSize(QWidget *widget)
-{
+void Application::fixSize(QWidget* widget) {
     static int fixedHeight = -1;
     if (-1 == fixedHeight) {
         ComboBox c(widget);
@@ -111,26 +110,31 @@ void Application::fixSize(QWidget *widget)
         c.ensurePolished();
         b.ensurePolished();
         g.ensurePolished();
-        fixedHeight=qMax(24, qMax(c.sizeHint().height(), qMax(b.sizeHint().height(), g.sizeHint().height())));
-        if (fixedHeight%2) {
+        fixedHeight =
+            qMax(24, qMax(c.sizeHint().height(),
+                          qMax(b.sizeHint().height(), g.sizeHint().height())));
+        if (fixedHeight % 2) {
             fixedHeight--;
         }
     }
 
-    QToolButton *tb=qobject_cast<QToolButton *>(widget);
+    QToolButton* tb = qobject_cast<QToolButton*>(widget);
     if (tb) {
         tb->setFixedSize(fixedHeight, fixedHeight);
     } else {
-        #ifdef Q_OS_MAC
-        // TODO: Why is this +(2*focus) required for macOS? If its not used, library page's statusbar is larger
-        // than the rest - due to genre combo?
-        widget->setFixedHeight(fixedHeight+(2*widget->style()->pixelMetric(QStyle::PM_FocusFrameHMargin)));
-        #else
-        if (0==qstrcmp("QWidget", widget->metaObject()->className())) {
-            widget->setFixedHeight(fixedHeight+Utils::scaleForDpi(4));
+#ifdef Q_OS_MAC
+        // TODO: Why is this +(2*focus) required for macOS? If its not used,
+        // library page's statusbar is larger than the rest - due to genre
+        // combo?
+        widget->setFixedHeight(
+            fixedHeight +
+            (2 * widget->style()->pixelMetric(QStyle::PM_FocusFrameHMargin)));
+#else
+        if (0 == qstrcmp("QWidget", widget->metaObject()->className())) {
+            widget->setFixedHeight(fixedHeight + Utils::scaleForDpi(4));
         } else {
             widget->setFixedHeight(fixedHeight);
         }
-        #endif
+#endif
     }
 }

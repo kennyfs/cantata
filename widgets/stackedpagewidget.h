@@ -33,22 +33,23 @@ class SelectorButton;
 class SizeWidget;
 class QLabel;
 
-class StackedPageWidget : public QStackedWidget, public Page
-{
+class StackedPageWidget : public QStackedWidget, public Page {
     Q_OBJECT
 
-public:
-    StackedPageWidget(QWidget *p);
+   public:
+    StackedPageWidget(QWidget* p);
     ~StackedPageWidget() override;
 
     void setView(int v);
     void focusSearch() override;
     QStringList selectedFiles(bool allowPlaylists) const;
     QList<Song> selectedSongs(bool allowPlaylists) const override;
-    void addSelectionToPlaylist(const QString &name, int action, quint8 priority, bool decreasePriority) override;
+    void addSelectionToPlaylist(const QString& name, int action,
+                                quint8 priority,
+                                bool decreasePriority) override;
     void removeItems() override;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void close();
 };
 

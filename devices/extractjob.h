@@ -21,29 +21,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
 #ifndef EXTRACT_JOB_H
 #define EXTRACT_JOB_H
 
 #include "filejob.h"
 #include "encoders.h"
 
-class ExtractJob : public FileJob
-{
+class ExtractJob : public FileJob {
     Q_OBJECT
-public:
+   public:
     static const int constWavHeaderSize;
-    static void writeWavHeader(QIODevice &dev, qint32 size=0);
+    static void writeWavHeader(QIODevice& dev, qint32 size = 0);
 
-    explicit ExtractJob(const Encoders::Encoder &enc, int val, const QString &src, const QString &dest, const Song &s, const QString &cover);
+    explicit ExtractJob(const Encoders::Encoder& enc, int val,
+                        const QString& src, const QString& dest, const Song& s,
+                        const QString& cover);
     virtual ~ExtractJob();
 
     bool coverCopied() const { return copiedCover; }
 
-private:
+   private:
     void run();
 
-private:
+   private:
     Encoders::Encoder encoder;
     int value;
     QString srcFile;
@@ -53,5 +53,4 @@ private:
     bool copiedCover;
 };
 
-
-#endif //TRANSCODING_JOB_H
+#endif  // TRANSCODING_JOB_H

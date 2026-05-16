@@ -30,21 +30,20 @@ class LineEdit;
 class QPushButton;
 class QLabel;
 
-class ScrobblingSettings : public QWidget, public Ui::ScrobblingSettings
-{
+class ScrobblingSettings : public QWidget, public Ui::ScrobblingSettings {
     Q_OBJECT
 
-public:
-    ScrobblingSettings(QWidget *parent);
+   public:
+    ScrobblingSettings(QWidget* parent);
 
     void load();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void save();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void showStatus(bool status);
-    void showError(const QString &msg);
+    void showError(const QString& msg);
     void controlLoginButton();
     void scrobblerChanged();
 };

@@ -26,32 +26,32 @@
 
 #include "treeview.h"
 
-class TableView : public TreeView
-{
+class TableView : public TreeView {
     Q_OBJECT
 
-public:
-    TableView(const QString &cfgGroup, QWidget *parent=nullptr, bool menuAlwaysAllowed=false);
-    ~TableView() override { }
-    void setModel(QAbstractItemModel *m) override;
+   public:
+    TableView(const QString& cfgGroup, QWidget* parent = nullptr,
+              bool menuAlwaysAllowed = false);
+    ~TableView() override {}
+    void setModel(QAbstractItemModel* m) override;
     void initHeader();
     void saveHeader();
-    void scrollTo(const QModelIndex &index, ScrollHint hint) override;
+    void scrollTo(const QModelIndex& index, ScrollHint hint) override;
 
-private Q_SLOTS:
-    void showMenu(const QPoint &pos);
+   private Q_SLOTS:
+    void showMenu(const QPoint& pos);
     void toggleHeaderItem(bool visible);
     void stretchToggled(bool e);
     void alignmentChanged();
 
-protected:
-    QMenu *menu;
+   protected:
+    QMenu* menu;
     QString configGroup;
     int menuIsForCol;
-    QAction *alignAction;
-    QAction *alignLeftAction;
-    QAction *alignCenterAction;
-    QAction *alignRightAction;
+    QAction* alignAction;
+    QAction* alignLeftAction;
+    QAction* alignCenterAction;
+    QAction* alignRightAction;
 };
 
 #endif

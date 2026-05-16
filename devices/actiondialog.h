@@ -38,43 +38,40 @@
 
 class SongListDialog;
 
-class ActionDialog : public Dialog, Ui::ActionDialog
-{
+class ActionDialog : public Dialog, Ui::ActionDialog {
     Q_OBJECT
 
-    enum Mode
-    {
-        Copy,
-        Remove,
-        Sync
-    };
+    enum Mode { Copy, Remove, Sync };
 
     typedef QPair<QString, QString> StringPair;
     typedef QList<StringPair> StringPairList;
 
-public:
+   public:
     static int instanceCount();
 
-    ActionDialog(QWidget *parent);
+    ActionDialog(QWidget* parent);
     ~ActionDialog() override;
 
-    void sync(const QString &devId, const QList<Song> &libSongs, const QList<Song> &devSongs);
-    void copy(const QString &srcUdi, const QString &dstUdi, const QList<Song> &songs);
-    void remove(const QString &udi, const QList<Song> &songs);
+    void sync(const QString& devId, const QList<Song>& libSongs,
+              const QList<Song>& devSongs);
+    void copy(const QString& srcUdi, const QString& dstUdi,
+              const QList<Song>& songs);
+    void remove(const QString& udi, const QList<Song>& songs);
 
-Q_SIGNALS:
-    // These are for communicating with MPD object (which is in its own thread, so need to talk via signal/slots)
+   Q_SIGNALS:
+    // These are for communicating with MPD object (which is in its own thread,
+    // so need to talk via signal/slots)
     void update();
 
     void completed();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void calcFileSize();
     void configureSource();
     void configureDest();
-    void saveProperties(const QString &path, const DeviceOptions &opts);
+    void saveProperties(const QString& path, const DeviceOptions& opts);
     void saveProperties();
-    void actionStatus(int status, bool copiedCover=false);
+    void actionStatus(int status, bool copiedCover = false);
     void doNext();
     void removeSongResult(int status);
     void cleanDirsResult(int status);
@@ -83,22 +80,24 @@ private Q_SLOTS:
     void controlInfoLabel();
     void deviceRenamed();
 
-private:
+   private:
     void updateSongCountLabel();
-    void controlInfoLabel(Device *dev);
-    Device * getDevice(const QString &udi, bool logErrors=true);
-    void configure(const QString &udi);
-    void init(const QString &srcUdi, const QString &dstUdi, const QList<Song> &songs, Mode m);
+    void controlInfoLabel(Device* dev);
+    Device* getDevice(const QString& udi, bool logErrors = true);
+    void configure(const QString& udi);
+    void init(const QString& srcUdi, const QString& dstUdi,
+              const QList<Song>& songs, Mode m);
     void slotButtonClicked(int button) override;
-    void setPage(int page, const StringPairList &msg=StringPairList(), const QString &header=QString());
-    StringPairList formatSong(const Song &s, bool showFiles=false);
+    void setPage(int page, const StringPairList& msg = StringPairList(),
+                 const QString& header = QString());
+    StringPairList formatSong(const Song& s, bool showFiles = false);
     bool refreshLibrary();
-    void removeSong(const Song &s);
+    void removeSong(const Song& s);
     void cleanDirs();
     void incProgress();
     void updateUnity(bool finished);
 
-private:
+   private:
     Mode mode;
     qint64 spaceRequired;
     bool sourceIsAudioCd;
@@ -112,7 +111,7 @@ private:
     QSet<QString> dirsToClean;
     QSet<QString> copiedCovers;
     unsigned long count;
-    int currentPercent; // Percentage of current song
+    int currentPercent;  // Percentage of current song
     Song origCurrentSong;
     Song currentSong;
     bool autoSkip;
@@ -120,17 +119,17 @@ private:
     bool performingAction;
     bool haveVariousArtists;
     bool mpdConfigured;
-    Device *currentDev;
+    Device* currentDev;
     QString destFile;
     DeviceOptions namingOptions;
-    #ifdef ENABLE_REPLAYGAIN_SUPPORT
+#ifdef ENABLE_REPLAYGAIN_SUPPORT
     QSet<QString> albumsWithoutRgTags;
-    #endif
-    #ifdef QT_QTDBUS_FOUND
+#endif
+#ifdef QT_QTDBUS_FOUND
     QDBusMessage unityMessage;
-    #endif
+#endif
 
-    SongListDialog *songDialog;
+    SongListDialog* songDialog;
     friend class SongListDialog;
 };
 

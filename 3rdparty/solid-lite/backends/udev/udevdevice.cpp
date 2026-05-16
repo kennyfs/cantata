@@ -21,16 +21,16 @@
 #include "udevdevice.h"
 
 #include "udevgenericinterface.h"
-//#include "udevprocessor.h"
-//#include "udevcamera.h"
-//#include "udevvideo.h"
+// #include "udevprocessor.h"
+// #include "udevcamera.h"
+// #include "udevvideo.h"
 #include "udevportablemediaplayer.h"
-//#include "udevdvbinterface.h"
+// #include "udevdvbinterface.h"
 #include "udevblock.h"
-//#include "udevaudiointerface.h"
-//#include "udevserialinterface.h"
-//#include "udevnetworkinterface.h"
-//#include "cpuinfo.h"
+// #include "udevaudiointerface.h"
+// #include "udevserialinterface.h"
+// #include "udevnetworkinterface.h"
+// #include "cpuinfo.h"
 
 #include <sys/socket.h>
 #include <linux/if_arp.h>
@@ -41,97 +41,92 @@
 using namespace Solid::Backends::UDev;
 
 UDevDevice::UDevDevice(const UdevQt::Device device)
-    : Solid::Ifaces::Device()
-    , m_device(device)
-{
-}
+    : Solid::Ifaces::Device(), m_device(device) {}
 
-UDevDevice::~UDevDevice()
-{
-}
+UDevDevice::~UDevDevice() {}
 
-QString UDevDevice::udi() const
-{
-    return devicePath();
-}
+QString UDevDevice::udi() const { return devicePath(); }
 
-QString UDevDevice::parentUdi() const
-{
-    return UDEV_UDI_PREFIX;
-}
+QString UDevDevice::parentUdi() const { return UDEV_UDI_PREFIX; }
 
-QString UDevDevice::vendor() const
-{
+QString UDevDevice::vendor() const {
     QString vendor = m_device.sysfsProperty("manufacturer").toString();
     if (vendor.isEmpty()) {
-         /*if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-             // sysfs doesn't have anything useful here
-            vendor = extractCpuInfoLine(deviceNumber(), "vendor_id\\s+:\\s+(\\S.+)");
-         } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
-             vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', " ");
-         }  else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
-             vendor = m_device.deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
-         } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
-             if (m_device.parent().isValid()) {
-                 vendor = m_device.parent().deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
-             }
-         }
-         */
-         if (vendor.isEmpty()) {
-             vendor = m_device.deviceProperty("ID_VENDOR").toString().replace('_', ' ');
-         }
+        /*if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+            // sysfs doesn't have anything useful here
+           vendor = extractCpuInfoLine(deviceNumber(),
+        "vendor_id\\s+:\\s+(\\S.+)"); } else if
+        (queryDeviceInterface(Solid::DeviceInterface::Video)) { vendor =
+        m_device.deviceProperty("ID_VENDOR").toString().replace('_', " "); }
+        else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface))
+        { vendor =
+        m_device.deviceProperty("ID_VENDOR_FROM_DATABASE").toString(); } else if
+        (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) { if
+        (m_device.parent().isValid()) { vendor =
+        m_device.parent().deviceProperty("ID_VENDOR_FROM_DATABASE").toString();
+            }
+        }
+        */
+        if (vendor.isEmpty()) {
+            vendor = m_device.deviceProperty("ID_VENDOR")
+                         .toString()
+                         .replace('_', ' ');
+        }
     }
     return vendor;
 }
 
-QString UDevDevice::product() const
-{
+QString UDevDevice::product() const {
     QString product = m_device.sysfsProperty("product").toString();
     if (product.isEmpty()) {
         /*if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
             // sysfs doesn't have anything useful here
-            product = extractCpuInfoLine(deviceNumber(), "model name\\s+:\\s+(\\S.+)");
-        } else if(queryDeviceInterface(Solid::DeviceInterface::Video)) {
-            product = m_device.deviceProperty("ID_V4L_PRODUCT").toString();
-        } else if(queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
-            const AudioInterface audioIface(const_cast<UDevDevice *>(this));
-            product = audioIface.name();
-        }  else if(queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
+            product = extractCpuInfoLine(deviceNumber(), "model
+        name\\s+:\\s+(\\S.+)"); } else
+        if(queryDeviceInterface(Solid::DeviceInterface::Video)) { product =
+        m_device.deviceProperty("ID_V4L_PRODUCT").toString(); } else
+        if(queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) { const
+        AudioInterface audioIface(const_cast<UDevDevice *>(this)); product =
+        audioIface.name(); }  else
+        if(queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
             QFile typeFile(deviceName() + "/type");
             if (typeFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 int mediaType = typeFile.readAll().trimmed().toInt();
                 if (mediaType == ARPHRD_LOOPBACK) {
                     product = QLatin1String("Loopback device Interface");
                 } else  {
-                    product = m_device.deviceProperty("ID_MODEL_FROM_DATABASE").toString();
+                    product =
+        m_device.deviceProperty("ID_MODEL_FROM_DATABASE").toString();
                 }
             }
-        } else if(queryDeviceInterface(Solid::DeviceInterface::SerialInterface)) {
-            const SerialInterface serialIface(const_cast<UDevDevice *>(this));
-            if (serialIface.serialType() == Solid::SerialInterface::Platform) {
+        } else if(queryDeviceInterface(Solid::DeviceInterface::SerialInterface))
+        { const SerialInterface serialIface(const_cast<UDevDevice *>(this)); if
+        (serialIface.serialType() == Solid::SerialInterface::Platform) {
                 product.append(QLatin1String("Platform serial"));
-            } else if (serialIface.serialType() == Solid::SerialInterface::Usb) {
-                product.append(QLatin1String("USB Serial Port"));
+            } else if (serialIface.serialType() == Solid::SerialInterface::Usb)
+        { product.append(QLatin1String("USB Serial Port"));
             }
         }
         */
 
         if (product.isEmpty()) {
-            product = m_device.deviceProperty("ID_MODEL").toString().replace('_', ' ');
+            product = m_device.deviceProperty("ID_MODEL")
+                          .toString()
+                          .replace('_', ' ');
         }
     }
     return product;
 }
 
-QString UDevDevice::icon() const
-{
+QString UDevDevice::icon() const {
     if (parentUdi().isEmpty()) {
         return QLatin1String("computer");
     }
 
     /*if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
         return QLatin1String("cpu");
-    } else*/ if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+    } else*/
+    if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
         return QLatin1String("multimedia-player");
     } /*else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
@@ -167,20 +162,17 @@ QString UDevDevice::icon() const
     return QString();
 }
 
-QStringList UDevDevice::emblems() const
-{
-    return QStringList();
-}
+QStringList UDevDevice::emblems() const { return QStringList(); }
 
-QString UDevDevice::description() const
-{
+QString UDevDevice::description() const {
     if (parentUdi().isEmpty()) {
         return QObject::tr("Computer");
     }
 
     /*if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
         return QObject::tr("Processor");
-    } else*/ if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+    } else*/
+    if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
         return QObject::tr("Portable Media Player");
     } /*else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
@@ -200,95 +192,91 @@ QString UDevDevice::description() const
     return QString();
 }
 
-bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
-{
+bool UDevDevice::queryDeviceInterface(
+    const Solid::DeviceInterface::Type& type) const {
     switch (type) {
-    case Solid::DeviceInterface::GenericInterface:
-        return true;
+        case Solid::DeviceInterface::GenericInterface:
+            return true;
 
-    /*case Solid::DeviceInterface::Processor:
-        return property("DRIVER").toString() == "processor";
+        /*case Solid::DeviceInterface::Processor:
+            return property("DRIVER").toString() == "processor";
 
-    case Solid::DeviceInterface::Camera:
-        return property("ID_GPHOTO2").toInt() == 1;
-   */
-    case Solid::DeviceInterface::PortableMediaPlayer:
-        return !property("ID_MEDIA_PLAYER").toString().isEmpty();
+        case Solid::DeviceInterface::Camera:
+            return property("ID_GPHOTO2").toInt() == 1;
+       */
+        case Solid::DeviceInterface::PortableMediaPlayer:
+            return !property("ID_MEDIA_PLAYER").toString().isEmpty();
 
-/*
-    case Solid::DeviceInterface::DvbInterface:
-        return m_device.subsystem() ==  QLatin1String("dvb");
-*/
-    case Solid::DeviceInterface::Block:
-        return !property("MAJOR").toString().isEmpty();
-/*
-    case Solid::DeviceInterface::Video:
-        return m_device.subsystem() == QLatin1String("video4linux");
+            /*
+                case Solid::DeviceInterface::DvbInterface:
+                    return m_device.subsystem() ==  QLatin1String("dvb");
+            */
+        case Solid::DeviceInterface::Block:
+            return !property("MAJOR").toString().isEmpty();
+            /*
+                case Solid::DeviceInterface::Video:
+                    return m_device.subsystem() == QLatin1String("video4linux");
 
-    case Solid::DeviceInterface::AudioInterface:
-        return m_device.subsystem() == QLatin1String("sound");
+                case Solid::DeviceInterface::AudioInterface:
+                    return m_device.subsystem() == QLatin1String("sound");
 
-    case Solid::DeviceInterface::NetworkInterface:
-        return m_device.subsystem() == QLatin1String("net");
+                case Solid::DeviceInterface::NetworkInterface:
+                    return m_device.subsystem() == QLatin1String("net");
 
-    case Solid::DeviceInterface::SerialInterface:
-        return m_device.subsystem() == QLatin1String("tty");
-*/
-    default:
-        return false;
+                case Solid::DeviceInterface::SerialInterface:
+                    return m_device.subsystem() == QLatin1String("tty");
+            */
+        default:
+            return false;
     }
 }
 
-QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
-{
+QObject* UDevDevice::createDeviceInterface(
+    const Solid::DeviceInterface::Type& type) {
     if (!queryDeviceInterface(type)) {
         return nullptr;
     }
 
     switch (type) {
-    case Solid::DeviceInterface::GenericInterface:
-        return new GenericInterface(this);
-/*
-    case Solid::DeviceInterface::Processor:
-        return new Processor(this);
+        case Solid::DeviceInterface::GenericInterface:
+            return new GenericInterface(this);
+            /*
+                case Solid::DeviceInterface::Processor:
+                    return new Processor(this);
 
-    case Solid::DeviceInterface::Camera:
-        return new Camera(this);
-*/
-    case Solid::DeviceInterface::PortableMediaPlayer:
-        return new PortableMediaPlayer(this);
-/*
-    case Solid::DeviceInterface::DvbInterface:
-        return new DvbInterface(this);
-*/
-    case Solid::DeviceInterface::Block:
-        return new Block(this);
-/*
-    case Solid::DeviceInterface::Video:
-        return new Video(this);
+                case Solid::DeviceInterface::Camera:
+                    return new Camera(this);
+            */
+        case Solid::DeviceInterface::PortableMediaPlayer:
+            return new PortableMediaPlayer(this);
+            /*
+                case Solid::DeviceInterface::DvbInterface:
+                    return new DvbInterface(this);
+            */
+        case Solid::DeviceInterface::Block:
+            return new Block(this);
+            /*
+                case Solid::DeviceInterface::Video:
+                    return new Video(this);
 
-    case Solid::DeviceInterface::AudioInterface:
-        return new AudioInterface(this);
+                case Solid::DeviceInterface::AudioInterface:
+                    return new AudioInterface(this);
 
-    case Solid::DeviceInterface::NetworkInterface:
-        return new NetworkInterface(this);
+                case Solid::DeviceInterface::NetworkInterface:
+                    return new NetworkInterface(this);
 
-    case Solid::DeviceInterface::SerialInterface:
-        return new SerialInterface(this);
-*/
-    default:
-  //      qFatal("Shouldn't happen");
-        return nullptr;
+                case Solid::DeviceInterface::SerialInterface:
+                    return new SerialInterface(this);
+            */
+        default:
+            //      qFatal("Shouldn't happen");
+            return nullptr;
     }
 }
 
-QString UDevDevice::device() const
-{
-    return devicePath();
-}
+QString UDevDevice::device() const { return devicePath(); }
 
-QVariant UDevDevice::property(const QString &key) const
-{
+QVariant UDevDevice::property(const QString& key) const {
     const QVariant res = m_device.deviceProperty(key);
     if (res.isValid()) {
         return res;
@@ -296,41 +284,28 @@ QVariant UDevDevice::property(const QString &key) const
     return m_device.sysfsProperty(key);
 }
 
-QMap<QString, QVariant> UDevDevice::allProperties() const
-{
+QMap<QString, QVariant> UDevDevice::allProperties() const {
     QMap<QString, QVariant> res;
-    foreach (const QString &prop, m_device.deviceProperties()) {
+    foreach (const QString& prop, m_device.deviceProperties()) {
         res[prop] = property(prop);
     }
     return res;
 }
 
-bool UDevDevice::propertyExists(const QString &key) const
-{
+bool UDevDevice::propertyExists(const QString& key) const {
     return m_device.deviceProperties().contains(key);
 }
 
-QString UDevDevice::systemAttribute(const char *attribute) const
-{
+QString UDevDevice::systemAttribute(const char* attribute) const {
     return m_device.sysfsProperty(attribute).toString();
 }
 
-QString UDevDevice::deviceName() const
-{
-    return m_device.sysfsPath();
-}
+QString UDevDevice::deviceName() const { return m_device.sysfsPath(); }
 
-int UDevDevice::deviceNumber() const
-{
-    return m_device.sysfsNumber();
-}
+int UDevDevice::deviceNumber() const { return m_device.sysfsNumber(); }
 
-QString UDevDevice::devicePath() const
-{
+QString UDevDevice::devicePath() const {
     return QString(UDEV_UDI_PREFIX) + deviceName();
 }
 
-UdevQt::Device UDevDevice::udevDevice()
-{
-    return m_device;
-}
+UdevQt::Device UDevDevice::udevDevice() { return m_device; }

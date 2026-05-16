@@ -31,38 +31,39 @@
 
 class NetworkJob;
 
-class StreamFetcher : public QObject
-{
+class StreamFetcher : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
 
-    StreamFetcher(QObject *p);
+    StreamFetcher(QObject* p);
     ~StreamFetcher() override;
 
-    void get(const QStringList &items, int insertRow, int action, quint8 priority, bool decPriority);
+    void get(const QStringList& items, int insertRow, int action,
+             quint8 priority, bool decPriority);
 
-private:
+   private:
     void doNext();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void cancel();
 
-Q_SIGNALS:
-    void result(const QStringList &items, int insertRow, int action, quint8 priority, bool decreasePriority);
-    void status(const QString &msg);
+   Q_SIGNALS:
+    void result(const QStringList& items, int insertRow, int action,
+                quint8 priority, bool decreasePriority);
+    void status(const QString& msg);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void dataReady();
     void jobFinished();
 
-private:
-    void jobFinished(NetworkJob *reply);
+   private:
+    void jobFinished(NetworkJob* reply);
     void cancelJob();
 
-private:
-    NetworkJob *job;
+   private:
+    NetworkJob* job;
     QString current;
     QString currentName;
     QStringList todo;

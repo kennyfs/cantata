@@ -32,36 +32,35 @@ class Device;
 class SyncCollectionWidget;
 class SqueezedTextLabel;
 
-class SyncDialog : public Dialog
-{
+class SyncDialog : public Dialog {
     Q_OBJECT
 
-public:
+   public:
     static int instanceCount();
 
-    SyncDialog(QWidget *parent);
+    SyncDialog(QWidget* parent);
     ~SyncDialog() override;
 
-    void sync(const QString &udi);
+    void sync(const QString& udi);
 
-private Q_SLOTS:
-    void copy(const QList<Song> &songs);
-    void librarySongs(const QList<Song> &songs, double pc);
+   private Q_SLOTS:
+    void copy(const QList<Song>& songs);
+    void librarySongs(const QList<Song>& songs, double pc);
     void selectionChanged();
     void configure();
-    void saveProperties(const QString &path, const DeviceOptions &opts);
+    void saveProperties(const QString& path, const DeviceOptions& opts);
 
-private:
+   private:
     void updateSongs();
     void slotButtonClicked(int button) override;
-    Device * getDevice();
+    Device* getDevice();
 
-private:
-    SqueezedTextLabel *statusLabel;
+   private:
+    SqueezedTextLabel* statusLabel;
     QString devUdi;
-    Device *currentDev;
-    SyncCollectionWidget *devWidget;
-    SyncCollectionWidget *libWidget;
+    Device* currentDev;
+    SyncCollectionWidget* devWidget;
+    SyncCollectionWidget* libWidget;
     QSet<Song> libSongs;
     DeviceOptions libOptions;
 };

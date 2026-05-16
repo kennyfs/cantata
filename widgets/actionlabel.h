@@ -29,21 +29,20 @@
 class QTimer;
 class QLabel;
 
-class ActionLabel : public QLabel
-{
+class ActionLabel : public QLabel {
     Q_OBJECT
 
-public:
-    ActionLabel(QWidget *parent);
+   public:
+    ActionLabel(QWidget* parent);
     ~ActionLabel() override;
     void startAnimation();
     void stopAnimation();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void rotateIcon();
 
-protected:
-    QTimer *timer;
+   protected:
+    QTimer* timer;
     int count;
 };
 

@@ -25,33 +25,31 @@
 #include <solid-lite/genericinterface.h>
 #include "haldeviceinterface.h"
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
 class HalDevice;
 
-class GenericInterface : public DeviceInterface, virtual public Solid::Ifaces::GenericInterface
-{
+class GenericInterface : public DeviceInterface,
+                         virtual public Solid::Ifaces::GenericInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::GenericInterface)
 
-public:
-    GenericInterface(HalDevice *device);
+   public:
+    GenericInterface(HalDevice* device);
     ~GenericInterface() override;
 
-    QVariant property(const QString &key) const override;
+    QVariant property(const QString& key) const override;
     QMap<QString, QVariant> allProperties() const override;
-    bool propertyExists(const QString &key) const override;
+    bool propertyExists(const QString& key) const override;
 
-Q_SIGNALS:
-    void propertyChanged(const QMap<QString,int> &changes) override;
-    void conditionRaised(const QString &condition, const QString &reason) override;
+   Q_SIGNALS:
+    void propertyChanged(const QMap<QString, int>& changes) override;
+    void conditionRaised(const QString& condition,
+                         const QString& reason) override;
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_GENERICINTERFACE_H
+#endif  // SOLID_BACKENDS_HAL_GENERICINTERFACE_H

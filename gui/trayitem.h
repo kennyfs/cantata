@@ -38,56 +38,57 @@ class QImage;
 struct Song;
 class Action;
 
-class TrayItem : public QObject
-{
+class TrayItem : public QObject {
     Q_OBJECT
-public:
-    TrayItem(MainWindow *p);
-    ~TrayItem() override { }
+   public:
+    TrayItem(MainWindow* p);
+    ~TrayItem() override {}
 
-    void showMessage(const QString &title, const QString &text, const QImage &img=QImage());
+    void showMessage(const QString& title, const QString& text,
+                     const QImage& img = QImage());
     void setup();
-    #ifdef Q_OS_MAC
+#ifdef Q_OS_MAC
     bool isActive() const { return false; }
-    void setIcon(const QIcon &) { }
-    void setToolTip(const QString &, const QString &, const QString &) { }
-    #else
-    bool isActive() const { return nullptr!=trayItem; }
-    void setIcon(const QIcon &icon) {
+    void setIcon(const QIcon&) {}
+    void setToolTip(const QString&, const QString&, const QString&) {}
+#else
+    bool isActive() const { return nullptr != trayItem; }
+    void setIcon(const QIcon& icon) {
         if (trayItem) {
             trayItem->setIcon(icon);
         }
     }
-    void setToolTip(const QString &iconName, const QString &title, const QString &subTitle) {
+    void setToolTip(const QString& iconName, const QString& title,
+                    const QString& subTitle) {
         if (trayItem) {
             Q_UNUSED(iconName)
             Q_UNUSED(subTitle)
             trayItem->setToolTip(title);
         }
     }
-    #endif
-    void songChanged(const Song &song, bool isPlaying);
+#endif
+    void songChanged(const Song& song, bool isPlaying);
     void updateConnections();
     void updatePartitions();
     void updateOutputs();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void trayItemClicked(QSystemTrayIcon::ActivationReason reason);
 
-private:
-    #ifndef Q_OS_MAC
+   private:
+#ifndef Q_OS_MAC
 
-    MainWindow *mw;
-    QSystemTrayIcon *trayItem;
-    QMenu *trayItemMenu;
-    #ifdef QT_QTDBUS_FOUND
-    Notify *notification;
-    #endif
-    Action *connectionsAction;
-    Action *partitionsAction;
-    Action *outputsAction;
+    MainWindow* mw;
+    QSystemTrayIcon* trayItem;
+    QMenu* trayItemMenu;
+#ifdef QT_QTDBUS_FOUND
+    Notify* notification;
+#endif
+    Action* connectionsAction;
+    Action* partitionsAction;
+    Action* outputsAction;
 
-    #endif
+#endif
 };
 
 #endif

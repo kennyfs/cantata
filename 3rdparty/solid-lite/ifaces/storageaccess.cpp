@@ -20,7 +20,4 @@
 
 #include "storageaccess.h"
 
-Solid::Ifaces::StorageAccess::~StorageAccess()
-{
-}
-
+Solid::Ifaces::StorageAccess::~StorageAccess() {}

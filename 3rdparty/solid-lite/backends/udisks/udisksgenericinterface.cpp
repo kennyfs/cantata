@@ -24,33 +24,27 @@
 
 using namespace Solid::Backends::UDisks;
 
-GenericInterface::GenericInterface(UDisksDevice *device)
-    : DeviceInterface(device)
-{
-/* TODO
-    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
-            this, SIGNAL(propertyChanged(QMap<QString,int>)));
-    connect(device, SIGNAL(conditionRaised(QString,QString)),
-            this, SIGNAL(conditionRaised(QString,QString)));
-*/
+GenericInterface::GenericInterface(UDisksDevice* device)
+    : DeviceInterface(device) {
+    /* TODO
+        connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+                this, SIGNAL(propertyChanged(QMap<QString,int>)));
+        connect(device, SIGNAL(conditionRaised(QString,QString)),
+                this, SIGNAL(conditionRaised(QString,QString)));
+    */
 }
 
-GenericInterface::~GenericInterface()
-{
-}
+GenericInterface::~GenericInterface() {}
 
-QVariant GenericInterface::property(const QString &key) const
-{
+QVariant GenericInterface::property(const QString& key) const {
     return m_device->prop(key);
 }
 
-QMap<QString, QVariant> GenericInterface::allProperties() const
-{
+QMap<QString, QVariant> GenericInterface::allProperties() const {
     return m_device->allProperties();
 }
 
-bool GenericInterface::propertyExists(const QString &key) const
-{
+bool GenericInterface::propertyExists(const QString& key) const {
     return m_device->propertyExists(key);
 }
 

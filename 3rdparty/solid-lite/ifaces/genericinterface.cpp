@@ -20,7 +20,4 @@
 
 #include "genericinterface.h"
 
-Solid::Ifaces::GenericInterface::~GenericInterface()
-{
-}
-
+Solid::Ifaces::GenericInterface::~GenericInterface() {}

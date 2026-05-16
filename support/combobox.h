@@ -26,24 +26,23 @@
 
 #include <QComboBox>
 
-class ComboBox : public QComboBox
-{
+class ComboBox : public QComboBox {
     Q_OBJECT
 
-public:
-    ComboBox(QWidget *p);
-    ~ComboBox() override { }
+   public:
+    ComboBox(QWidget* p);
+    ~ComboBox() override {}
 
     void setEditable(bool editable);
-    #if !defined Q_OS_WIN && !defined Q_OS_MAC
+#if !defined Q_OS_WIN && !defined Q_OS_MAC
     void showPopup() override;
     void hidePopup() override;
-    #endif
+#endif
 
-Q_SIGNALS:
-    void textChanged(const QString &t);
+   Q_SIGNALS:
+    void textChanged(const QString& t);
 
-private:
+   private:
     bool toggleState;
 };
 

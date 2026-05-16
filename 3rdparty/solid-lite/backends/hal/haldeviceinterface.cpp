@@ -22,13 +22,9 @@
 
 using namespace Solid::Backends::Hal;
 
-DeviceInterface::DeviceInterface(HalDevice *device)
-    : QObject(device), m_device(device)
-{
-}
+DeviceInterface::DeviceInterface(HalDevice* device)
+    : QObject(device), m_device(device) {}
 
-DeviceInterface::~DeviceInterface()
-{
-}
+DeviceInterface::~DeviceInterface() {}
 
 #include "backends/hal/moc_haldeviceinterface.cpp"

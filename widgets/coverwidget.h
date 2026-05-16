@@ -27,30 +27,28 @@
 #include <QWidget>
 #include <QLabel>
 
-class CoverLabel : public QLabel
-{
+class CoverLabel : public QLabel {
     Q_OBJECT
-public:
-    CoverLabel(QWidget *p);
+   public:
+    CoverLabel(QWidget* p);
 
     void updateToolTip(bool isEvent);
-    bool event(QEvent *event) override;
-    void paintEvent(QPaintEvent *) override;
+    bool event(QEvent* event) override;
+    void paintEvent(QPaintEvent*) override;
     void updatePix();
     void deletePix();
 
-private:
+   private:
     QPoint lastTtPos;
     bool pressed;
     QPixmap pix;
 };
 
-class CoverWidget : public QWidget
-{
+class CoverWidget : public QWidget {
     Q_OBJECT
 
-public:
-    CoverWidget(QWidget *p);
+   public:
+    CoverWidget(QWidget* p);
     ~CoverWidget() override;
 
     void setSize(int min);
@@ -58,14 +56,14 @@ public:
 
     void emitClicked() { emit clicked(); }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void clicked();
 
-private Q_SLOTS:
-    void coverImage(const QImage &);
+   private Q_SLOTS:
+    void coverImage(const QImage&);
 
-private:
-    CoverLabel *label;
+   private:
+    CoverLabel* label;
 };
 
 #endif

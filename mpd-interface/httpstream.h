@@ -34,58 +34,57 @@
 
 class QTimer;
 
-class HttpStream : public QObject
-{
+class HttpStream : public QObject {
     Q_OBJECT
 
-public:
+   public:
     static void enableDebug();
-    static HttpStream * self();
+    static HttpStream* self();
 
-    HttpStream(QObject *p=nullptr);
+    HttpStream(QObject* p = nullptr);
     ~HttpStream() override { save(); }
     void save() const;
     bool isMuted() const { return muted; }
     int volume();
     int unmuteVolume() const { return unmuteVol; }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void isEnabled(bool en);
     void update();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void setEnabled(bool e);
     void setVolume(int vol);
     void toggleMute();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void updateStatus();
-    void streamUrl(const QString &url);
+    void streamUrl(const QString& url);
     void checkPlayer();
 #ifndef LIBVLC_FOUND
     void bufferingProgress(int progress);
 #endif
 
-private:
+   private:
     void startTimer();
     void stopTimer();
 
-private:
+   private:
     bool enabled;
     bool muted;
     int state;
     int playStateChecks;
     int currentVolume;
     int unmuteVol;
-    QTimer *playStateCheckTimer;
+    QTimer* playStateCheckTimer;
 
-    #ifdef LIBVLC_FOUND
-    libvlc_instance_t *instance;
-    libvlc_media_player_t *player;
-    libvlc_media_t *media;
-    #else
-    QMediaPlayer *player;
-    #endif
+#ifdef LIBVLC_FOUND
+    libvlc_instance_t* instance;
+    libvlc_media_player_t* player;
+    libvlc_media_t* media;
+#else
+    QMediaPlayer* player;
+#endif
 };
 
 #endif

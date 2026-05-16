@@ -27,18 +27,17 @@
 #include "support/icon.h"
 #include "config.h"
 
-class Icons
-{
-public:
-    static Icons *self();
+class Icons {
+   public:
+    static Icons* self();
 
     Icons();
     void initSidebarIcons();
-    void initToolbarIcons(const QColor &toolbarText);
+    void initToolbarIcons(const QColor& toolbarText);
     QIcon appIcon;
     QIcon genreIcon;
     QIcon artistIcon;
-    const QIcon &albumIcon(int size, bool mono=false) const;
+    const QIcon& albumIcon(int size, bool mono = false) const;
     QIcon albumIconLarge;
     QIcon albumIconSmall;
     QIcon albumMonoIcon;
@@ -61,9 +60,9 @@ public:
     QIcon searchTabIcon;
     QIcon infoIcon;
     QIcon infoSidebarIcon;
-    #ifdef ENABLE_DEVICES_SUPPORT
+#ifdef ENABLE_DEVICES_SUPPORT
     QIcon devicesIcon;
-    #endif
+#endif
 
     QIcon toolbarMenuIcon;
     QIcon toolbarPrevIcon;
@@ -98,9 +97,9 @@ public:
     QIcon clockIcon;
     QIcon streamListIcon;
     QIcon streamCategoryIcon;
-    #ifdef ENABLE_HTTP_STREAM_PLAYBACK
+#ifdef ENABLE_HTTP_STREAM_PLAYBACK
     QIcon httpStreamIcon;
-    #endif
+#endif
     QIcon leftIcon;
     QIcon rightIcon;
     QIcon upIcon;

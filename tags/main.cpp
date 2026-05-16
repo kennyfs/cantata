@@ -33,28 +33,30 @@ const QLatin1Char Utils::constDirSep('/');
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-static long __stdcall exceptionHandler(EXCEPTION_POINTERS *p)
-{
+static long __stdcall exceptionHandler(EXCEPTION_POINTERS* p) {
     Q_UNUSED(p)
     ::exit(0);
 }
 #endif
 
-static void cantataQtMsgHandler(QtMsgType, const QMessageLogContext &, const QString &msg)
-{
-    std::cout << QDateTime::currentDateTime().toString(Qt::ISODate).replace("T", " ").toLatin1().constData()
+static void cantataQtMsgHandler(QtMsgType, const QMessageLogContext&,
+                                const QString& msg) {
+    std::cout << QDateTime::currentDateTime()
+                     .toString(Qt::ISODate)
+                     .replace("T", " ")
+                     .toLatin1()
+                     .constData()
               << " - " << msg.toLocal8Bit().constData() << std::endl;
 }
 
-int main(int argc, char *argv[])
-{
-    #ifdef Q_OS_WIN
+int main(int argc, char* argv[]) {
+#ifdef Q_OS_WIN
     // Prevent windows crash dialog from appearing...
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)exceptionHandler);
-    #endif
+#endif
     QCoreApplication app(argc, argv);
-    if (3==app.arguments().length() || 4==app.arguments().length()) {
-        if (4==app.arguments().length() && "true" == app.arguments().at(3)) {
+    if (3 == app.arguments().length() || 4 == app.arguments().length()) {
+        if (4 == app.arguments().length() && "true" == app.arguments().at(3)) {
             qInstallMessageHandler(cantataQtMsgHandler);
             TagHelper::enableDebug();
             Tags::enableDebug();

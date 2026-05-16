@@ -29,50 +29,55 @@
 #include "support/utils.h"
 
 class FilenameSchemeDialog;
-class DevicePropertiesWidget : public QWidget, Ui::DevicePropertiesWidget
-{
+class DevicePropertiesWidget : public QWidget, Ui::DevicePropertiesWidget {
     Q_OBJECT
 
-public:
+   public:
     enum Properties {
-        Prop_Basic       = 0x0000,
+        Prop_Basic = 0x0000,
 
-        Prop_Name        = 0x0001,
-        Prop_Folder      = 0x0002,
-        Prop_FileName    = 0x0004,
-        Prop_CoversAll   = 0x0008,
+        Prop_Name = 0x0001,
+        Prop_Folder = 0x0002,
+        Prop_FileName = 0x0004,
+        Prop_CoversAll = 0x0008,
         Prop_CoversBasic = 0x0010,
-        Prop_Va          = 0x0020,
-        Prop_Transcoder  = 0x0040,
-        Prop_Cache       = 0x0080,
-        Prop_AutoScan    = 0x0100,
+        Prop_Va = 0x0020,
+        Prop_Transcoder = 0x0040,
+        Prop_Cache = 0x0080,
+        Prop_AutoScan = 0x0100,
 
-        Prop_Encoder     = 0x0200,
+        Prop_Encoder = 0x0200,
 
-        Prop_All         = 0x03FF
+        Prop_All = 0x03FF
     };
-    DevicePropertiesWidget(QWidget *parent);
-    ~DevicePropertiesWidget() override { }
-    void update(const QString &path, const DeviceOptions &opts, const QList<DeviceStorage> &storage, int props, int disabledProps);
+    DevicePropertiesWidget(QWidget* parent);
+    ~DevicePropertiesWidget() override {}
+    void update(const QString& path, const DeviceOptions& opts,
+                const QList<DeviceStorage>& storage, int props,
+                int disabledProps);
     DeviceOptions settings();
     bool isModified() const { return modified; }
     bool isSaveable() const { return saveable; }
-    QString music() const { return musicFolder && musicFolder->isEnabled() ? Utils::convertPathFromDisplay(musicFolder->text()) : origMusicFolder; }
+    QString music() const {
+        return musicFolder && musicFolder->isEnabled()
+                   ? Utils::convertPathFromDisplay(musicFolder->text())
+                   : origMusicFolder;
+    }
     QString cover() const;
     void showRemoteConnectionNote(bool v) { remoteDeviceNote->setVisible(v); }
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void updated();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void configureFilenameScheme();
     void checkSaveable();
     void transcoderChanged();
     void albumCoversChanged();
     void setSize();
 
-private:
-    FilenameSchemeDialog *schemeDlg;
+   private:
+    FilenameSchemeDialog* schemeDlg;
     DeviceOptions origOpts;
     QString origMusicFolder;
     QString noCoverText;

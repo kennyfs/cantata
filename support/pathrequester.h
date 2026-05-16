@@ -28,35 +28,36 @@
 #include "flattoolbutton.h"
 #include <QDir>
 
-class PathRequester : public QWidget
-{
+class PathRequester : public QWidget {
     Q_OBJECT
-public:
-    static void setIcon(const QIcon &icn);
-    PathRequester(QWidget *parent);
-    ~PathRequester() override { }
+   public:
+    static void setIcon(const QIcon& icn);
+    PathRequester(QWidget* parent);
+    ~PathRequester() override {}
 
     QString text() const { return QDir::fromNativeSeparators(edit->text()); }
-    void setText(const QString &t) { edit->setText(QDir::toNativeSeparators(t)); }
+    void setText(const QString& t) {
+        edit->setText(QDir::toNativeSeparators(t));
+    }
     void setButtonVisible(bool v) { btn->setVisible(v); }
     void setFocus() { edit->setFocus(); }
-    void setDirMode(bool m) { dirMode=m; }
-    LineEdit * lineEdit() const { return edit; }
-    QToolButton * button() const { return btn; }
-    void setFilter(const QString &f) { filter=f; }
+    void setDirMode(bool m) { dirMode = m; }
+    LineEdit* lineEdit() const { return edit; }
+    QToolButton* button() const { return btn; }
+    void setFilter(const QString& f) { filter = f; }
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void setEnabled(bool e);
 
-Q_SIGNALS:
-    void textChanged(const QString &);
+   Q_SIGNALS:
+    void textChanged(const QString&);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void choose();
 
-private:
-    LineEdit *edit;
-    FlatToolButton *btn;
+   private:
+    LineEdit* edit;
+    FlatToolButton* btn;
     bool dirMode;
     QString filter;
 };

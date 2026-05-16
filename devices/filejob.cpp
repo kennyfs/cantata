@@ -35,82 +35,74 @@
 
 GLOBAL_STATIC(FileThread, instance)
 
-FileThread::FileThread()
-    : thread(nullptr)
-{
-}
+FileThread::FileThread() : thread(nullptr) {}
 
-FileThread::~FileThread()
-{
+FileThread::~FileThread() {
     // stop();
 }
 
-void FileThread::addJob(FileJob *job)
-{
+void FileThread::addJob(FileJob* job) {
     if (!thread) {
-        thread=new Thread(metaObject()->className());
+        thread = new Thread(metaObject()->className());
         thread->start();
     }
     job->moveToThread(thread);
 }
 
-void FileThread::stop()
-{
+void FileThread::stop() {
     if (thread) {
         thread->stop();
-        thread=nullptr;
+        thread = nullptr;
     }
 }
 
-FileJob::FileJob()
-    : stopRequested(false)
-    , progressPercent(0)
-{
+FileJob::FileJob() : stopRequested(false), progressPercent(0) {
     FileThread::self()->addJob(this);
-    // Cant call deleteLater here, as in the device's xxResult() slots "sender()" returns
-    // null. Therefore, xxResult() slots need to call finished()
-    //connect(this, SIGNAL(result(int)), SLOT(deleteLater()));
+    // Cant call deleteLater here, as in the device's xxResult() slots
+    // "sender()" returns null. Therefore, xxResult() slots need to call
+    // finished()
+    // connect(this, SIGNAL(result(int)), SLOT(deleteLater()));
 }
 
-void FileJob::start()
-{
-    QTimer::singleShot(0, this, SLOT(run()));
-}
+void FileJob::start() { QTimer::singleShot(0, this, SLOT(run())); }
 
-void FileJob::setPercent(int pc)
-{
-    if (pc!=progressPercent) {
-        progressPercent=pc;
+void FileJob::setPercent(int pc) {
+    if (pc != progressPercent) {
+        progressPercent = pc;
         emit percent(progressPercent);
     }
 }
 
-CopyJob::~CopyJob()
-{
+CopyJob::~CopyJob() {
     if (temp) {
         temp->remove();
         delete temp;
     }
 }
 
-static const int constChunkSize=32*1024;
+static const int constChunkSize = 32 * 1024;
 
-QString CopyJob::updateTagsLocal()
-{
-    // First, if we are going to update tags (e.g. to fix various artists), then check if we want to do that locally, before
-    // copying to device. For UMS devices, we just modify on device, but for remote (e.g. sshfs) then it'd be better to do locally :-)
-    if (copyOpts&OptsFixLocal && (copyOpts&OptsApplyVaFix || copyOpts&OptsUnApplyVaFix || Device::constEmbedCover==deviceOpts.coverName)) {
-        song.file=srcFile;
-        temp=Device::copySongToTemp(song);
+QString CopyJob::updateTagsLocal() {
+    // First, if we are going to update tags (e.g. to fix various artists), then
+    // check if we want to do that locally, before copying to device. For UMS
+    // devices, we just modify on device, but for remote (e.g. sshfs) then it'd
+    // be better to do locally :-)
+    if (copyOpts & OptsFixLocal &&
+        (copyOpts & OptsApplyVaFix || copyOpts & OptsUnApplyVaFix ||
+         Device::constEmbedCover == deviceOpts.coverName)) {
+        song.file = srcFile;
+        temp = Device::copySongToTemp(song);
         if (!temp) {
             emit result(Device::FailedToUpdateTags);
             return QString();
         }
-        if ((copyOpts&OptsApplyVaFix || copyOpts&OptsUnApplyVaFix) && !Device::fixVariousArtists(temp->fileName(), song, copyOpts&OptsApplyVaFix)) {
+        if ((copyOpts & OptsApplyVaFix || copyOpts & OptsUnApplyVaFix) &&
+            !Device::fixVariousArtists(temp->fileName(), song,
+                                       copyOpts & OptsApplyVaFix)) {
             emit result(Device::FailedToUpdateTags);
             return QString();
         }
-        if (Device::constEmbedCover==deviceOpts.coverName) {
+        if (Device::constEmbedCover == deviceOpts.coverName) {
             Device::embedCover(temp->fileName(), song, deviceOpts.coverMaxSize);
         }
         return temp->fileName();
@@ -118,30 +110,34 @@ QString CopyJob::updateTagsLocal()
     return srcFile;
 }
 
-void CopyJob::updateTagsDest()
-{
-    if (!stopRequested && !(copyOpts&OptsFixLocal) && (copyOpts&OptsApplyVaFix || copyOpts&OptsUnApplyVaFix || Device::constEmbedCover==deviceOpts.coverName)) {
-        if (copyOpts&OptsApplyVaFix || copyOpts&OptsUnApplyVaFix) {
-            Device::fixVariousArtists(destFile, song, copyOpts&OptsApplyVaFix);
+void CopyJob::updateTagsDest() {
+    if (!stopRequested && !(copyOpts & OptsFixLocal) &&
+        (copyOpts & OptsApplyVaFix || copyOpts & OptsUnApplyVaFix ||
+         Device::constEmbedCover == deviceOpts.coverName)) {
+        if (copyOpts & OptsApplyVaFix || copyOpts & OptsUnApplyVaFix) {
+            Device::fixVariousArtists(destFile, song,
+                                      copyOpts & OptsApplyVaFix);
         }
-        if (!stopRequested && Device::constEmbedCover==deviceOpts.coverName) {
+        if (!stopRequested && Device::constEmbedCover == deviceOpts.coverName) {
             Device::embedCover(destFile, song, deviceOpts.coverMaxSize);
         }
     }
 }
 
-void CopyJob::copyCover(const QString &origSrcFile)
-{
-    if (!stopRequested && !deviceOpts.coverName.isEmpty() && Device::constNoCover!=deviceOpts.coverName && Device::constEmbedCover!=deviceOpts.coverName) {
-        song.file=destFile;
-        copiedCover=Covers::copyCover(song, Utils::getDir(origSrcFile), Utils::getDir(destFile), deviceOpts.coverName, deviceOpts.coverMaxSize);
+void CopyJob::copyCover(const QString& origSrcFile) {
+    if (!stopRequested && !deviceOpts.coverName.isEmpty() &&
+        Device::constNoCover != deviceOpts.coverName &&
+        Device::constEmbedCover != deviceOpts.coverName) {
+        song.file = destFile;
+        copiedCover = Covers::copyCover(
+            song, Utils::getDir(origSrcFile), Utils::getDir(destFile),
+            deviceOpts.coverName, deviceOpts.coverMaxSize);
     }
 }
 
-void CopyJob::run()
-{
+void CopyJob::run() {
     QString origSrcFile(srcFile);
-    srcFile=updateTagsLocal();
+    srcFile = updateTagsLocal();
     if (srcFile.isEmpty()) {
         return;
     }
@@ -168,15 +164,16 @@ void CopyJob::run()
     qint64 totalBytes = src.size();
     qint64 readPos = 0;
     qint64 bytesRead = 0;
-    qint64 adjustTotal = Device::constNoCover!=deviceOpts.coverName ? 16384 : 0;
+    qint64 adjustTotal =
+        Device::constNoCover != deviceOpts.coverName ? 16384 : 0;
     do {
         if (stopRequested) {
             emit result(Device::Cancelled);
             return;
         }
         bytesRead = src.read(buffer, constChunkSize);
-        readPos+=bytesRead;
-        if (bytesRead<0) {
+        readPos += bytesRead;
+        if (bytesRead < 0) {
             emit result(Device::ReadFailed);
             return;
         }
@@ -186,25 +183,27 @@ void CopyJob::run()
             return;
         }
 
-        qint64 writePos=0;
+        qint64 writePos = 0;
         do {
-            qint64 bytesWritten = dest.write(&buffer[writePos], bytesRead - writePos);
+            qint64 bytesWritten =
+                dest.write(&buffer[writePos], bytesRead - writePos);
             if (stopRequested) {
                 emit result(Device::Cancelled);
                 return;
             }
-            if (-1==bytesWritten) {
+            if (-1 == bytesWritten) {
                 emit result(Device::WriteFailed);
                 return;
             }
-            writePos+=bytesWritten;
-        } while (writePos<bytesRead);
+            writePos += bytesWritten;
+        } while (writePos < bytesRead);
 
-        setPercent(((readPos+bytesRead)*100.0)/(totalBytes+adjustTotal));
+        setPercent(((readPos + bytesRead) * 100.0) /
+                   (totalBytes + adjustTotal));
         if (src.atEnd()) {
             break;
         }
-    } while (readPos<totalBytes);
+    } while (readPos < totalBytes);
 
     updateTagsDest();
     copyCover(origSrcFile);
@@ -212,12 +211,12 @@ void CopyJob::run()
     emit result(Device::Ok);
 }
 
-void DeleteJob::run()
-{
-    int status=QFile::remove(fileName) ? Device::Ok : Device::Failed;
-    if (remLyrics && Device::Ok==status) {
-        QString lyrics=Utils::changeExtension(fileName, SongView::constExtension);
-        if (lyrics!=fileName) {
+void DeleteJob::run() {
+    int status = QFile::remove(fileName) ? Device::Ok : Device::Failed;
+    if (remLyrics && Device::Ok == status) {
+        QString lyrics =
+            Utils::changeExtension(fileName, SongView::constExtension);
+        if (lyrics != fileName) {
             QFile::remove(lyrics);
         }
     }
@@ -225,17 +224,16 @@ void DeleteJob::run()
     emit percent(100);
 }
 
-void CleanJob::run()
-{
-    int total=dirs.count();
-    int current=0;
-    for (const QString &d: dirs) {
+void CleanJob::run() {
+    int total = dirs.count();
+    int current = 0;
+    for (const QString& d : dirs) {
         if (stopRequested) {
             emit result(Device::Cancelled);
             return;
         }
         Device::cleanDir(d, base, coverFile);
-        emit percent((++current*100)/total);
+        emit percent((++current * 100) / total);
     }
 
     emit percent(100);

@@ -46,95 +46,93 @@ class Spinner;
 class PlayQueueView;
 class MessageOverlay;
 
-class PlayQueueTreeView : public TableView
-{
-public:
-    PlayQueueTreeView(PlayQueueView *p);
-    ~PlayQueueTreeView() override { }
-    void paintEvent(QPaintEvent *e) override;
-private:
-    PlayQueueView *view;
+class PlayQueueTreeView : public TableView {
+   public:
+    PlayQueueTreeView(PlayQueueView* p);
+    ~PlayQueueTreeView() override {}
+    void paintEvent(QPaintEvent* e) override;
+
+   private:
+    PlayQueueView* view;
 };
 
-class PlayQueueGroupedView : public GroupedView
-{
-public:
-    PlayQueueGroupedView(PlayQueueView *p);
+class PlayQueueGroupedView : public GroupedView {
+   public:
+    PlayQueueGroupedView(PlayQueueView* p);
     ~PlayQueueGroupedView() override;
-    void paintEvent(QPaintEvent *e) override;
-private:
-    PlayQueueView *view;
+    void paintEvent(QPaintEvent* e) override;
+
+   private:
+    PlayQueueView* view;
 };
 
-class PlayQueueView : public QStackedWidget
-{
+class PlayQueueView : public QStackedWidget {
     Q_OBJECT
     Q_PROPERTY(float fade READ fade WRITE setFade)
 
-public:
-    enum BackgroundImage {
-        BI_None,
-        BI_Cover,
-        BI_Custom
-    };
+   public:
+    enum BackgroundImage { BI_None, BI_Cover, BI_Custom };
 
-    PlayQueueView(QWidget *parent=nullptr);
+    PlayQueueView(QWidget* parent = nullptr);
     ~PlayQueueView() override;
 
     void readConfig();
     void saveConfig();
     void saveHeader();
     void setMode(ItemView::Mode m);
-    bool isGrouped() const { return ItemView::Mode_GroupedTree==mode; }
+    bool isGrouped() const { return ItemView::Mode_GroupedTree == mode; }
     void setAutoExpand(bool ae);
     bool isAutoExpand() const;
     void setStartClosed(bool sc);
     bool isStartClosed() const;
     void setFilterActive(bool f);
-    void updateRows(qint32 row, quint16 curAlbum, bool scroll, bool forceScroll=false);
-    void scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint);
-    QModelIndex indexAt(const QPoint &point);
-    void setModel(QAbstractItemModel *m) { view()->setModel(m); }
-    void addAction(QAction *a);
+    void updateRows(qint32 row, quint16 curAlbum, bool scroll,
+                    bool forceScroll = false);
+    void scrollTo(const QModelIndex& index, QAbstractItemView::ScrollHint hint);
+    QModelIndex indexAt(const QPoint& point);
+    void setModel(QAbstractItemModel* m) { view()->setModel(m); }
+    void addAction(QAction* a);
     void setFocus();
     bool hasFocus();
-    QAbstractItemModel * model() { return view()->model(); }
+    QAbstractItemModel* model() { return view()->model(); }
     bool haveSelectedItems();
     bool haveUnSelectedItems();
-    void setCurrentIndex(const QModelIndex &idx) { view()->setCurrentIndex(idx); }
+    void setCurrentIndex(const QModelIndex& idx) {
+        view()->setCurrentIndex(idx);
+    }
     void clearSelection();
-    QAbstractItemView * view() const;
+    QAbstractItemView* view() const;
     bool hasFocus() const;
-    QModelIndexList selectedIndexes(bool sorted=true) const;
+    QModelIndexList selectedIndexes(bool sorted = true) const;
     QList<Song> selectedSongs() const;
     float fade() { return fadeValue; }
     void setFade(double value);
     void updatePalette();
-    Action * removeFromAct() { return removeFromAction; }
+    Action* removeFromAct() { return removeFromAction; }
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void showSpinner();
     void hideSpinner();
-    void setImage(const QImage &img);
-    void streamFetchStatus(const QString &msg);
+    void setImage(const QImage& img);
+    void streamFetchStatus(const QString& msg);
     void searchActive(bool a);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void itemsSelected(bool);
-    void doubleClicked(const QModelIndex &);
+    void doubleClicked(const QModelIndex&);
     void cancelStreamFetch();
-    void focusSearch(const QString &text);
+    void focusSearch(const QString& text);
 
-private:
-    void drawBackdrop(QWidget *widget, const QSize &size);
+   private:
+    void drawBackdrop(QWidget* widget, const QSize& size);
 
-private:
-    Action *removeFromAction;
+   private:
+    Action* removeFromAction;
     ItemView::Mode mode;
-    PlayQueueGroupedView *groupedView;
-    PlayQueueTreeView *treeView;
-    Spinner *spinner;
-    MessageOverlay *msgOverlay;
+    PlayQueueGroupedView* groupedView;
+    PlayQueueTreeView* treeView;
+    Spinner* spinner;
+    MessageOverlay* msgOverlay;
 
     BackgroundImage backgroundImageType;
     QPropertyAnimation animator;

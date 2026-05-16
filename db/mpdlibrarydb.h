@@ -38,34 +38,34 @@ class QSqlDatabase;
 class QSqlQuery;
 class QSettings;
 
-class MpdLibraryDb : public LibraryDb
-{
+class MpdLibraryDb : public LibraryDb {
     Q_OBJECT
 
-public:
+   public:
     static void removeUnusedDbs();
 
-    MpdLibraryDb(QObject *p=nullptr);
+    MpdLibraryDb(QObject* p = nullptr);
     ~MpdLibraryDb() override;
 
-    Song getCoverSong(const QString &artistId, const QString &albumId=QString());
+    Song getCoverSong(const QString& artistId,
+                      const QString& albumId = QString());
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void loadLibrary();
 
-public Q_SLOTS:
-    void connectionChanged(const MPDConnectionDetails &details);
-    void statsUpdated(const MPDStatsValues &stats);
+   public Q_SLOTS:
+    void connectionChanged(const MPDConnectionDetails& details);
+    void statsUpdated(const MPDStatsValues& stats);
 
-private:
+   private:
     void reset() override;
     void updateFinished() override;
 
-private:
+   private:
     bool loading;
-    QSqlQuery *coverQuery;
-    QSqlQuery *albumIdOnlyCoverQuery;
-    QSqlQuery *artistImageQuery;
+    QSqlQuery* coverQuery;
+    QSqlQuery* albumIdOnlyCoverQuery;
+    QSqlQuery* artistImageQuery;
 };
 
 #endif

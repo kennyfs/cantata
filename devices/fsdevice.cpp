@@ -46,38 +46,40 @@
 
 const QLatin1String FsDevice::constCantataCacheFile("/.cache");
 const QLatin1String FsDevice::constCantataSettingsFile("/.cantata");
-const QLatin1String FsDevice::constMusicFilenameSchemeKey("music_filenamescheme");
+const QLatin1String FsDevice::constMusicFilenameSchemeKey(
+    "music_filenamescheme");
 const QLatin1String FsDevice::constVfatSafeKey("vfat_safe");
 const QLatin1String FsDevice::constAsciiOnlyKey("ascii_only");
 const QLatin1String FsDevice::constIgnoreTheKey("ignore_the");
 const QLatin1String FsDevice::constReplaceSpacesKey("replace_spaces");
-const QLatin1String FsDevice::constCoverFileNameKey("cover_filename"); // Cantata extension!
-const QLatin1String FsDevice::constCoverMaxSizeKey("cover_maxsize"); // Cantata extension!
-const QLatin1String FsDevice::constVariousArtistsFixKey("fix_various_artists"); // Cantata extension!
-const QLatin1String FsDevice::constTranscoderKey("transcoder"); // Cantata extension!
-const QLatin1String FsDevice::constUseCacheKey("use_cache"); // Cantata extension!
+const QLatin1String FsDevice::constCoverFileNameKey(
+    "cover_filename");  // Cantata extension!
+const QLatin1String FsDevice::constCoverMaxSizeKey(
+    "cover_maxsize");  // Cantata extension!
+const QLatin1String FsDevice::constVariousArtistsFixKey(
+    "fix_various_artists");  // Cantata extension!
+const QLatin1String FsDevice::constTranscoderKey(
+    "transcoder");  // Cantata extension!
+const QLatin1String FsDevice::constUseCacheKey(
+    "use_cache");  // Cantata extension!
 const QLatin1String FsDevice::constDefCoverFileName("cover.jpg");
-const QLatin1String FsDevice::constAutoScanKey("auto_scan"); // Cantata extension!
+const QLatin1String FsDevice::constAutoScanKey(
+    "auto_scan");  // Cantata extension!
 
-MusicScanner::MusicScanner(const QString &id)
-    : QObject(nullptr)
-    , stopRequested(false)
-    , count(0)
-{
-    thread=new Thread(metaObject()->className()+QLatin1String("::")+id);
+MusicScanner::MusicScanner(const QString& id)
+    : QObject(nullptr), stopRequested(false), count(0) {
+    thread = new Thread(metaObject()->className() + QLatin1String("::") + id);
     moveToThread(thread);
     thread->start();
 }
 
-MusicScanner::~MusicScanner()
-{
-    stop();
-}
+MusicScanner::~MusicScanner() { stop(); }
 
-void MusicScanner::scan(const QString &folder, const QString &cacheFile, bool readCache, const QSet<FileOnlySong> &existingSongs)
-{
+void MusicScanner::scan(const QString& folder, const QString& cacheFile,
+                        bool readCache,
+                        const QSet<FileOnlySong>& existingSongs) {
     if (!cacheFile.isEmpty() && readCache) {
-        MusicLibraryItemRoot *lib=new MusicLibraryItemRoot;
+        MusicLibraryItemRoot* lib = new MusicLibraryItemRoot;
         readProgress(0.0);
         if (lib->fromXML(cacheFile, folder)) {
             if (!stopRequested) {
@@ -94,10 +96,10 @@ void MusicScanner::scan(const QString &folder, const QString &cacheFile, bool re
     if (stopRequested) {
         return;
     }
-    count=0;
-    MusicLibraryItemRoot *library = new MusicLibraryItemRoot;
-    QString topLevel=Utils::fixPath(QDir(folder).absolutePath());
-    QSet<FileOnlySong> existing=existingSongs;
+    count = 0;
+    MusicLibraryItemRoot* library = new MusicLibraryItemRoot;
+    QString topLevel = Utils::fixPath(QDir(folder).absolutePath());
+    QSet<FileOnlySong> existing = existingSongs;
     timer.start();
     scanFolder(library, topLevel, topLevel, existing, 0);
 
@@ -112,70 +114,74 @@ void MusicScanner::scan(const QString &folder, const QString &cacheFile, bool re
     }
 }
 
-void MusicScanner::saveCache(const QString &cache, MusicLibraryItemRoot *lib)
-{
+void MusicScanner::saveCache(const QString& cache, MusicLibraryItemRoot* lib) {
     writeProgress(0.0);
     lib->toXML(cache, this);
     emit cacheSaved();
 }
 
-void MusicScanner::stop()
-{
-    stopRequested=true;
+void MusicScanner::stop() {
+    stopRequested = true;
     thread->stop();
-    thread=nullptr;
+    thread = nullptr;
 }
 
-void MusicScanner::scanFolder(MusicLibraryItemRoot *library, const QString &topLevel, const QString &f,
-                              QSet<FileOnlySong> &existing, int level)
-{
+void MusicScanner::scanFolder(MusicLibraryItemRoot* library,
+                              const QString& topLevel, const QString& f,
+                              QSet<FileOnlySong>& existing, int level) {
     if (stopRequested) {
         return;
     }
-    if (level<4) {
+    if (level < 4) {
         QDir d(f);
-        QFileInfoList entries=d.entryInfoList(QDir::Files|QDir::NoSymLinks|QDir::Dirs|QDir::NoDotAndDotDot);
-        MusicLibraryItemArtist *artistItem = nullptr;
-        MusicLibraryItemAlbum *albumItem = nullptr;
-        for (const QFileInfo &info: entries) {
+        QFileInfoList entries = d.entryInfoList(
+            QDir::Files | QDir::NoSymLinks | QDir::Dirs | QDir::NoDotAndDotDot);
+        MusicLibraryItemArtist* artistItem = nullptr;
+        MusicLibraryItemAlbum* albumItem = nullptr;
+        for (const QFileInfo& info : entries) {
             if (stopRequested) {
                 return;
             }
             if (info.isDir()) {
-                scanFolder(library, topLevel, info.absoluteFilePath(), existing, level+1);
-            } else if(info.isReadable()) {
+                scanFolder(library, topLevel, info.absoluteFilePath(), existing,
+                           level + 1);
+            } else if (info.isReadable()) {
                 Song song;
-                QString fname=info.absoluteFilePath().mid(topLevel.length());
+                QString fname = info.absoluteFilePath().mid(topLevel.length());
 
-                if (fname.endsWith(".jpg", Qt::CaseInsensitive) || fname.endsWith(".png", Qt::CaseInsensitive) ||
-                    fname.endsWith(".lyrics", Qt::CaseInsensitive) || fname.endsWith(".pamp", Qt::CaseInsensitive)) {
+                if (fname.endsWith(".jpg", Qt::CaseInsensitive) ||
+                    fname.endsWith(".png", Qt::CaseInsensitive) ||
+                    fname.endsWith(".lyrics", Qt::CaseInsensitive) ||
+                    fname.endsWith(".pamp", Qt::CaseInsensitive)) {
                     continue;
                 }
-                song.file=fname;
-                QSet<FileOnlySong>::iterator it=existing.find(song);
-                if (existing.end()==it) {
-                    song=Tags::read(info.absoluteFilePath());
-                    song.file=fname;
+                song.file = fname;
+                QSet<FileOnlySong>::iterator it = existing.find(song);
+                if (existing.end() == it) {
+                    song = Tags::read(info.absoluteFilePath());
+                    song.file = fname;
                 } else {
-                    song=*it;
+                    song = *it;
                     existing.erase(it);
                 }
                 if (song.isEmpty()) {
                     continue;
                 }
                 count++;
-                if (timer.elapsed()>=1500 || 0==(count%5)) {
+                if (timer.elapsed() >= 1500 || 0 == (count % 5)) {
                     timer.restart();
                     emit songCount(count);
                 }
 
                 song.fillEmptyFields();
                 song.populateSorts();
-                song.size=info.size();
-                if (!artistItem || song.albumArtistOrComposer()!=artistItem->data()) {
+                song.size = info.size();
+                if (!artistItem ||
+                    song.albumArtistOrComposer() != artistItem->data()) {
                     artistItem = library->artist(song);
                 }
-                if (!albumItem || albumItem->parentItem()!=artistItem || song.albumName()!=albumItem->data()) {
+                if (!albumItem || albumItem->parentItem() != artistItem ||
+                    song.albumName() != albumItem->data()) {
                     albumItem = artistItem->album(song);
                 }
                 albumItem->append(new MusicLibraryItemSong(song, albumItem));
@@ -184,76 +190,80 @@ void MusicScanner::scanFolder(MusicLibraryItemRoot *library, const QString &topL
     }
 }
 
-void MusicScanner::readProgress(double pc)
-{
-    emit readingCache(pc);
-}
+void MusicScanner::readProgress(double pc) { emit readingCache(pc); }
 
-void MusicScanner::writeProgress(double pc)
-{
-    emit savingCache(pc);
-}
+void MusicScanner::writeProgress(double pc) { emit savingCache(pc); }
 
-bool FsDevice::readOpts(const QString &fileName, DeviceOptions &opts, bool readAll)
-{
+bool FsDevice::readOpts(const QString& fileName, DeviceOptions& opts,
+                        bool readAll) {
     QFile file(fileName);
 
-    opts=DeviceOptions(constDefCoverFileName);
-    if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
+    opts = DeviceOptions(constDefCoverFileName);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
         while (!in.atEnd()) {
             QString line = in.readLine();
-            if (line.startsWith(constCoverFileNameKey+"=")) {
-                opts.coverName=line.section('=', 1, 1);
-            } if (line.startsWith(constCoverMaxSizeKey+"=")) {
-                opts.coverMaxSize=line.section('=', 1, 1).toUInt();
+            if (line.startsWith(constCoverFileNameKey + "=")) {
+                opts.coverName = line.section('=', 1, 1);
+            }
+            if (line.startsWith(constCoverMaxSizeKey + "=")) {
+                opts.coverMaxSize = line.section('=', 1, 1).toUInt();
                 opts.checkCoverSize();
-            } else if(line.startsWith(constVariousArtistsFixKey+"=")) {
-                opts.fixVariousArtists=QLatin1String("true")==line.section('=', 1, 1);
-            } else if (line.startsWith(constTranscoderKey+"="))  {
-                QStringList parts=line.section('=', 1, 1).split(',');
-                if (parts.size()>=3) {
-                    opts.transcoderCodec=parts.at(0);
-                    opts.transcoderValue=parts.at(1).toInt();
-                    if (parts.size()>=4) {
-                        if (QLatin1String("true")==parts.at(3)) {
-                            opts.transcoderWhen=DeviceOptions::TW_IfLossess;
-                        } else if (QLatin1String("true")==parts.at(2)) {
-                            opts.transcoderWhen=DeviceOptions::TW_IfDifferent;
+            } else if (line.startsWith(constVariousArtistsFixKey + "=")) {
+                opts.fixVariousArtists =
+                    QLatin1String("true") == line.section('=', 1, 1);
+            } else if (line.startsWith(constTranscoderKey + "=")) {
+                QStringList parts = line.section('=', 1, 1).split(',');
+                if (parts.size() >= 3) {
+                    opts.transcoderCodec = parts.at(0);
+                    opts.transcoderValue = parts.at(1).toInt();
+                    if (parts.size() >= 4) {
+                        if (QLatin1String("true") == parts.at(3)) {
+                            opts.transcoderWhen = DeviceOptions::TW_IfLossess;
+                        } else if (QLatin1String("true") == parts.at(2)) {
+                            opts.transcoderWhen = DeviceOptions::TW_IfDifferent;
                         } else {
-                            opts.transcoderWhen=DeviceOptions::TW_Always;
+                            opts.transcoderWhen = DeviceOptions::TW_Always;
                         }
                     } else {
-                        const QString &val = parts.at(2);
-                        if (QLatin1String("true")==val) {
-                            opts.transcoderWhen=DeviceOptions::TW_IfDifferent;
-                        } else if (QLatin1String("false")==val) {
-                            opts.transcoderWhen=DeviceOptions::TW_Always;
+                        const QString& val = parts.at(2);
+                        if (QLatin1String("true") == val) {
+                            opts.transcoderWhen = DeviceOptions::TW_IfDifferent;
+                        } else if (QLatin1String("false") == val) {
+                            opts.transcoderWhen = DeviceOptions::TW_Always;
                         } else {
-                            opts.transcoderWhen=(DeviceOptions::TranscodeWhen)val.toInt();
+                            opts.transcoderWhen =
+                                (DeviceOptions::TranscodeWhen)val.toInt();
                         }
                     }
                 }
-            } else if (line.startsWith(constUseCacheKey+"=")) {
-                opts.useCache=QLatin1String("true")==line.section('=', 1, 1);
-            } else if (line.startsWith(constAutoScanKey+"=")) {
-                opts.autoScan=QLatin1String("true")==line.section('=', 1, 1);
+            } else if (line.startsWith(constUseCacheKey + "=")) {
+                opts.useCache =
+                    QLatin1String("true") == line.section('=', 1, 1);
+            } else if (line.startsWith(constAutoScanKey + "=")) {
+                opts.autoScan =
+                    QLatin1String("true") == line.section('=', 1, 1);
             } else if (readAll) {
-                // For UMS these are stored in .is_audio_player - for Amarok compatability!
-                if (line.startsWith(constMusicFilenameSchemeKey+"=")) {
+                // For UMS these are stored in .is_audio_player - for Amarok
+                // compatability!
+                if (line.startsWith(constMusicFilenameSchemeKey + "=")) {
                     QString scheme = line.section('=', 1, 1);
-                    //protect against empty setting.
-                    if (!scheme.isEmpty() ) {
+                    // protect against empty setting.
+                    if (!scheme.isEmpty()) {
                         opts.scheme = scheme;
                     }
-                } else if (line.startsWith(constVfatSafeKey+"="))  {
-                    opts.vfatSafe = QLatin1String("true")==line.section('=', 1, 1);
-                } else if (line.startsWith(constAsciiOnlyKey+"=")) {
-                    opts.asciiOnly = QLatin1String("true")==line.section('=', 1, 1);
-                } else if (line.startsWith(constIgnoreTheKey+"=")) {
-                    opts.ignoreThe = QLatin1String("true")==line.section('=', 1, 1);
-                } else if (line.startsWith(constReplaceSpacesKey+"="))  {
-                    opts.replaceSpaces = QLatin1String("true")==line.section('=', 1, 1);
+                } else if (line.startsWith(constVfatSafeKey + "=")) {
+                    opts.vfatSafe =
+                        QLatin1String("true") == line.section('=', 1, 1);
+                } else if (line.startsWith(constAsciiOnlyKey + "=")) {
+                    opts.asciiOnly =
+                        QLatin1String("true") == line.section('=', 1, 1);
+                } else if (line.startsWith(constIgnoreTheKey + "=")) {
+                    opts.ignoreThe =
+                        QLatin1String("true") == line.section('=', 1, 1);
+                } else if (line.startsWith(constReplaceSpacesKey + "=")) {
+                    opts.replaceSpaces =
+                        QLatin1String("true") == line.section('=', 1, 1);
                 }
             }
         }
@@ -263,18 +273,20 @@ bool FsDevice::readOpts(const QString &fileName, DeviceOptions &opts, bool readA
     return false;
 }
 
-static inline QString toString(bool b)
-{
+static inline QString toString(bool b) {
     return b ? QLatin1String("true") : QLatin1String("false");
 }
 
-void FsDevice::writeOpts(const QString &fileName, const DeviceOptions &opts, bool writeAll)
-{
+void FsDevice::writeOpts(const QString& fileName, const DeviceOptions& opts,
+                         bool writeAll) {
     DeviceOptions def(constDefCoverFileName);
     // If we are just using the defaults, then mayas wel lremove the file!
-    if ( (writeAll && opts==def) ||
-         (!writeAll && opts.coverName==constDefCoverFileName && 0==opts.coverMaxSize && opts.fixVariousArtists!=def.fixVariousArtists &&
-          opts.transcoderCodec.isEmpty() && opts.useCache==def.useCache && opts.autoScan!=def.autoScan)) {
+    if ((writeAll && opts == def) ||
+        (!writeAll && opts.coverName == constDefCoverFileName &&
+         0 == opts.coverMaxSize &&
+         opts.fixVariousArtists != def.fixVariousArtists &&
+         opts.transcoderCodec.isEmpty() && opts.useCache == def.useCache &&
+         opts.autoScan != def.autoScan)) {
         if (QFile::exists(fileName)) {
             QFile::remove(fileName);
         }
@@ -282,105 +294,103 @@ void FsDevice::writeOpts(const QString &fileName, const DeviceOptions &opts, boo
     }
 
     QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
-
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
         if (writeAll) {
-            if (opts.scheme!=def.scheme) {
-                out << constMusicFilenameSchemeKey << '=' << opts.scheme << '\n';
+            if (opts.scheme != def.scheme) {
+                out << constMusicFilenameSchemeKey << '=' << opts.scheme
+                    << '\n';
             }
-            if (opts.vfatSafe!=def.vfatSafe) {
-                out << constVfatSafeKey << '=' << toString(opts.vfatSafe) << '\n';
+            if (opts.vfatSafe != def.vfatSafe) {
+                out << constVfatSafeKey << '=' << toString(opts.vfatSafe)
+                    << '\n';
             }
-            if (opts.asciiOnly!=def.asciiOnly) {
-                out << constAsciiOnlyKey << '=' << toString(opts.asciiOnly) << '\n';
+            if (opts.asciiOnly != def.asciiOnly) {
+                out << constAsciiOnlyKey << '=' << toString(opts.asciiOnly)
+                    << '\n';
             }
-            if (opts.ignoreThe!=def.ignoreThe) {
-                out << constIgnoreTheKey << '=' << toString(opts.ignoreThe) << '\n';
+            if (opts.ignoreThe != def.ignoreThe) {
+                out << constIgnoreTheKey << '=' << toString(opts.ignoreThe)
+                    << '\n';
             }
-            if (opts.replaceSpaces!=def.replaceSpaces) {
-                out << constReplaceSpacesKey << '=' << toString(opts.replaceSpaces) << '\n';
+            if (opts.replaceSpaces != def.replaceSpaces) {
+                out << constReplaceSpacesKey << '='
+                    << toString(opts.replaceSpaces) << '\n';
             }
         }
 
-        // NOTE: If any options are added/changed - take care of the "if ( (writeAll..." block above!!!
-        if (opts.coverName!=constDefCoverFileName) {
+        // NOTE: If any options are added/changed - take care of the "if (
+        // (writeAll..." block above!!!
+        if (opts.coverName != constDefCoverFileName) {
             out << constCoverFileNameKey << '=' << opts.coverName << '\n';
         }
-        if (0!=opts.coverMaxSize) {
+        if (0 != opts.coverMaxSize) {
             out << constCoverMaxSizeKey << '=' << opts.coverMaxSize << '\n';
         }
-        if (opts.fixVariousArtists!=def.fixVariousArtists) {
-            out << constVariousArtistsFixKey << '=' << toString(opts.fixVariousArtists) << '\n';
+        if (opts.fixVariousArtists != def.fixVariousArtists) {
+            out << constVariousArtistsFixKey << '='
+                << toString(opts.fixVariousArtists) << '\n';
         }
         if (!opts.transcoderCodec.isEmpty()) {
-            out << constTranscoderKey << '=' << opts.transcoderCodec << ',' << opts.transcoderValue
-                << ',' << opts.transcoderWhen << '\n';
+            out << constTranscoderKey << '=' << opts.transcoderCodec << ','
+                << opts.transcoderValue << ',' << opts.transcoderWhen << '\n';
         }
-        if (opts.useCache!=def.useCache) {
+        if (opts.useCache != def.useCache) {
             out << constUseCacheKey << '=' << toString(opts.useCache) << '\n';
         }
-        if (opts.autoScan!=def.autoScan) {
+        if (opts.autoScan != def.autoScan) {
             out << constAutoScanKey << '=' << toString(opts.autoScan) << '\n';
         }
     }
 }
 
-FsDevice::FsDevice(MusicLibraryModel *m, Solid::Device &dev)
-    : Device(m, dev)
-    , state(Idle)
-    , scanned(false)
-    , cacheProgress(-1)
-    , scanner(nullptr)
-{
-}
+FsDevice::FsDevice(MusicLibraryModel* m, Solid::Device& dev)
+    : Device(m, dev),
+      state(Idle),
+      scanned(false),
+      cacheProgress(-1),
+      scanner(nullptr) {}
 
-FsDevice::FsDevice(MusicLibraryModel *m, const QString &name, const QString &id)
-    : Device(m, name, id)
-    , state(Idle)
-    , scanned(false)
-    , cacheProgress(-1)
-    , scanner(nullptr)
-{
-}
+FsDevice::FsDevice(MusicLibraryModel* m, const QString& name, const QString& id)
+    : Device(m, name, id),
+      state(Idle),
+      scanned(false),
+      cacheProgress(-1),
+      scanner(nullptr) {}
 
-FsDevice::~FsDevice() {
-    stopScanner();
-}
+FsDevice::~FsDevice() { stopScanner(); }
 
-void FsDevice::rescan(bool full)
-{
+void FsDevice::rescan(bool full) {
     spaceInfo.setDirty();
-    // If this is the first scan (scanned=false) and we are set to use cache, attempt to load that before scanning
+    // If this is the first scan (scanned=false) and we are set to use cache,
+    // attempt to load that before scanning
     if (isIdle()) {
         if (full) {
             removeCache();
             clear();
         }
         startScanner(full);
-        scanned=true;
+        scanned = true;
     }
 }
 
-void FsDevice::stop()
-{
-     if (nullptr!=scanner) {
-         stopScanner();
-     }
+void FsDevice::stop() {
+    if (nullptr != scanner) {
+        stopScanner();
+    }
 }
 
-void FsDevice::addSong(const Song &s, bool overwrite, bool copyCover)
-{
-    jobAbortRequested=false;
+void FsDevice::addSong(const Song& s, bool overwrite, bool copyCover) {
+    jobAbortRequested = false;
     if (!isConnected()) {
         emit actionStatus(NotConnected);
         return;
     }
 
-    needToFixVa=opts.fixVariousArtists && s.isVariousArtists();
+    needToFixVa = opts.fixVariousArtists && s.isVariousArtists();
 
     if (!overwrite) {
-        Song check=s;
+        Song check = s;
 
         if (needToFixVa) {
             Device::fixVariousArtists(QString(), check, true);
@@ -396,23 +406,25 @@ void FsDevice::addSong(const Song &s, bool overwrite, bool copyCover)
         return;
     }
 
-    currentDestFile=audioFolder+opts.createFilename(s);
+    currentDestFile = audioFolder + opts.createFilename(s);
     Encoders::Encoder encoder;
 
     transcoding = false;
     if (!opts.transcoderCodec.isEmpty()) {
-        encoder=Encoders::getEncoder(opts.transcoderCodec);
+        encoder = Encoders::getEncoder(opts.transcoderCodec);
         if (encoder.codec.isEmpty()) {
             emit actionStatus(CodecNotAvailable);
             return;
         }
 
         transcoding = !opts.transcoderCodec.isEmpty() &&
-                         (DeviceOptions::TW_IfDifferent!=opts.transcoderWhen || encoder.isDifferent(s.file)) &&
-                         (DeviceOptions::TW_IfLossess!=opts.transcoderWhen || Device::isLossless(s.file));
+                      (DeviceOptions::TW_IfDifferent != opts.transcoderWhen ||
+                       encoder.isDifferent(s.file)) &&
+                      (DeviceOptions::TW_IfLossess != opts.transcoderWhen ||
+                       Device::isLossless(s.file));
 
         if (transcoding) {
-            currentDestFile=encoder.changeExtension(currentDestFile);
+            currentDestFile = encoder.changeExtension(currentDestFile);
         }
     }
 
@@ -422,42 +434,50 @@ void FsDevice::addSong(const Song &s, bool overwrite, bool copyCover)
     }
 
     QDir dir(Utils::getDir(currentDestFile));
-    if(!dir.exists() && !Utils::createWorldReadableDir(dir.absolutePath(), QString())) {
+    if (!dir.exists() &&
+        !Utils::createWorldReadableDir(dir.absolutePath(), QString())) {
         emit actionStatus(DirCreationFaild);
         return;
     }
-    currentSong=s;
+    currentSong = s;
 
     if (transcoding) {
-        TranscodingJob *job=new TranscodingJob(encoder, opts.transcoderValue, s.file, currentDestFile, copyCover ? opts : DeviceOptions(Device::constNoCover),
-                                               (needToFixVa ? CopyJob::OptsApplyVaFix : CopyJob::OptsNone)|
-                                                   (Device::RemoteFs==devType() ? CopyJob::OptsFixLocal : CopyJob::OptsNone),
-                                               currentSong);
+        TranscodingJob* job = new TranscodingJob(
+            encoder, opts.transcoderValue, s.file, currentDestFile,
+            copyCover ? opts : DeviceOptions(Device::constNoCover),
+            (needToFixVa ? CopyJob::OptsApplyVaFix : CopyJob::OptsNone) |
+                (Device::RemoteFs == devType() ? CopyJob::OptsFixLocal
+                                               : CopyJob::OptsNone),
+            currentSong);
         connect(job, SIGNAL(result(int)), SLOT(addSongResult(int)));
         connect(job, SIGNAL(percent(int)), SLOT(percent(int)));
         job->start();
     } else {
-        CopyJob *job=new CopyJob(s.file, currentDestFile, copyCover ? opts : DeviceOptions(Device::constNoCover),
-                                 (needToFixVa ? CopyJob::OptsApplyVaFix : CopyJob::OptsNone)|(Device::RemoteFs==devType() ? CopyJob::OptsFixLocal : CopyJob::OptsNone),
-                                 currentSong);
+        CopyJob* job = new CopyJob(
+            s.file, currentDestFile,
+            copyCover ? opts : DeviceOptions(Device::constNoCover),
+            (needToFixVa ? CopyJob::OptsApplyVaFix : CopyJob::OptsNone) |
+                (Device::RemoteFs == devType() ? CopyJob::OptsFixLocal
+                                               : CopyJob::OptsNone),
+            currentSong);
         connect(job, SIGNAL(result(int)), SLOT(addSongResult(int)));
         connect(job, SIGNAL(percent(int)), SLOT(percent(int)));
         job->start();
     }
 }
 
-void FsDevice::copySongTo(const Song &s, const QString &musicPath, bool overwrite, bool copyCover)
-{
-    jobAbortRequested=false;
+void FsDevice::copySongTo(const Song& s, const QString& musicPath,
+                          bool overwrite, bool copyCover) {
+    jobAbortRequested = false;
     if (!isConnected()) {
         emit actionStatus(NotConnected);
         return;
     }
 
-    needToFixVa=opts.fixVariousArtists && s.isVariousArtists();
+    needToFixVa = opts.fixVariousArtists && s.isVariousArtists();
 
     if (!overwrite) {
-        Song check=s;
+        Song check = s;
 
         if (needToFixVa) {
             Device::fixVariousArtists(QString(), check, false);
@@ -468,92 +488,96 @@ void FsDevice::copySongTo(const Song &s, const QString &musicPath, bool overwrit
         }
     }
 
-    QString source=audioFolder+s.file;
+    QString source = audioFolder + s.file;
 
     if (!QFile::exists(source)) {
         emit actionStatus(SourceFileDoesNotExist);
         return;
     }
 
-    QString baseDir=MPDConnection::self()->getDetails().dir;
-    if (!overwrite && QFile::exists(baseDir+musicPath)) {
+    QString baseDir = MPDConnection::self()->getDetails().dir;
+    if (!overwrite && QFile::exists(baseDir + musicPath)) {
         emit actionStatus(FileExists);
         return;
     }
 
-    currentDestFile=baseDir+musicPath;
+    currentDestFile = baseDir + musicPath;
     QDir dir(Utils::getDir(currentDestFile));
-    if (!dir.exists() && !Utils::createWorldReadableDir(dir.absolutePath(), baseDir)) {
+    if (!dir.exists() &&
+        !Utils::createWorldReadableDir(dir.absolutePath(), baseDir)) {
         emit actionStatus(DirCreationFaild);
         return;
     }
 
-    currentSong=s;
-    // Pass an empty filename as covername, so that Covers::copyCover knows this is TO MPD...
-    CopyJob *job=new CopyJob(source, currentDestFile, copyCover ? DeviceOptions(QString()) : DeviceOptions(Device::constNoCover),
-                             needToFixVa ? CopyJob::OptsUnApplyVaFix : CopyJob::OptsNone, currentSong);
+    currentSong = s;
+    // Pass an empty filename as covername, so that Covers::copyCover knows this
+    // is TO MPD...
+    CopyJob* job =
+        new CopyJob(source, currentDestFile,
+                    copyCover ? DeviceOptions(QString())
+                              : DeviceOptions(Device::constNoCover),
+                    needToFixVa ? CopyJob::OptsUnApplyVaFix : CopyJob::OptsNone,
+                    currentSong);
     connect(job, SIGNAL(result(int)), SLOT(copySongToResult(int)));
     connect(job, SIGNAL(percent(int)), SLOT(percent(int)));
     job->start();
 }
 
-void FsDevice::removeSong(const Song &s)
-{
-    jobAbortRequested=false;
+void FsDevice::removeSong(const Song& s) {
+    jobAbortRequested = false;
     if (!isConnected()) {
         emit actionStatus(NotConnected);
         return;
     }
 
-    if (!QFile::exists(audioFolder+s.file)) {
+    if (!QFile::exists(audioFolder + s.file)) {
         emit actionStatus(SourceFileDoesNotExist);
         return;
     }
 
-    currentSong=s;
-    DeleteJob *job=new DeleteJob(audioFolder+s.file);
+    currentSong = s;
+    DeleteJob* job = new DeleteJob(audioFolder + s.file);
     connect(job, SIGNAL(result(int)), SLOT(removeSongResult(int)));
     job->start();
 }
 
-void FsDevice::cleanDirs(const QSet<QString> &dirs)
-{
-    CleanJob *job=new CleanJob(dirs, audioFolder, opts.coverName);
+void FsDevice::cleanDirs(const QSet<QString>& dirs) {
+    CleanJob* job = new CleanJob(dirs, audioFolder, opts.coverName);
     connect(job, SIGNAL(result(int)), SLOT(cleanDirsResult(int)));
     connect(job, SIGNAL(percent(int)), SLOT(percent(int)));
     job->start();
 }
 
-Covers::Image FsDevice::requestCover(const Song &s)
-{
+Covers::Image FsDevice::requestCover(const Song& s) {
     Covers::Image i;
-    QString songFile=audioFolder+s.file;
-    QString dirName=Utils::getDir(songFile);
+    QString songFile = audioFolder + s.file;
+    QString dirName = Utils::getDir(songFile);
 
-    if (QFile::exists(dirName+opts.coverName)) {
-        QImage img(dirName+opts.coverName);
+    if (QFile::exists(dirName + opts.coverName)) {
+        QImage img(dirName + opts.coverName);
         if (!img.isNull()) {
             emit cover(s, img);
-            return Covers::Image(img, dirName+opts.coverName);
+            return Covers::Image(img, dirName + opts.coverName);
         }
     }
 
-    QStringList files=QDir(dirName).entryList(QStringList() << QLatin1String("*.jpg") << QLatin1String("*.png"), QDir::Files|QDir::Readable);
-    for (const QString &fileName: files) {
-        QImage img(dirName+fileName);
+    QStringList files = QDir(dirName).entryList(
+        QStringList() << QLatin1String("*.jpg") << QLatin1String("*.png"),
+        QDir::Files | QDir::Readable);
+    for (const QString& fileName : files) {
+        QImage img(dirName + fileName);
 
         if (!img.isNull()) {
             emit cover(s, img);
-            return Covers::Image(img, dirName+fileName);
+            return Covers::Image(img, dirName + fileName);
         }
     }
     return Covers::Image();
 }
 
-void FsDevice::percent(int pc)
-{
-    if (jobAbortRequested && 100!=pc) {
-        FileJob *job=qobject_cast<FileJob *>(sender());
+void FsDevice::percent(int pc) {
+    if (jobAbortRequested && 100 != pc) {
+        FileJob* job = qobject_cast<FileJob*>(sender());
         if (job) {
             job->stop();
         }
@@ -562,9 +586,8 @@ void FsDevice::percent(int pc)
     emit progress(pc);
 }
 
-void FsDevice::addSongResult(int status)
-{
-    CopyJob *job=qobject_cast<CopyJob *>(sender());
+void FsDevice::addSongResult(int status) {
+    CopyJob* job = qobject_cast<CopyJob*>(sender());
     FileJob::finished(job);
     spaceInfo.setDirty();
 
@@ -574,10 +597,10 @@ void FsDevice::addSongResult(int status)
         }
         return;
     }
-    if (Ok!=status) {
+    if (Ok != status) {
         emit actionStatus(status);
     } else {
-        currentSong.file=currentDestFile.mid(audioFolder.length());
+        currentSong.file = currentDestFile.mid(audioFolder.length());
         if (needToFixVa) {
             currentSong.fixVariousArtists();
         }
@@ -586,9 +609,8 @@ void FsDevice::addSongResult(int status)
     }
 }
 
-void FsDevice::copySongToResult(int status)
-{
-    CopyJob *job=qobject_cast<CopyJob *>(sender());
+void FsDevice::copySongToResult(int status) {
+    CopyJob* job = qobject_cast<CopyJob*>(sender());
     FileJob::finished(job);
     spaceInfo.setDirty();
     if (jobAbortRequested) {
@@ -597,34 +619,37 @@ void FsDevice::copySongToResult(int status)
         }
         return;
     }
-    if (Ok!=status) {
+    if (Ok != status) {
         emit actionStatus(status);
     } else {
-        currentSong.file=currentDestFile.mid(MPDConnection::self()->getDetails().dir.length());
+        currentSong.file = currentDestFile.mid(
+            MPDConnection::self()->getDetails().dir.length());
         QString origPath;
         if (MPDConnection::self()->isMopidy()) {
-            origPath=currentSong.file;
-            currentSong.file=Song::encodePath(currentSong.file);
+            origPath = currentSong.file;
+            currentSong.file = Song::encodePath(currentSong.file);
         }
         if (needToFixVa) {
             currentSong.revertVariousArtists();
         }
         Utils::setFilePerms(currentDestFile);
-//        MusicLibraryModel::self()->addSongToList(currentSong);
-//        DirViewModel::self()->addFileToList(origPath.isEmpty() ? currentSong.file : origPath,
-//                                            origPath.isEmpty() ? QString() : currentSong.file);
+        //        MusicLibraryModel::self()->addSongToList(currentSong);
+        //        DirViewModel::self()->addFileToList(origPath.isEmpty() ?
+        //        currentSong.file : origPath,
+        //                                            origPath.isEmpty() ?
+        //                                            QString() :
+        //                                            currentSong.file);
         emit actionStatus(Ok, job && job->coverCopied());
     }
 }
 
-void FsDevice::removeSongResult(int status)
-{
+void FsDevice::removeSongResult(int status) {
     FileJob::finished(sender());
     spaceInfo.setDirty();
     if (jobAbortRequested) {
         return;
     }
-    if (Ok!=status) {
+    if (Ok != status) {
         emit actionStatus(status);
     } else {
         removeSongFromList(currentSong);
@@ -632,8 +657,7 @@ void FsDevice::removeSongResult(int status)
     }
 }
 
-void FsDevice::cleanDirsResult(int status)
-{
+void FsDevice::cleanDirsResult(int status) {
     FileJob::finished(sender());
     spaceInfo.setDirty();
     if (jobAbortRequested) {
@@ -642,129 +666,127 @@ void FsDevice::cleanDirsResult(int status)
     emit actionStatus(status);
 }
 
-void FsDevice::initScaner()
-{
+void FsDevice::initScaner() {
     if (!scanner) {
-        static bool registeredTypes=false;
+        static bool registeredTypes = false;
 
         if (!registeredTypes) {
-             qRegisterMetaType<QSet<FileOnlySong> >("QSet<FileOnlySong>");
-             registeredTypes=true;
+            qRegisterMetaType<QSet<FileOnlySong> >("QSet<FileOnlySong>");
+            registeredTypes = true;
         }
-        scanner=new MusicScanner(data());
-        connect(scanner, SIGNAL(libraryUpdated(MusicLibraryItemRoot *)), this, SLOT(libraryUpdated(MusicLibraryItemRoot *)));
+        scanner = new MusicScanner(data());
+        connect(scanner, SIGNAL(libraryUpdated(MusicLibraryItemRoot*)), this,
+                SLOT(libraryUpdated(MusicLibraryItemRoot*)));
         connect(scanner, SIGNAL(songCount(int)), this, SLOT(songCount(int)));
         connect(scanner, SIGNAL(cacheSaved()), this, SLOT(savedCache()));
-        connect(scanner, SIGNAL(savingCache(int)), this, SLOT(savingCache(int)));
-        connect(scanner, SIGNAL(readingCache(int)), this, SLOT(readingCache(int)));
-        connect(this, SIGNAL(scan(const QString &, const QString &, bool, const QSet<FileOnlySong> &)), scanner, SLOT(scan(const QString &, const QString &, bool, const QSet<FileOnlySong> &)));
-        connect(this, SIGNAL(saveCache(const QString &, MusicLibraryItemRoot *)), scanner, SLOT(saveCache(const QString &, MusicLibraryItemRoot *)));
+        connect(scanner, SIGNAL(savingCache(int)), this,
+                SLOT(savingCache(int)));
+        connect(scanner, SIGNAL(readingCache(int)), this,
+                SLOT(readingCache(int)));
+        connect(this,
+                SIGNAL(scan(const QString&, const QString&, bool,
+                            const QSet<FileOnlySong>&)),
+                scanner,
+                SLOT(scan(const QString&, const QString&, bool,
+                          const QSet<FileOnlySong>&)));
+        connect(this, SIGNAL(saveCache(const QString&, MusicLibraryItemRoot*)),
+                scanner,
+                SLOT(saveCache(const QString&, MusicLibraryItemRoot*)));
     }
 }
 
-void FsDevice::startScanner(bool fullScan)
-{
+void FsDevice::startScanner(bool fullScan) {
     stopScanner();
     initScaner();
     QSet<FileOnlySong> existingSongs;
     if (!fullScan) {
-        QSet<Song> songs=allSongs();
+        QSet<Song> songs = allSongs();
 
-        for (const Song &s: songs) {
+        for (const Song& s : songs) {
             existingSongs.insert(FileOnlySong(s));
         }
     }
-    state=Updating;
-    emit scan(audioFolder, opts.useCache ? cacheFileName() : QString(), !scanned, existingSongs);
+    state = Updating;
+    emit scan(audioFolder, opts.useCache ? cacheFileName() : QString(),
+              !scanned, existingSongs);
     setStatusMessage(tr("Updating..."));
     emit updating(id(), true);
 }
 
-void FsDevice::stopScanner()
-{
-    state=Idle;
+void FsDevice::stopScanner() {
+    state = Idle;
     if (!scanner) {
         return;
     }
-    disconnect(scanner, SIGNAL(libraryUpdated(MusicLibraryItemRoot *)), this, SLOT(libraryUpdated(MusicLibraryItemRoot *)));
+    disconnect(scanner, SIGNAL(libraryUpdated(MusicLibraryItemRoot*)), this,
+               SLOT(libraryUpdated(MusicLibraryItemRoot*)));
     disconnect(scanner, SIGNAL(songCount(int)), this, SLOT(songCount(int)));
     disconnect(scanner, SIGNAL(cacheSaved()), this, SLOT(savedCache()));
     disconnect(scanner, SIGNAL(savingCache(int)), this, SLOT(savingCache(int)));
-    disconnect(scanner, SIGNAL(readingCache(int)), this, SLOT(readingCache(int)));
+    disconnect(scanner, SIGNAL(readingCache(int)), this,
+               SLOT(readingCache(int)));
     scanner->deleteLater();
-    scanner=nullptr;
+    scanner = nullptr;
 }
 
-void FsDevice::clear() const
-{
+void FsDevice::clear() const {
     if (childCount()) {
-        FsDevice *that=const_cast<FsDevice *>(this);
-        that->update=new MusicLibraryItemRoot();
+        FsDevice* that = const_cast<FsDevice*>(this);
+        that->update = new MusicLibraryItemRoot();
         that->applyUpdate();
-        that->scanned=false;
+        that->scanned = false;
     }
 }
 
-void FsDevice::libraryUpdated(MusicLibraryItemRoot *lib)
-{
-    cacheProgress=-1;
+void FsDevice::libraryUpdated(MusicLibraryItemRoot* lib) {
+    cacheProgress = -1;
     if (update) {
         delete update;
     }
-    update=lib;
+    update = lib;
     setStatusMessage(QString());
-    state=Idle;
+    state = Idle;
     emit updating(id(), false);
 }
 
-QString FsDevice::cacheFileName() const
-{
+QString FsDevice::cacheFileName() const {
     if (audioFolder.isEmpty()) {
         setAudioFolder();
     }
-    return audioFolder+constCantataCacheFile+".xml.gz";
+    return audioFolder + constCantataCacheFile + ".xml.gz";
 }
 
-void FsDevice::saveCache()
-{
+void FsDevice::saveCache() {
     if (opts.useCache) {
-        state=SavingCache;
+        state = SavingCache;
         initScaner();
         emit saveCache(cacheFileName(), this);
     }
 }
 
-void FsDevice::savedCache()
-{
-    state=Idle;
-    cacheProgress=-1;
+void FsDevice::savedCache() {
+    state = Idle;
+    cacheProgress = -1;
     setStatusMessage(QString());
     emit cacheSaved();
 }
 
-void FsDevice::removeCache()
-{
+void FsDevice::removeCache() {
     QString cacheFile(cacheFileName());
     if (QFile::exists(cacheFile)) {
         QFile::remove(cacheFile);
     }
 }
 
-void FsDevice::readingCache(int pc)
-{
-    cacheStatus(tr("Reading cache"), pc);
-}
+void FsDevice::readingCache(int pc) { cacheStatus(tr("Reading cache"), pc); }
 
-void FsDevice::savingCache(int pc)
-{
-    cacheStatus(tr("Saving cache"), pc);
-}
+void FsDevice::savingCache(int pc) { cacheStatus(tr("Saving cache"), pc); }
 
-void FsDevice::cacheStatus(const QString &msg, int prog)
-{
-    if (prog!=cacheProgress) {
-        cacheProgress=prog;
-        setStatusMessage(tr("%1 %2%","Message percent").arg(msg).arg(cacheProgress));
+void FsDevice::cacheStatus(const QString& msg, int prog) {
+    if (prog != cacheProgress) {
+        cacheProgress = prog;
+        setStatusMessage(
+            tr("%1 %2%", "Message percent").arg(msg).arg(cacheProgress));
     }
 }
 

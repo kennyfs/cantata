@@ -38,25 +38,19 @@
 #include <QCheckBox>
 #include <QProcess>
 
-ShortcutsSettingsPage::ShortcutsSettingsPage(QWidget *p)
-    : QWidget(p)
-{
-    QBoxLayout *lay=new QBoxLayout(QBoxLayout::TopToBottom, this);
+ShortcutsSettingsPage::ShortcutsSettingsPage(QWidget* p) : QWidget(p) {
+    QBoxLayout* lay = new QBoxLayout(QBoxLayout::TopToBottom, this);
     lay->setMargin(0);
 
-    QHash<QString, ActionCollection *> map;
+    QHash<QString, ActionCollection*> map;
     map.insert("Cantata", ActionCollection::get());
     shortcuts = new ShortcutsSettingsWidget(map, this);
     shortcuts->view()->setAlternatingRowColors(false);
-    shortcuts->view()->setItemDelegate(new BasicItemDelegate(shortcuts->view()));
+    shortcuts->view()->setItemDelegate(
+        new BasicItemDelegate(shortcuts->view()));
     lay->addWidget(shortcuts);
 }
 
-void ShortcutsSettingsPage::load()
-{
-}
+void ShortcutsSettingsPage::load() {}
 
-void ShortcutsSettingsPage::save()
-{
-    shortcuts->save();
-}
+void ShortcutsSettingsPage::save() { shortcuts->save(); }

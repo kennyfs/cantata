@@ -26,32 +26,28 @@
 #include "soliddefs_p.h"
 #include <solid-lite/ifaces/portablemediaplayer.h>
 
-Solid::PortableMediaPlayer::PortableMediaPlayer(QObject *backendObject)
-    : DeviceInterface(*new PortableMediaPlayerPrivate(), backendObject)
-{
-}
+Solid::PortableMediaPlayer::PortableMediaPlayer(QObject* backendObject)
+    : DeviceInterface(*new PortableMediaPlayerPrivate(), backendObject) {}
 
-Solid::PortableMediaPlayer::~PortableMediaPlayer()
-{
+Solid::PortableMediaPlayer::~PortableMediaPlayer() {}
 
-}
-
-QStringList Solid::PortableMediaPlayer::supportedProtocols() const
-{
+QStringList Solid::PortableMediaPlayer::supportedProtocols() const {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), supportedProtocols());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(),
+                      QStringList(), supportedProtocols());
 }
 
-QStringList Solid::PortableMediaPlayer::supportedDrivers(QString protocol) const
-{
+QStringList Solid::PortableMediaPlayer::supportedDrivers(
+    QString protocol) const {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), supportedDrivers(protocol));
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(),
+                      QStringList(), supportedDrivers(protocol));
 }
 
-QVariant Solid::PortableMediaPlayer::driverHandle(const QString &driver) const
-{
+QVariant Solid::PortableMediaPlayer::driverHandle(const QString& driver) const {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QVariant(), driverHandle(driver));
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(),
+                      QVariant(), driverHandle(driver));
 }
 
 #include "moc_portablemediaplayer.cpp"

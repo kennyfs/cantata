@@ -32,54 +32,55 @@
 #include <QList>
 #include <QPair>
 
-class SearchWidget : public QWidget
-{
+class SearchWidget : public QWidget {
     Q_OBJECT
-public:
-    struct Category
-    {
-        Category(const QString &txt=QString(), const QString &f=QString(), const QString &tt=QString())
-            : text(txt), field(f), toolTip(tt) {
-
-        }
+   public:
+    struct Category {
+        Category(const QString& txt = QString(), const QString& f = QString(),
+                 const QString& tt = QString())
+            : text(txt), field(f), toolTip(tt) {}
 
         QString text;
         QString field;
         QString toolTip;
     };
 
-    SearchWidget(QWidget *p, int extraSpace=0);
-    ~SearchWidget() override { }
+    SearchWidget(QWidget* p, int extraSpace = 0);
+    ~SearchWidget() override {}
 
-    void setText(const QString &t) { edit->setText(t); }
+    void setText(const QString& t) { edit->setText(t); }
     QString text() const { return edit->text(); }
-    QString category() const { return cat ? cat->itemData(cat->currentIndex()) : QString(); }
+    QString category() const {
+        return cat ? cat->itemData(cat->currentIndex()) : QString();
+    }
     void setFocus() { edit->setFocus(); }
-    bool hasFocus() const { return edit->hasFocus() || (closeButton && closeButton->hasFocus()); }
+    bool hasFocus() const {
+        return edit->hasFocus() || (closeButton && closeButton->hasFocus());
+    }
     bool isActive() const { return widgetIsActive; }
     void setPermanent();
-    void setCategories(const QList<Category> &categories);
-    void setCategory(const QString &id);
+    void setCategories(const QList<Category>& categories);
+    void setCategory(const QString& id);
 
-Q_SIGNALS:
-    void textChanged(const QString &);
+   Q_SIGNALS:
+    void textChanged(const QString&);
     void returnPressed();
     void active(bool);
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void toggle();
     void clear() { edit->clear(); }
-    void activate(const QString &text=QString());
+    void activate(const QString& text = QString());
     void show() { setVisible(true); }
     void close();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void categoryActivated(int c);
 
-private:
-    SelectorLabel *cat;
-    LineEdit *edit;
-    ToolButton *closeButton;
+   private:
+    SelectorLabel* cat;
+    LineEdit* edit;
+    ToolButton* closeButton;
     bool widgetIsActive;
 };
 

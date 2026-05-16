@@ -44,8 +44,7 @@
 typedef QMultiHash<QString, QString> QStringMultiHash;
 SOLID_GLOBAL_STATIC(QStringMultiHash, globalMountPointsCache)
 
-QString _k_resolveSymLink(const QString &filename)
-{
+QString _k_resolveSymLink(const QString& filename) {
     QString resolved = filename;
     QString tmp = QFile::symLinkTarget(filename);
 
@@ -57,28 +56,22 @@ QString _k_resolveSymLink(const QString &filename)
     return resolved;
 }
 
-bool _k_isNetworkFileSystem(const QString &fstype, const QString &devName)
-{
-    if (fstype == "nfs"
-     || fstype == "nfs4"
-     || fstype == "smbfs"
-     || fstype == "cifs"
-     || devName.startsWith(QLatin1String("//"))) {
+bool _k_isNetworkFileSystem(const QString& fstype, const QString& devName) {
+    if (fstype == "nfs" || fstype == "nfs4" || fstype == "smbfs" ||
+        fstype == "cifs" || devName.startsWith(QLatin1String("//"))) {
         return true;
     }
     return false;
 }
 
-
-void _k_updateMountPointsCache()
-{
+void _k_updateMountPointsCache() {
     static bool firstCall = true;
     static QElapsedTimer elapsedTimer;
 
     if (firstCall) {
         firstCall = false;
         elapsedTimer.start();
-    } else if (elapsedTimer.elapsed()>10000) {
+    } else if (elapsedTimer.elapsed() > 10000) {
         elapsedTimer.restart();
     } else {
         return;
@@ -88,16 +81,18 @@ void _k_updateMountPointsCache()
 
 #ifdef HAVE_SETMNTENT
 
-    struct mntent *fstab;
+    struct mntent* fstab;
     if ((fstab = setmntent(FSTAB, "r")) == 0) {
         return;
     }
 
-    struct mntent *fe;
+    struct mntent* fe;
     while ((fe = getmntent(fstab)) != 0) {
         if (!_k_isNetworkFileSystem(fe->mnt_type, fe->mnt_fsname)) {
-            const QString device = _k_resolveSymLink(QFile::decodeName(fe->mnt_fsname));
-            const QString mountpoint = _k_resolveSymLink(QFile::decodeName(fe->mnt_dir));
+            const QString device =
+                _k_resolveSymLink(QFile::decodeName(fe->mnt_fsname));
+            const QString mountpoint =
+                _k_resolveSymLink(QFile::decodeName(fe->mnt_dir));
 
             globalMountPointsCache->insert(device, mountpoint);
         }
@@ -133,7 +128,7 @@ void _k_updateMountPointsCache()
             continue;
         }
 #endif
-        //prevent accessing a blocking directory
+        // prevent accessing a blocking directory
         if (!_k_isNetworkFileSystem(items.at(2), items.at(0))) {
             const QString device = _k_resolveSymLink(items.at(0));
             const QString mountpoint = _k_resolveSymLink(items.at(1));
@@ -146,33 +141,32 @@ void _k_updateMountPointsCache()
 #endif
 }
 
-bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
-{
+bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString& device) {
     _k_updateMountPointsCache();
     const QString deviceToFind = _k_resolveSymLink(device);
 
     return globalMountPointsCache->contains(deviceToFind);
 }
 
-QStringList Solid::Backends::Hal::FstabHandling::possibleMountPoints(const QString &device)
-{
+QStringList Solid::Backends::Hal::FstabHandling::possibleMountPoints(
+    const QString& device) {
     _k_updateMountPointsCache();
     const QString deviceToFind = _k_resolveSymLink(device);
 
     return globalMountPointsCache->values(deviceToFind);
 }
 
-QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
-                                                                 const QStringList &args,
-                                                                 QObject *obj, const char *slot)
-{
+QProcess* Solid::Backends::Hal::FstabHandling::callSystemCommand(
+    const QString& commandName, const QStringList& args, QObject* obj,
+    const char* slot) {
     QStringList env = QProcess::systemEnvironment();
-    env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=/sbin:/bin:/usr/sbin/:/usr/bin");
+    env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive),
+                         "PATH=/sbin:/bin:/usr/sbin/:/usr/bin");
 
-    QProcess *process = new QProcess(obj);
+    QProcess* process = new QProcess(obj);
 
-    QObject::connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
-                     obj, slot);
+    QObject::connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), obj,
+                     slot);
 
     process->setEnvironment(env);
     process->start(commandName, args);
@@ -185,10 +179,8 @@ QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &
     }
 }
 
-QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
-                                                                 const QString &device,
-                                                                 QObject *obj, const char *slot)
-{
+QProcess* Solid::Backends::Hal::FstabHandling::callSystemCommand(
+    const QString& commandName, const QString& device, QObject* obj,
+    const char* slot) {
     return callSystemCommand(commandName, QStringList() << device, obj, slot);
 }
-

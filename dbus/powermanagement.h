@@ -31,34 +31,33 @@ class OrgKdeSolidPowerManagementPolicyAgentInterface;
 class OrgFreedesktopPowerManagementInhibitInterface;
 class OrgFreedesktopUPowerInterface;
 class OrgFreedesktopLogin1ManagerInterface;
-    
-class PowerManagement : public QObject
-{
+
+class PowerManagement : public QObject {
     Q_OBJECT
 
-public:
-    static PowerManagement * self();
+   public:
+    static PowerManagement* self();
     PowerManagement();
 
     void setInhibitSuspend(bool i);
     void beginSuppressingSleep();
     void stopSuppressingSleep();
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void resuming();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void mpdStatusUpdated();
     void prepareForSleep(bool s);
 
-private:
+   private:
     bool inhibitSuspendWhilstPlaying;
     int cookie;
     QDBusUnixFileDescriptor descriptor;
-    OrgKdeSolidPowerManagementPolicyAgentInterface *policy;
-    OrgFreedesktopPowerManagementInhibitInterface *inhibit;
-    OrgFreedesktopUPowerInterface *upower;
-    OrgFreedesktopLogin1ManagerInterface *login1;
+    OrgKdeSolidPowerManagementPolicyAgentInterface* policy;
+    OrgFreedesktopPowerManagementInhibitInterface* inhibit;
+    OrgFreedesktopUPowerInterface* upower;
+    OrgFreedesktopLogin1ManagerInterface* login1;
 };
 
 #endif

@@ -45,301 +45,327 @@
 #include <QDropEvent>
 #include <QPixmap>
 
-static int constCoverSize=32;
-static int constIconSize=16;
-static int constBorder=1;
-static double sizeAdjust=1.25;
+static int constCoverSize = 32;
+static int constIconSize = 16;
+static int constBorder = 1;
+static double sizeAdjust = 1.25;
 
-void GroupedView::setup()
-{
-    int height=QApplication::fontMetrics().height();
-    sizeAdjust=1.25;
+void GroupedView::setup() {
+    int height = QApplication::fontMetrics().height();
+    sizeAdjust = 1.25;
 
-    if (height>17) {
-        constCoverSize=(((int)((height*2)/4))*4);
-        constIconSize=Icon::stdSize(((int)(height/4))*4);
-        constBorder=constCoverSize>48 ? 2 : 1;
+    if (height > 17) {
+        constCoverSize = (((int)((height * 2) / 4)) * 4);
+        constIconSize = Icon::stdSize(((int)(height / 4)) * 4);
+        constBorder = constCoverSize > 48 ? 2 : 1;
     } else {
-        constCoverSize=32;
-        constIconSize=16;
-        constBorder=1;
+        constCoverSize = 32;
+        constIconSize = 16;
+        constBorder = 1;
     }
-    constCoverSize*=sizeAdjust;
+    constCoverSize *= sizeAdjust;
 }
 
-int GroupedView::coverSize()
-{
-    return constCoverSize;
-}
+int GroupedView::coverSize() { return constCoverSize; }
 
-int GroupedView::borderSize()
-{
-    return constBorder;
-}
+int GroupedView::borderSize() { return constBorder; }
 
-int GroupedView::iconSize()
-{
-    return constIconSize;
-}
+int GroupedView::iconSize() { return constIconSize; }
 
-void GroupedView::drawPlayState(QPainter *painter, const QStyleOptionViewItem &option, const QRect &r, int state)
-{
+void GroupedView::drawPlayState(QPainter* painter,
+                                const QStyleOptionViewItem& option,
+                                const QRect& r, int state) {
     if (state) {
-        int size=constIconSize-7;
-        int hSize=size/2;
-        QRect ir(r.x()-(size+6), r.y()+(((r.height()-size)/2.0)+0.5), size, size);
+        int size = constIconSize - 7;
+        int hSize = size / 2;
+        QRect ir(r.x() - (size + 6),
+                 r.y() + (((r.height() - size) / 2.0) + 0.5), size, size);
         QColor inside(option.palette.color(QPalette::Text));
-        QColor border=inside.red()>100 && inside.blue()>100 && inside.green()>100 ? Qt::black : Qt::white;
+        QColor border =
+            inside.red() > 100 && inside.blue() > 100 && inside.green() > 100
+                ? Qt::black
+                : Qt::white;
         if (QApplication::isRightToLeft()) {
-            ir.adjust(r.width()-size, 0, r.width()-size, 0);
+            ir.adjust(r.width() - size, 0, r.width() - size, 0);
         }
         switch (state) {
-        case GroupedView::State_Stopped:
-            painter->fillRect(ir, border);
-            painter->fillRect(ir.adjusted(1, 1, -1, -1), inside);
-            break;
-        case GroupedView::State_StopAfter: {
-            ir.adjust(2, 0, -2, 0);
-            QPoint p1[5]={ QPoint(ir.x()-2, ir.y()-1), QPoint(ir.x(), ir.y()-1), QPoint(ir.x()+(size-hSize), ir.y()+hSize), QPoint(ir.x(), ir.y()+(ir.height())), QPoint(ir.x()-2, ir.y()+(ir.height())) };
-            QPoint p2[5]={ QPoint(ir.x()-1, ir.y()), QPoint(ir.x(), ir.y()), QPoint(ir.x()+(size-hSize)-1, ir.y()+hSize), QPoint(ir.x(), ir.y()+ir.height()-1), QPoint(ir.x()-1, ir.y()+ir.height()-1) };
-            QPoint p3[3]={ QPoint(ir.x(), ir.y()+1), QPoint(ir.x()+(size-hSize)-2, ir.y()+hSize), QPoint(ir.x(), ir.y()+ir.height()-2) };
-            painter->save();
-            painter->setPen(border);
-            painter->drawPolygon(p1, 5);
-            painter->drawPolygon(p3, 3);
-            painter->setPen(inside);
-            painter->drawPolygon(p2, 5);
-            painter->restore();
-            break;
-        }
-        case GroupedView::State_StopAfterTrack:
-            painter->setPen(border);
-            painter->drawRect(ir.adjusted(0, 0, -1, -1));
-            painter->drawRect(ir.adjusted(2, 2, -3, -3));
-            painter->setPen(inside);
-            painter->drawRect(ir.adjusted(1, 1, -2, -2));
-            break;
-        case GroupedView::State_Paused: {
-            int blockSize=hSize-1;
-            painter->fillRect(ir, border);
-            painter->fillRect(ir.x()+1, ir.y()+1, blockSize, size-2, inside);
-            painter->fillRect(ir.x()+size-blockSize-1, ir.y()+1, blockSize, size-2, inside);
-            break;
-        }
-        case GroupedView::State_Playing: {
-            ir.adjust(2, 0, -2, 0);
-            QPoint p1[5]={ QPoint(ir.x()-2, ir.y()-1), QPoint(ir.x(), ir.y()-1), QPoint(ir.x()+(size-hSize), ir.y()+hSize), QPoint(ir.x(), ir.y()+(ir.height()-1)), QPoint(ir.x()-2, ir.y()+(ir.height()-1)) };
-            QPoint p2[5]={ QPoint(ir.x()-2, ir.y()-1), QPoint(ir.x(), ir.y()-1), QPoint(ir.x()+(size-hSize), ir.y()+hSize), QPoint(ir.x(), ir.y()+ir.height()), QPoint(ir.x()-2, ir.y()+ir.height()) };
-            painter->save();
-            painter->setBrush(border);
-            painter->setPen(border);
-            painter->drawPolygon(p1, 5);
-            painter->setBrush(inside);
-            painter->drawPolygon(p2, 5);
-            painter->restore();
-            break;
-        }
+            case GroupedView::State_Stopped:
+                painter->fillRect(ir, border);
+                painter->fillRect(ir.adjusted(1, 1, -1, -1), inside);
+                break;
+            case GroupedView::State_StopAfter: {
+                ir.adjust(2, 0, -2, 0);
+                QPoint p1[5] = {QPoint(ir.x() - 2, ir.y() - 1),
+                                QPoint(ir.x(), ir.y() - 1),
+                                QPoint(ir.x() + (size - hSize), ir.y() + hSize),
+                                QPoint(ir.x(), ir.y() + (ir.height())),
+                                QPoint(ir.x() - 2, ir.y() + (ir.height()))};
+                QPoint p2[5] = {
+                    QPoint(ir.x() - 1, ir.y()), QPoint(ir.x(), ir.y()),
+                    QPoint(ir.x() + (size - hSize) - 1, ir.y() + hSize),
+                    QPoint(ir.x(), ir.y() + ir.height() - 1),
+                    QPoint(ir.x() - 1, ir.y() + ir.height() - 1)};
+                QPoint p3[3] = {
+                    QPoint(ir.x(), ir.y() + 1),
+                    QPoint(ir.x() + (size - hSize) - 2, ir.y() + hSize),
+                    QPoint(ir.x(), ir.y() + ir.height() - 2)};
+                painter->save();
+                painter->setPen(border);
+                painter->drawPolygon(p1, 5);
+                painter->drawPolygon(p3, 3);
+                painter->setPen(inside);
+                painter->drawPolygon(p2, 5);
+                painter->restore();
+                break;
+            }
+            case GroupedView::State_StopAfterTrack:
+                painter->setPen(border);
+                painter->drawRect(ir.adjusted(0, 0, -1, -1));
+                painter->drawRect(ir.adjusted(2, 2, -3, -3));
+                painter->setPen(inside);
+                painter->drawRect(ir.adjusted(1, 1, -2, -2));
+                break;
+            case GroupedView::State_Paused: {
+                int blockSize = hSize - 1;
+                painter->fillRect(ir, border);
+                painter->fillRect(ir.x() + 1, ir.y() + 1, blockSize, size - 2,
+                                  inside);
+                painter->fillRect(ir.x() + size - blockSize - 1, ir.y() + 1,
+                                  blockSize, size - 2, inside);
+                break;
+            }
+            case GroupedView::State_Playing: {
+                ir.adjust(2, 0, -2, 0);
+                QPoint p1[5] = {QPoint(ir.x() - 2, ir.y() - 1),
+                                QPoint(ir.x(), ir.y() - 1),
+                                QPoint(ir.x() + (size - hSize), ir.y() + hSize),
+                                QPoint(ir.x(), ir.y() + (ir.height() - 1)),
+                                QPoint(ir.x() - 2, ir.y() + (ir.height() - 1))};
+                QPoint p2[5] = {QPoint(ir.x() - 2, ir.y() - 1),
+                                QPoint(ir.x(), ir.y() - 1),
+                                QPoint(ir.x() + (size - hSize), ir.y() + hSize),
+                                QPoint(ir.x(), ir.y() + ir.height()),
+                                QPoint(ir.x() - 2, ir.y() + ir.height())};
+                painter->save();
+                painter->setBrush(border);
+                painter->setPen(border);
+                painter->drawPolygon(p1, 5);
+                painter->setBrush(inside);
+                painter->drawPolygon(p2, 5);
+                painter->restore();
+                break;
+            }
         }
     }
 }
 
-enum Type {
-    AlbumHeader,
-    AlbumTrack
-};
+enum Type { AlbumHeader, AlbumTrack };
 
-static Type getType(const QModelIndex &index)
-{
-    QModelIndex prev=index.row()>0 ? index.sibling(index.row()-1, 0) : QModelIndex();
-    quint16 thisKey=index.data(Cantata::Role_Key).toUInt();
-    quint16 prevKey=prev.isValid() ? prev.data(Cantata::Role_Key).toUInt() : (quint16)Song::Null_Key;
+static Type getType(const QModelIndex& index) {
+    QModelIndex prev =
+        index.row() > 0 ? index.sibling(index.row() - 1, 0) : QModelIndex();
+    quint16 thisKey = index.data(Cantata::Role_Key).toUInt();
+    quint16 prevKey = prev.isValid() ? prev.data(Cantata::Role_Key).toUInt()
+                                     : (quint16)Song::Null_Key;
 
-    return thisKey==prevKey ? AlbumTrack : AlbumHeader;
+    return thisKey == prevKey ? AlbumTrack : AlbumHeader;
 }
 
-static bool isAlbumHeader(const QModelIndex &index)
-{
-    return !index.data(Cantata::Role_IsCollection).toBool() && AlbumHeader==getType(index);
+static bool isAlbumHeader(const QModelIndex& index) {
+    return !index.data(Cantata::Role_IsCollection).toBool() &&
+           AlbumHeader == getType(index);
 }
 
-static QString streamText(const Song &song, const QString &trackTitle, bool useName=true)
-{
+static QString streamText(const Song& song, const QString& trackTitle,
+                          bool useName = true) {
     if (song.album.isEmpty() && song.albumArtist().isEmpty()) {
-        QString songName=song.name();
-        return song.title.isEmpty() && songName.isEmpty()
-                ? song.file
-                : !useName || songName.isEmpty()
-                  ? song.title
-                  : song.title.isEmpty()
-                    ? songName
-                    : (song.title + Song::constSep + songName);
+        QString songName = song.name();
+        return song.title.isEmpty() && songName.isEmpty() ? song.file
+               : !useName || songName.isEmpty()           ? song.title
+               : song.title.isEmpty()
+                   ? songName
+                   : (song.title + Song::constSep + songName);
     } else if (!song.title.isEmpty() && !song.artist.isEmpty()) {
-        QString name=song.name();
-        return song.artist + Song::constSep + (!useName || name.isEmpty()
-                                        ? song.title
-                                        : song.title.isEmpty()
-                                            ? name
-                                            : (song.title + Song::constSep + name));
+        QString name = song.name();
+        return song.artist + Song::constSep +
+               (!useName || name.isEmpty() ? song.title
+                : song.title.isEmpty()     ? name
+                                       : (song.title + Song::constSep + name));
     } else {
         return trackTitle;
     }
 }
 
-GroupedViewDelegate::GroupedViewDelegate(GroupedView *p)
-    : ActionItemDelegate(p)
-    , view(p)
-    , ratingPainter(nullptr)
-{
-}
+GroupedViewDelegate::GroupedViewDelegate(GroupedView* p)
+    : ActionItemDelegate(p), view(p), ratingPainter(nullptr) {}
 
-GroupedViewDelegate::~GroupedViewDelegate()
-{
-    delete ratingPainter;
-}
+GroupedViewDelegate::~GroupedViewDelegate() { delete ratingPainter; }
 
-QSize GroupedViewDelegate::sizeHint(int type, bool isCollection) const
-{
-    int textHeight = QApplication::fontMetrics().height()*sizeAdjust;
+QSize GroupedViewDelegate::sizeHint(int type, bool isCollection) const {
+    int textHeight = QApplication::fontMetrics().height() * sizeAdjust;
 
-    if (isCollection || AlbumHeader==type) {
-        return QSize(64, qMax(constCoverSize, (qMax(constIconSize, textHeight)*2)+constBorder)+(2*constBorder));
+    if (isCollection || AlbumHeader == type) {
+        return QSize(64,
+                     qMax(constCoverSize,
+                          (qMax(constIconSize, textHeight) * 2) + constBorder) +
+                         (2 * constBorder));
     }
-    return QSize(64, qMax(constIconSize, textHeight)+(2*constBorder));
+    return QSize(64, qMax(constIconSize, textHeight) + (2 * constBorder));
 }
 
-QSize GroupedViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    if (0==index.column()) {
-        return sizeHint(getType(index), index.data(Cantata::Role_IsCollection).toBool());
+QSize GroupedViewDelegate::sizeHint(const QStyleOptionViewItem& option,
+                                    const QModelIndex& index) const {
+    if (0 == index.column()) {
+        return sizeHint(getType(index),
+                        index.data(Cantata::Role_IsCollection).toBool());
     }
     return QStyledItemDelegate::sizeHint(option, index);
 }
 
-void GroupedViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+void GroupedViewDelegate::paint(QPainter* painter,
+                                const QStyleOptionViewItem& option,
+                                const QModelIndex& index) const {
     if (!index.isValid()) {
         return;
     }
 
-    Type type=getType(index);
-    bool isCollection=index.data(Cantata::Role_IsCollection).toBool();
-    Song song=index.data(Cantata::Role_SongWithRating).value<Song>();
-    int state=index.data(Cantata::Role_Status).toInt();
-    quint32 collection=index.data(Cantata::Role_CollectionId).toUInt();
-    bool selected=option.state&QStyle::State_Selected;
-    bool mouseOver=underMouse && option.state&QStyle::State_MouseOver;
-    bool gtk=mouseOver && GtkStyle::isActive();
-    bool rtl=QApplication::isRightToLeft();
+    Type type = getType(index);
+    bool isCollection = index.data(Cantata::Role_IsCollection).toBool();
+    Song song = index.data(Cantata::Role_SongWithRating).value<Song>();
+    int state = index.data(Cantata::Role_Status).toInt();
+    quint32 collection = index.data(Cantata::Role_CollectionId).toUInt();
+    bool selected = option.state & QStyle::State_Selected;
+    bool mouseOver = underMouse && option.state & QStyle::State_MouseOver;
+    bool gtk = mouseOver && GtkStyle::isActive();
+    bool rtl = QApplication::isRightToLeft();
 
-    if (!isCollection && AlbumHeader==type) {
+    if (!isCollection && AlbumHeader == type) {
         if (mouseOver && gtk) {
-            GtkStyle::drawSelection(option, painter, (selected ? 0.75 : 0.25)*0.75);
+            GtkStyle::drawSelection(option, painter,
+                                    (selected ? 0.75 : 0.25) * 0.75);
         } else {
             painter->save();
             painter->setOpacity(0.75);
-            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, view);
+            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem,
+                                                 &option, painter, view);
             painter->restore();
         }
         painter->save();
-        painter->setClipRect(option.rect.adjusted(0, option.rect.height()/2, 0, 0), Qt::IntersectClip);
+        painter->setClipRect(
+            option.rect.adjusted(0, option.rect.height() / 2, 0, 0),
+            Qt::IntersectClip);
         if (mouseOver && gtk) {
             GtkStyle::drawSelection(option, painter, selected ? 0.75 : 0.25);
         } else {
-            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, view);
+            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem,
+                                                 &option, painter, view);
         }
         painter->restore();
-        if (!state && !view->isExpanded(song.key, collection) && view->isCurrentAlbum(song.key)) {
-            QVariant cs=index.data(Cantata::Role_CurrentStatus);
+        if (!state && !view->isExpanded(song.key, collection) &&
+            view->isCurrentAlbum(song.key)) {
+            QVariant cs = index.data(Cantata::Role_CurrentStatus);
             if (cs.isValid()) {
-                state=cs.toInt();
+                state = cs.toInt();
             }
         }
     } else {
         if (mouseOver && gtk) {
             GtkStyle::drawSelection(option, painter, selected ? 0.75 : 0.25);
         } else {
-            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, view);
+            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem,
+                                                 &option, painter, view);
         }
     }
     QString title;
     QString track;
-    QString duration=song.time>0 ? Utils::formatTime(song.time) : QString();
-    bool stream=!isCollection && song.isStandardStream();
-    bool isEmpty=song.title.isEmpty() && song.artist.isEmpty() && !song.file.isEmpty();
-    QString trackTitle=isEmpty
-            ? song.file
-            : song.diffArtist()
-              ? song.artistSong()
-              : song.title;
+    QString duration = song.time > 0 ? Utils::formatTime(song.time) : QString();
+    bool stream = !isCollection && song.isStandardStream();
+    bool isEmpty =
+        song.title.isEmpty() && song.artist.isEmpty() && !song.file.isEmpty();
+    QString trackTitle = isEmpty             ? song.file
+                         : song.diffArtist() ? song.artistSong()
+                                             : song.title;
     QFont f(QApplication::font());
     if (stream) {
         f.setItalic(true);
     }
     QFontMetrics fm(f);
-    int textHeight=fm.height()*sizeAdjust;
-
+    int textHeight = fm.height() * sizeAdjust;
 
     if (isCollection) {
-        title=index.data(Qt::DisplayRole).toString();
-    } else if (AlbumHeader==type) {
+        title = index.data(Qt::DisplayRole).toString();
+    } else if (AlbumHeader == type) {
         if (stream) {
-            QModelIndex next=index.sibling(index.row()+1, 0);
-            quint16 nextKey=next.isValid() ? next.data(Cantata::Role_Key).toUInt() : (quint16)Song::Null_Key;
-            if (nextKey!=song.key && !song.name().isEmpty()) {
-                title=song.name();
-                track=streamText(song, trackTitle, false);
+            QModelIndex next = index.sibling(index.row() + 1, 0);
+            quint16 nextKey = next.isValid()
+                                  ? next.data(Cantata::Role_Key).toUInt()
+                                  : (quint16)Song::Null_Key;
+            if (nextKey != song.key && !song.name().isEmpty()) {
+                title = song.name();
+                track = streamText(song, trackTitle, false);
             } else {
-                title=song.isCdda() ? tr("Audio CD") : tr("Streams");
-                track=streamText(song, trackTitle);
+                title = song.isCdda() ? tr("Audio CD") : tr("Streams");
+                track = streamText(song, trackTitle);
             }
         } else if (isEmpty) {
-            title=Song::unknown();
-            track=trackTitle;
+            title = Song::unknown();
+            track = trackTitle;
         } else if (song.album.isEmpty()) {
-            title=song.albumArtistOrComposer();
-            track=song.trackAndTitleStr();
+            title = song.albumArtistOrComposer();
+            track = song.trackAndTitleStr();
         } else {
             if (song.isFromOnlineService()) {
-                title=Song::displayAlbum(song.albumName(), Song::albumYear(song));
+                title =
+                    Song::displayAlbum(song.albumName(), Song::albumYear(song));
             } else {
-                title=song.albumArtistOrComposer()+Song::constSep+Song::displayAlbum(song.albumName(), Song::albumYear(song));
+                title =
+                    song.albumArtistOrComposer() + Song::constSep +
+                    Song::displayAlbum(song.albumName(), Song::albumYear(song));
             }
-            track=song.trackAndTitleStr();
+            track = song.trackAndTitleStr();
         }
     } else {
         if (stream) {
-            track=streamText(song, trackTitle);
+            track = streamText(song, trackTitle);
         } else {
-            track=song.trackAndTitleStr();
+            track = song.trackAndTitleStr();
         }
     }
 
-    if (song.priority>0) {
-        track=track+QLatin1String(" [")+QString::number(song.priority)+QChar(']');
+    if (song.priority > 0) {
+        track = track + QLatin1String(" [") + QString::number(song.priority) +
+                QChar(']');
     }
 
     painter->save();
     painter->setFont(f);
-    #ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
     QColor textColor(option.palette.color(QPalette::Text));
-    #else
-    QColor textColor(option.palette.color(option.state&QStyle::State_Selected ? QPalette::HighlightedText : QPalette::Text));
-    #endif
+#else
+    QColor textColor(option.palette.color(option.state & QStyle::State_Selected
+                                              ? QPalette::HighlightedText
+                                              : QPalette::Text));
+#endif
     QTextOption textOpt(Qt::AlignVCenter);
-    QRect r(option.rect.adjusted(constBorder+4, constBorder, -(constBorder+4), -constBorder));
+    QRect r(option.rect.adjusted(constBorder + 4, constBorder,
+                                 -(constBorder + 4), -constBorder));
 
-    if (state && GroupedView::State_StopAfterTrack!=state) {
-        QRectF border(option.rect.x()+1, option.rect.y()+1, option.rect.width()-3, option.rect.height()-3);
+    if (state && GroupedView::State_StopAfterTrack != state) {
+        QRectF border(option.rect.x() + 1, option.rect.y() + 1,
+                      option.rect.width() - 3, option.rect.height() - 3);
         if (!title.isEmpty()) {
-            border.adjust(0, (border.height()/2)+1, 0, 0);
+            border.adjust(0, (border.height() / 2) + 1, 0, 0);
         }
-        #ifdef Q_OS_MAC
-        QColor gradCol(OSXStyle::self()->viewPalette().color(QPalette::Highlight));
-        QColor borderCol(OSXStyle::self()->viewPalette().color(selected ? QPalette::HighlightedText : QPalette::Highlight));
-        #else
+#ifdef Q_OS_MAC
+        QColor gradCol(
+            OSXStyle::self()->viewPalette().color(QPalette::Highlight));
+        QColor borderCol(OSXStyle::self()->viewPalette().color(
+            selected ? QPalette::HighlightedText : QPalette::Highlight));
+#else
         QColor gradCol(QApplication::palette().color(QPalette::Highlight));
-        QColor borderCol(QApplication::palette().color(selected ? QPalette::HighlightedText : QPalette::Highlight));
-        #endif
+        QColor borderCol(QApplication::palette().color(
+            selected ? QPalette::HighlightedText : QPalette::Highlight));
+#endif
         if (!selected) {
             borderCol.setAlphaF(0.5);
         }
@@ -350,65 +376,92 @@ void GroupedViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     }
 
     painter->setPen(textColor);
-    bool showTrackDuration=!duration.isEmpty();
+    bool showTrackDuration = !duration.isEmpty();
 
-    if (isCollection || AlbumHeader==type) {
+    if (isCollection || AlbumHeader == type) {
         QPixmap pix;
         // Draw cover...
         if (isCollection) {
-            pix=index.data(Qt::DecorationRole).value<QIcon>().pixmap(constCoverSize, constCoverSize,
-                                                                     selected && textColor==qApp->palette().color(QPalette::HighlightedText)
-                                                                     ? QIcon::Selected : QIcon::Normal);
+            pix = index.data(Qt::DecorationRole)
+                      .value<QIcon>()
+                      .pixmap(constCoverSize, constCoverSize,
+                              selected && textColor ==
+                                              qApp->palette().color(
+                                                  QPalette::HighlightedText)
+                                  ? QIcon::Selected
+                                  : QIcon::Normal);
         } else {
-            QPixmap *cover=/*stream ? 0 : */Covers::self()->get(song, constCoverSize);
-            pix=cover ? *cover : (stream && !song.isCdda() ? Icons::self()->streamIcon : Icons::self()->albumIcon(constCoverSize)).pixmap(constCoverSize, constCoverSize);
+            QPixmap* cover =
+                /*stream ? 0 : */ Covers::self()->get(song, constCoverSize);
+            pix = cover ? *cover
+                        : (stream && !song.isCdda()
+                               ? Icons::self()->streamIcon
+                               : Icons::self()->albumIcon(constCoverSize))
+                              .pixmap(constCoverSize, constCoverSize);
         }
 
-        int maxSize=constCoverSize*pix.DEVICE_PIXEL_RATIO();
+        int maxSize = constCoverSize * pix.DEVICE_PIXEL_RATIO();
 
-        if (pix.width()>maxSize) {
-            pix=pix.scaled(maxSize, maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        if (pix.width() > maxSize) {
+            pix = pix.scaled(maxSize, maxSize, Qt::KeepAspectRatio,
+                             Qt::SmoothTransformation);
         }
 
-        QSize pixSize = pix.isNull() ? QSize(0, 0) : (pix.size() / pix.DEVICE_PIXEL_RATIO());
+        QSize pixSize = pix.isNull() ? QSize(0, 0)
+                                     : (pix.size() / pix.DEVICE_PIXEL_RATIO());
 
         if (rtl) {
-            painter->drawPixmap(r.x()+r.width()-(pixSize.width()-constBorder), r.y()+((r.height()-pixSize.height())/2), pixSize.width(), pixSize.height(), pix);
-            r.adjust(0, 0, -(constCoverSize+constBorder), 0);
+            painter->drawPixmap(
+                r.x() + r.width() - (pixSize.width() - constBorder),
+                r.y() + ((r.height() - pixSize.height()) / 2), pixSize.width(),
+                pixSize.height(), pix);
+            r.adjust(0, 0, -(constCoverSize + constBorder), 0);
         } else {
-            painter->drawPixmap(r.x()-2, r.y()+((r.height()-pixSize.height())/2), pixSize.width(), pixSize.height(), pix);
-            r.adjust(constCoverSize+constBorder, 0, 0, 0);
+            painter->drawPixmap(r.x() - 2,
+                                r.y() + ((r.height() - pixSize.height()) / 2),
+                                pixSize.width(), pixSize.height(), pix);
+            r.adjust(constCoverSize + constBorder, 0, 0, 0);
         }
 
-        int td=index.data(Cantata::Role_AlbumDuration).toUInt();
-        QString totalDuration=td>0 && td!=song.time ? Utils::formatTime(td) : QString();
+        int td = index.data(Cantata::Role_AlbumDuration).toUInt();
+        QString totalDuration =
+            td > 0 && td != song.time ? Utils::formatTime(td) : QString();
         QRect duratioRect(r.x(), r.y(), r.width(), textHeight);
-        int totalDurationWidth=fm.horizontalAdvance(totalDuration)+8;
-        QRect textRect(r.x(), r.y(), r.width()-(rtl ? (4*constBorder) : totalDurationWidth), textHeight);
+        int totalDurationWidth = fm.horizontalAdvance(totalDuration) + 8;
+        QRect textRect(
+            r.x(), r.y(),
+            r.width() - (rtl ? (4 * constBorder) : totalDurationWidth),
+            textHeight);
         QFont tf(f);
         tf.setBold(true);
-        title = QFontMetrics(tf).elidedText(title, Qt::ElideRight, textRect.width(), QPalette::WindowText);
+        title = QFontMetrics(tf).elidedText(
+            title, Qt::ElideRight, textRect.width(), QPalette::WindowText);
         painter->setFont(tf);
         painter->drawText(textRect, title, textOpt);
         if (!totalDuration.isEmpty()) {
-            painter->drawText(duratioRect, totalDuration, QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+            painter->drawText(duratioRect, totalDuration,
+                              QTextOption(Qt::AlignVCenter | Qt::AlignRight));
         }
-        BasicItemDelegate::drawLine(painter, r.adjusted(0, 0, 0, -r.height()/2), textColor, rtl, !rtl, 0.45);
-        r.adjust(0, textHeight+constBorder, 0, 0);
-        r=QRect(r.x(), r.y()+r.height()-(textHeight+1), r.width(), textHeight);
+        BasicItemDelegate::drawLine(painter,
+                                    r.adjusted(0, 0, 0, -r.height() / 2),
+                                    textColor, rtl, !rtl, 0.45);
+        r.adjust(0, textHeight + constBorder, 0, 0);
+        r = QRect(r.x(), r.y() + r.height() - (textHeight + 1), r.width(),
+                  textHeight);
         painter->setFont(f);
         if (rtl) {
-            r.adjust(0, 0, (constCoverSize-(constBorder*3)), 0);
+            r.adjust(0, 0, (constCoverSize - (constBorder * 3)), 0);
         }
 
         if (isCollection || !view->isExpanded(song.key, collection)) {
-            showTrackDuration=false;
-            track=tr("%n Track(s)", "", index.data(Cantata::Role_SongCount).toUInt());
+            showTrackDuration = false;
+            track = tr("%n Track(s)", "",
+                       index.data(Cantata::Role_SongCount).toUInt());
         }
     } else if (rtl) {
-        r.adjust(0, 0, -(constBorder*4), 0);
+        r.adjust(0, 0, -(constBorder * 4), 0);
     } else {
-        r.adjust(constCoverSize+constBorder, 0, 0, 0);
+        r.adjust(constCoverSize + constBorder, 0, 0, 0);
     }
 
     GroupedView::drawPlayState(painter, option, r, state);
@@ -418,59 +471,69 @@ void GroupedViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     }
     painter->setPen(textColor);
 
-    int ratingsStart=rtl ? 0 : drawRatings(painter, song, r, fm, option.palette.color(QPalette::Active, QPalette::Text)); // TODO!!!
+    int ratingsStart =
+        rtl ? 0
+            : drawRatings(painter, song, r, fm,
+                          option.palette.color(QPalette::Active,
+                                               QPalette::Text));  // TODO!!!
 
-    int durationWidth=showTrackDuration ? fm.horizontalAdvance(duration)+8 : 0;
+    int durationWidth =
+        showTrackDuration ? fm.horizontalAdvance(duration) + 8 : 0;
     QRect duratioRect(r.x(), r.y(), r.width(), textHeight);
-    QRect textRect(r.x(), r.y(), r.width()-durationWidth, textHeight);
-    if (ratingsStart>0) {
-        textRect.setWidth(ratingsStart-r.x());
+    QRect textRect(r.x(), r.y(), r.width() - durationWidth, textHeight);
+    if (ratingsStart > 0) {
+        textRect.setWidth(ratingsStart - r.x());
     }
-    track = fm.elidedText(track, Qt::ElideRight, textRect.width(), QPalette::WindowText);
+    track = fm.elidedText(track, Qt::ElideRight, textRect.width(),
+                          QPalette::WindowText);
     painter->drawText(textRect, track, textOpt);
     if (showTrackDuration) {
-        painter->drawText(duratioRect, duration, QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+        painter->drawText(duratioRect, duration,
+                          QTextOption(Qt::AlignVCenter | Qt::AlignRight));
     }
 
     if (mouseOver) {
-        drawIcons(painter, option.rect, mouseOver, rtl, AlbumHeader==type || isCollection ? AP_HBottom : AP_HMiddle, index);
+        drawIcons(painter, option.rect, mouseOver, rtl,
+                  AlbumHeader == type || isCollection ? AP_HBottom : AP_HMiddle,
+                  index);
     }
     BasicItemDelegate::drawLine(painter, option.rect, textColor);
     painter->restore();
 }
 
-int GroupedViewDelegate::drawRatings(QPainter *painter, const Song &song, const QRect &r, const QFontMetrics &fm, const QColor &col) const
-{
-    if (song.rating>0 && song.rating<=Song::Rating_Max) {
+int GroupedViewDelegate::drawRatings(QPainter* painter, const Song& song,
+                                     const QRect& r, const QFontMetrics& fm,
+                                     const QColor& col) const {
+    if (song.rating > 0 && song.rating <= Song::Rating_Max) {
         if (!ratingPainter) {
-            ratingPainter=new RatingPainter(r.height()-(constBorder*8));
+            ratingPainter = new RatingPainter(r.height() - (constBorder * 8));
             ratingPainter->setColor(col);
         }
 
         painter->save();
-        painter->setOpacity(painter->opacity()*0.75);
-        const QSize &ratingSize=ratingPainter->size();
-        int spacing=constBorder*2;
-        int durationWidth=fm.horizontalAdvance("0:00:00")+spacing;
-        QRect ratingRect(r.x()+r.width()-(durationWidth+ratingSize.width()+spacing),
-                         r.y()+(r.height()-ratingSize.height())/2,
-                         ratingSize.width(), ratingSize.height());
+        painter->setOpacity(painter->opacity() * 0.75);
+        const QSize& ratingSize = ratingPainter->size();
+        int spacing = constBorder * 2;
+        int durationWidth = fm.horizontalAdvance("0:00:00") + spacing;
+        QRect ratingRect(
+            r.x() + r.width() - (durationWidth + ratingSize.width() + spacing),
+            r.y() + (r.height() - ratingSize.height()) / 2, ratingSize.width(),
+            ratingSize.height());
         ratingPainter->paint(painter, ratingRect, song.rating);
         painter->restore();
-        return ratingRect.x()-spacing;
+        return ratingRect.x() - spacing;
     }
     return 0;
 }
 
-GroupedView::GroupedView(QWidget *parent, bool isPlayQueue)
-    : TreeView(parent, isPlayQueue)
-    , allowClose(true)
-    , startClosed(allowClose)
-    , autoExpand(true)
-    , filterActive(false)
-    , isMultiLevel(false)
-    , currentAlbum(Song::Null_Key)
-{
+GroupedView::GroupedView(QWidget* parent, bool isPlayQueue)
+    : TreeView(parent, isPlayQueue),
+      allowClose(true),
+      startClosed(allowClose),
+      autoExpand(true),
+      filterActive(false),
+      isMultiLevel(false),
+      currentAlbum(Song::Null_Key) {
     setContextMenuPolicy(Qt::CustomContextMenu);
     setAcceptDrops(true);
     setDragDropOverwriteMode(false);
@@ -481,49 +544,49 @@ GroupedView::GroupedView(QWidget *parent, bool isPlayQueue)
     setRootIsDecorated(false);
     setSelectionBehavior(SelectRows);
     setForceSingleColumn(true);
-    connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(itemClicked(const QModelIndex &)));
-    GroupedViewDelegate *delegate=new GroupedViewDelegate(this);
+    connect(this, SIGNAL(clicked(const QModelIndex&)), this,
+            SLOT(itemClicked(const QModelIndex&)));
+    GroupedViewDelegate* delegate = new GroupedViewDelegate(this);
     setItemDelegate(delegate);
     if (isPlayQueue) {
-        // 'underMouse' is used to work-around mouse over issues with some styles.
-        // PlayQueue does not have mouse over - so we never need to check this.
+        // 'underMouse' is used to work-around mouse over issues with some
+        // styles. PlayQueue does not have mouse over - so we never need to
+        // check this.
         delegate->setUnderMouse(true);
     }
 }
 
-GroupedView::~GroupedView()
-{
-}
+GroupedView::~GroupedView() {}
 
-void GroupedView::setModel(QAbstractItemModel *model)
-{
+void GroupedView::setModel(QAbstractItemModel* model) {
     TreeView::setModel(model);
     if (model) {
         if (startClosed) {
             updateCollectionRows();
         }
-        connect(Covers::self(), SIGNAL(loaded(Song,int)), this, SLOT(coverLoaded(Song,int)));
+        connect(Covers::self(), SIGNAL(loaded(Song, int)), this,
+                SLOT(coverLoaded(Song, int)));
     } else {
         controlledAlbums.clear();
-        disconnect(Covers::self(), SIGNAL(loaded(Song,int)), this, SLOT(coverLoaded(Song,int)));
+        disconnect(Covers::self(), SIGNAL(loaded(Song, int)), this,
+                   SLOT(coverLoaded(Song, int)));
     }
 }
 
-void GroupedView::setFilterActive(bool f)
-{
-    if (f==filterActive) {
+void GroupedView::setFilterActive(bool f) {
+    if (f == filterActive) {
         return;
     }
-    filterActive=f;
+    filterActive = f;
     if (filterActive && model()) {
-        quint32 count=model()->rowCount();
-        for (quint32 i=0; i<count; ++i) {
+        quint32 count = model()->rowCount();
+        for (quint32 i = 0; i < count; ++i) {
             setRowHidden(i, QModelIndex(), false);
             if (isMultiLevel) {
-                QModelIndex idx=model()->index(i, 0);
+                QModelIndex idx = model()->index(i, 0);
                 if (model()->hasChildren(idx)) {
-                    quint32 childCount=model()->rowCount(idx);
-                    for (quint32 c=0; c<childCount; ++c) {
+                    quint32 childCount = model()->rowCount(idx);
+                    for (quint32 c = 0; c < childCount; ++c) {
                         setRowHidden(c, idx, false);
                     }
                 }
@@ -532,111 +595,111 @@ void GroupedView::setFilterActive(bool f)
     }
 }
 
-void GroupedView::setStartClosed(bool sc)
-{
-    if (!allowClose || sc==startClosed) {
+void GroupedView::setStartClosed(bool sc) {
+    if (!allowClose || sc == startClosed) {
         return;
     }
     controlledAlbums.clear();
-    startClosed=sc;
+    startClosed = sc;
     if (startClosed) {
         updateCollectionRows();
     }
 }
 
-void GroupedView::updateRows(qint32 row, quint16 curAlbum, bool scroll, const QModelIndex &parent, bool forceScroll)
-{
-    currentAlbum=curAlbum;
+void GroupedView::updateRows(qint32 row, quint16 curAlbum, bool scroll,
+                             const QModelIndex& parent, bool forceScroll) {
+    currentAlbum = curAlbum;
 
-    if (row<0) {
-        row=0;
+    if (row < 0) {
+        row = 0;
     }
 
-    if (!model() || row>model()->rowCount(parent)) {
+    if (!model() || row > model()->rowCount(parent)) {
         return;
     }
 
-    if (filterActive && MPDState_Playing==MPDStatus::self()->state()) {
+    if (filterActive && MPDState_Playing == MPDStatus::self()->state()) {
         if (scroll) {
-            scrollTo(model()->index(row, 0, parent), QAbstractItemView::PositionAtCenter);
+            scrollTo(model()->index(row, 0, parent),
+                     QAbstractItemView::PositionAtCenter);
         }
         return;
     }
 
     updateRows(parent);
-    if (scroll && (MPDState_Playing==MPDStatus::self()->state() || forceScroll)) {
-        scrollTo(model()->index(row, 0, parent), QAbstractItemView::PositionAtCenter);
+    if (scroll &&
+        (MPDState_Playing == MPDStatus::self()->state() || forceScroll)) {
+        scrollTo(model()->index(row, 0, parent),
+                 QAbstractItemView::PositionAtCenter);
     }
 }
 
-void GroupedView::updateRows(const QModelIndex &parent)
-{
+void GroupedView::updateRows(const QModelIndex& parent) {
     if (!model()) {
         return;
     }
 
-    qint32 count=model()->rowCount(parent);
-    quint16 lastKey=Song::Null_Key;
-    quint32 collection=parent.data(Cantata::Role_CollectionId).toUInt();
+    qint32 count = model()->rowCount(parent);
+    quint16 lastKey = Song::Null_Key;
+    quint32 collection = parent.data(Cantata::Role_CollectionId).toUInt();
     QSet<quint16> keys;
 
-    for (qint32 i=0; i<count; ++i) {
-        quint16 key=model()->index(i, 0, parent).data(Cantata::Role_Key).toUInt();
+    for (qint32 i = 0; i < count; ++i) {
+        quint16 key =
+            model()->index(i, 0, parent).data(Cantata::Role_Key).toUInt();
         keys.insert(key);
-        bool hide=key==lastKey &&
-                        !(key==currentAlbum && autoExpand) &&
-                        ( ( startClosed && !controlledAlbums[collection].contains(key)) ||
-                          ( !startClosed && controlledAlbums[collection].contains(key)));
+        bool hide =
+            key == lastKey && !(key == currentAlbum && autoExpand) &&
+            ((startClosed && !controlledAlbums[collection].contains(key)) ||
+             (!startClosed && controlledAlbums[collection].contains(key)));
         setRowHidden(i, parent, hide);
-        lastKey=key;
+        lastKey = key;
     }
 
     // Check that 'controlledAlbums' only contains valid keys...
     controlledAlbums[collection].intersect(keys);
 }
 
-void GroupedView::updateCollectionRows()
-{
+void GroupedView::updateCollectionRows() {
     if (!model()) {
         return;
     }
 
-    currentAlbum=Song::Null_Key;
-    qint32 count=model()->rowCount();
-    for (int i=0; i<count; ++i) {
+    currentAlbum = Song::Null_Key;
+    qint32 count = model()->rowCount();
+    for (int i = 0; i < count; ++i) {
         updateRows(model()->index(i, 0));
     }
 }
 
-void GroupedView::toggle(const QModelIndex &idx)
-{
+void GroupedView::toggle(const QModelIndex& idx) {
     if (!allowClose) {
         return;
     }
 
-    quint16 indexKey=idx.data(Cantata::Role_Key).toUInt();
+    quint16 indexKey = idx.data(Cantata::Role_Key).toUInt();
 
-    if (indexKey==currentAlbum && autoExpand) {
+    if (indexKey == currentAlbum && autoExpand) {
         return;
     }
 
-    quint32 collection=idx.data(Cantata::Role_CollectionId).toUInt();
-    bool toBeHidden=false;
+    quint32 collection = idx.data(Cantata::Role_CollectionId).toUInt();
+    bool toBeHidden = false;
     if (controlledAlbums[collection].contains(indexKey)) {
         controlledAlbums[collection].remove(indexKey);
-        toBeHidden=startClosed;
+        toBeHidden = startClosed;
     } else {
         controlledAlbums[collection].insert(indexKey);
-        toBeHidden=!startClosed;
+        toBeHidden = !startClosed;
     }
 
     if (model()) {
-        QModelIndex parent=idx.parent();
-        quint32 count=model()->rowCount(idx.parent());
-        for (quint32 i=0; i<count; ++i) {
-            QModelIndex index=model()->index(i, 0, parent);
-            quint16 key=index.data(Cantata::Role_Key).toUInt();
-            if (indexKey==key) {
+        QModelIndex parent = idx.parent();
+        quint32 count = model()->rowCount(idx.parent());
+        for (quint32 i = 0; i < count; ++i) {
+            QModelIndex index = model()->index(i, 0, parent);
+            quint16 key = index.data(Cantata::Role_Key).toUInt();
+            if (indexKey == key) {
                 if (isAlbumHeader(index)) {
                     dataChanged(index, index);
                 } else {
@@ -647,31 +710,31 @@ void GroupedView::toggle(const QModelIndex &idx)
     }
 }
 
-// Calculate list of selected indexes. If a collapsed album is selected, we also pretend all of its tracks
-// are selected.
-QModelIndexList GroupedView::selectedIndexes(bool sorted) const
-{
+// Calculate list of selected indexes. If a collapsed album is selected, we also
+// pretend all of its tracks are selected.
+QModelIndexList GroupedView::selectedIndexes(bool sorted) const {
     QModelIndexList indexes = TreeView::selectedIndexes(sorted);
     QSet<QModelIndex> indexSet;
     QModelIndexList sel;
 
-    for (const QModelIndex &idx: indexes) {
+    for (const QModelIndex& idx : indexes) {
         if (!indexSet.contains(idx)) {
             indexSet.insert(idx);
             sel.append(idx);
         }
         if (!idx.data(Cantata::Role_IsCollection).toBool()) {
-            quint16 key=idx.data(Cantata::Role_Key).toUInt();
-            quint32 collection=idx.data(Cantata::Role_CollectionId).toUInt();
+            quint16 key = idx.data(Cantata::Role_Key).toUInt();
+            quint32 collection = idx.data(Cantata::Role_CollectionId).toUInt();
             if (!isExpanded(key, collection)) {
-                quint32 rowCount=model()->rowCount(idx.parent());
-                for (quint32 i=idx.row()+1; i<rowCount; ++i) {
-                    QModelIndex next=idx.sibling(i, 0);
+                quint32 rowCount = model()->rowCount(idx.parent());
+                for (quint32 i = idx.row() + 1; i < rowCount; ++i) {
+                    QModelIndex next = idx.sibling(i, 0);
                     if (next.isValid()) {
-                        quint16 nextKey=next.data(Cantata::Role_Key).toUInt();
-                        quint32 nextCollection=idx.data(Cantata::Role_CollectionId).toUInt();
+                        quint16 nextKey = next.data(Cantata::Role_Key).toUInt();
+                        quint32 nextCollection =
+                            idx.data(Cantata::Role_CollectionId).toUInt();
 
-                        if (nextCollection==collection && nextKey==key) {
+                        if (nextCollection == collection && nextKey == key) {
                             if (!indexSet.contains(next)) {
                                 indexSet.insert(next);
                                 sel.append(next);
@@ -689,32 +752,35 @@ QModelIndexList GroupedView::selectedIndexes(bool sorted) const
     return sel;
 }
 
-// If we are dropping onto a collapsed album, and we are in the bottom 1/2 of the row - then
-// we need to drop the item at the end of the album's tracks. So, we adjust the 'drop row'
-// by the amount of tracks.
-void GroupedView::dropEvent(QDropEvent *event)
-{
+// If we are dropping onto a collapsed album, and we are in the bottom 1/2 of
+// the row - then we need to drop the item at the end of the album's tracks. So,
+// we adjust the 'drop row' by the amount of tracks.
+void GroupedView::dropEvent(QDropEvent* event) {
     QModelIndex parent;
-    quint32 dropRowAdjust=0;
+    quint32 dropRowAdjust = 0;
     if (model() && viewport()->rect().contains(event->pos())) {
-        // Dont allow to drop on an already selected row - as this seems to cuase a crash!!!
-        QModelIndex idx=TreeView::indexAt(event->pos());
-        if (idx.isValid() && selectionModel() && selectionModel()->isSelected(idx)) {
+        // Dont allow to drop on an already selected row - as this seems to
+        // cuase a crash!!!
+        QModelIndex idx = TreeView::indexAt(event->pos());
+        if (idx.isValid() && selectionModel() &&
+            selectionModel()->isSelected(idx)) {
             return;
         }
         if (idx.isValid() && isAlbumHeader(idx)) {
             QRect rect(visualRect(idx));
-            if (event->pos().y()>(rect.y()+(rect.height()/2))) {
-                quint16 key=idx.data(Cantata::Role_Key).toUInt();
-                quint32 collection=idx.data(Cantata::Role_CollectionId).toUInt();
+            if (event->pos().y() > (rect.y() + (rect.height() / 2))) {
+                quint16 key = idx.data(Cantata::Role_Key).toUInt();
+                quint32 collection =
+                    idx.data(Cantata::Role_CollectionId).toUInt();
                 if (!isExpanded(key, collection)) {
-                    parent=idx.parent();
-                    quint32 rowCount=model()->rowCount(parent);
-                    for (quint32 i=idx.row()+1; i<rowCount; ++i) {
-                        QModelIndex next=idx.sibling(i, 0);
+                    parent = idx.parent();
+                    quint32 rowCount = model()->rowCount(parent);
+                    for (quint32 i = idx.row() + 1; i < rowCount; ++i) {
+                        QModelIndex next = idx.sibling(i, 0);
                         if (next.isValid()) {
-                            quint16 nextKey=next.data(Cantata::Role_Key).toUInt();
-                            if (nextKey==key) {
+                            quint16 nextKey =
+                                next.data(Cantata::Role_Key).toUInt();
+                            if (nextKey == key) {
                                 dropRowAdjust++;
                             } else {
                                 break;
@@ -723,7 +789,8 @@ void GroupedView::dropEvent(QDropEvent *event)
                             break;
                         }
                     }
-                    model()->setData(parent, dropRowAdjust, Cantata::Role_DropAdjust);
+                    model()->setData(parent, dropRowAdjust,
+                                     Cantata::Role_DropAdjust);
                 }
             }
         }
@@ -733,91 +800,94 @@ void GroupedView::dropEvent(QDropEvent *event)
     model()->setData(parent, 0, Cantata::Role_DropAdjust);
 }
 
-void GroupedView::coverLoaded(const Song &song, int size)
-{
-    if (filterActive || !isVisible() || size!=constCoverSize || song.isArtistImageRequest() || song.isComposerImageRequest()) {
+void GroupedView::coverLoaded(const Song& song, int size) {
+    if (filterActive || !isVisible() || size != constCoverSize ||
+        song.isArtistImageRequest() || song.isComposerImageRequest()) {
         return;
     }
-    quint32 count=model()->rowCount();
-    quint16 lastKey=Song::Null_Key;
-    QString albumArtist=song.albumArtist();
-    QString album=song.album;
+    quint32 count = model()->rowCount();
+    quint16 lastKey = Song::Null_Key;
+    QString albumArtist = song.albumArtist();
+    QString album = song.album;
 
-    for (quint32 i=0; i<count; ++i) {
-        QModelIndex index=model()->index(i, 0);
+    for (quint32 i = 0; i < count; ++i) {
+        QModelIndex index = model()->index(i, 0);
         if (!index.isValid()) {
             continue;
         }
         if (isMultiLevel && model()->hasChildren(index)) {
-            lastKey=Song::Null_Key;
-            quint32 childCount=model()->rowCount(index);
-            for (quint32 c=0; c<childCount; ++c) {
-                QModelIndex child=model()->index(c, 0, index);
+            lastKey = Song::Null_Key;
+            quint32 childCount = model()->rowCount(index);
+            for (quint32 c = 0; c < childCount; ++c) {
+                QModelIndex child = model()->index(c, 0, index);
                 if (!child.isValid()) {
                     continue;
                 }
-                quint16 key=child.data(Cantata::Role_Key).toUInt();
+                quint16 key = child.data(Cantata::Role_Key).toUInt();
 
-                if (key!=lastKey && !isRowHidden(c, index)) {
-                    Song song=child.data(Cantata::Role_Song).value<Song>();
-                    if (song.albumArtist()==albumArtist && song.album==album) {
+                if (key != lastKey && !isRowHidden(c, index)) {
+                    Song song = child.data(Cantata::Role_Song).value<Song>();
+                    if (song.albumArtist() == albumArtist &&
+                        song.album == album) {
                         dataChanged(child, child);
                     }
                 }
-                lastKey=key;
+                lastKey = key;
             }
         } else {
-            quint16 key=index.data(Cantata::Role_Key).toUInt();
+            quint16 key = index.data(Cantata::Role_Key).toUInt();
 
-            if (key!=lastKey && !isRowHidden(i, QModelIndex())) {
-                Song song=index.data(Cantata::Role_Song).value<Song>();
-                if (song.albumArtist()==albumArtist && song.album==album) {
+            if (key != lastKey && !isRowHidden(i, QModelIndex())) {
+                Song song = index.data(Cantata::Role_Song).value<Song>();
+                if (song.albumArtist() == albumArtist && song.album == album) {
                     dataChanged(index, index);
                 }
             }
-            lastKey=key;
+            lastKey = key;
         }
     }
 }
 
-void GroupedView::collectionRemoved(quint32 key)
-{
+void GroupedView::collectionRemoved(quint32 key) {
     controlledAlbums.remove(key);
 }
 
-void GroupedView::itemClicked(const QModelIndex &idx)
-{
+void GroupedView::itemClicked(const QModelIndex& idx) {
     if (isAlbumHeader(idx)) {
         QRect indexRect(visualRect(idx));
-        QRect icon(indexRect.x()+constBorder+4, indexRect.y()+constBorder+((indexRect.height()-constCoverSize)/2),
+        QRect icon(indexRect.x() + constBorder + 4,
+                   indexRect.y() + constBorder +
+                       ((indexRect.height() - constCoverSize) / 2),
                    constCoverSize, constCoverSize);
         QRect header(indexRect);
-        header.setHeight(header.height()/2);
+        header.setHeight(header.height() / 2);
         header.moveTo(viewport()->mapToGlobal(QPoint(header.x(), header.y())));
         icon.moveTo(viewport()->mapToGlobal(QPoint(icon.x(), icon.y())));
         if (allowClose && icon.contains(QCursor::pos())) {
             toggle(idx);
         } else if (header.contains(QCursor::pos())) {
             QModelIndexList list;
-            unsigned int key=idx.data(Cantata::Role_Key).toUInt();
-            QModelIndex i=idx.sibling(idx.row()+1, 0);
-//            QModelIndexList sel=selectedIndexes();
-            QItemSelectionModel *selModel=selectionModel();
+            unsigned int key = idx.data(Cantata::Role_Key).toUInt();
+            QModelIndex i = idx.sibling(idx.row() + 1, 0);
+            //            QModelIndexList sel=selectedIndexes();
+            QItemSelectionModel* selModel = selectionModel();
             QModelIndexList unsel;
 
-            while (i.isValid() && i.data(Cantata::Role_Key).toUInt()==key) {
-                #if 0 // The following does not seem to work from the grouped playlist view - the 2nd row never get selected!
+            while (i.isValid() && i.data(Cantata::Role_Key).toUInt() == key) {
+#if 0  // The following does not seem to work from the grouped playlist view -
+       // the 2nd row never get selected!
                 if (!sel.contains(i)) {
                     unsel.append(i);
                 }
-                #else
+#else
                 unsel.append(i);
-                #endif
+#endif
                 list.append(i);
-                i=i.sibling(i.row()+1, 0);
+                i = i.sibling(i.row() + 1, 0);
             }
             if (list.count()) {
-                #if 0 // Commendted out as (as noted below) unselection is not working, and we always add to 'unsel' above (because of playlists)
+#if 0  // Commendted out as (as noted below) unselection is not working, and we
+       // always add to 'unsel' above (because of playlists)
                 if (unsel.isEmpty()) { // TODO: This is not working!!!   CHECK selModel if re-add!!!
                     for (const QModelIndex &i: list) {
                         selModel->select(i, QItemSelectionModel::Deselect|QItemSelectionModel::Rows);
@@ -827,32 +897,32 @@ void GroupedView::itemClicked(const QModelIndex &idx)
                         selModel->select(i, QItemSelectionModel::Select|QItemSelectionModel::Rows);
                     }
                 }
-                #else
+#else
                 if (!unsel.isEmpty() && selModel) {
-                    for (const QModelIndex &i: unsel) {
-                        selModel->select(i, QItemSelectionModel::Select|QItemSelectionModel::Rows);
+                    for (const QModelIndex& i : unsel) {
+                        selModel->select(i, QItemSelectionModel::Select |
+                                                QItemSelectionModel::Rows);
                     }
                 }
-                #endif
+#endif
             }
         }
     }
 }
 
-void GroupedView::expand(const QModelIndex &idx, bool singleOnly)
-{
+void GroupedView::expand(const QModelIndex& idx, bool singleOnly) {
     if (allowClose && idx.isValid()) {
         if (idx.data(Cantata::Role_IsCollection).toBool()) {
             setExpanded(idx, true);
             if (!singleOnly) {
-                quint32 count=model()->rowCount(idx);
-                for (quint32 i=0; i<count; ++i) {
+                quint32 count = model()->rowCount(idx);
+                for (quint32 i = 0; i < count; ++i) {
                     expand(model()->index(i, 0, idx));
                 }
             }
-        } else if (AlbumHeader==getType(idx)) {
-            quint16 indexKey=idx.data(Cantata::Role_Key).toUInt();
-            quint32 collection=idx.data(Cantata::Role_CollectionId).toUInt();
+        } else if (AlbumHeader == getType(idx)) {
+            quint16 indexKey = idx.data(Cantata::Role_Key).toUInt();
+            quint32 collection = idx.data(Cantata::Role_CollectionId).toUInt();
             if (!isExpanded(indexKey, collection)) {
                 toggle(idx);
             }
@@ -860,14 +930,13 @@ void GroupedView::expand(const QModelIndex &idx, bool singleOnly)
     }
 }
 
-void GroupedView::collapse(const QModelIndex &idx, bool singleOnly)
-{
+void GroupedView::collapse(const QModelIndex& idx, bool singleOnly) {
     if (allowClose && idx.isValid()) {
         if (idx.data(Cantata::Role_IsCollection).toBool()) {
             setExpanded(idx, false);
             if (!singleOnly) {
-                quint32 count=model()->rowCount(idx);
-                for (quint32 i=0; i<count; ++i) {
+                quint32 count = model()->rowCount(idx);
+                for (quint32 i = 0; i < count; ++i) {
                     collapse(model()->index(i, 0, idx));
                 }
             }
@@ -875,8 +944,8 @@ void GroupedView::collapse(const QModelIndex &idx, bool singleOnly)
     }
 }
 
-void GroupedView::drawBranches(QPainter *, const QRect &, const QModelIndex &) const
-{
+void GroupedView::drawBranches(QPainter*, const QRect&,
+                               const QModelIndex&) const {
     // Don't want any branch lines drawn!
 }
 

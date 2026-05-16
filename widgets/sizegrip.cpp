@@ -25,14 +25,13 @@
 #include <QBoxLayout>
 #include <QSizeGrip>
 
-SizeGrip::SizeGrip(QWidget *parent)
-    : QWidget(parent)
-{
-    QBoxLayout *l=new QBoxLayout(QBoxLayout::TopToBottom, this);
-    l->addItem(new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Preferred));
-    QSizeGrip *grip=new QSizeGrip(this);
+SizeGrip::SizeGrip(QWidget* parent) : QWidget(parent) {
+    QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    l->addItem(
+        new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Preferred));
+    QSizeGrip* grip = new QSizeGrip(this);
     l->addWidget(grip);
     l->setMargin(0);
     l->setSpacing(0);
-    l->setAlignment(Qt::AlignBottom|Qt::AlignRight);
+    l->setAlignment(Qt::AlignBottom | Qt::AlignRight);
 }

@@ -29,30 +29,25 @@
 #include <QUrl>
 #include "config.h"
 
-class NetworkProxyFactory : public QNetworkProxyFactory
-{
-public:
-      // These values are persisted
-      enum Mode {
-        Mode_System = 0,
-        Mode_Direct = 1,
-        Mode_Manual = 2
-    };
+class NetworkProxyFactory : public QNetworkProxyFactory {
+   public:
+    // These values are persisted
+    enum Mode { Mode_System = 0, Mode_Direct = 1, Mode_Manual = 2 };
 
-    static NetworkProxyFactory * self();
-    static const char * constSettingsGroup;
+    static NetworkProxyFactory* self();
+    static const char* constSettingsGroup;
 
-    // These methods are thread-safe
-    #ifdef ENABLE_PROXY_CONFIG
+// These methods are thread-safe
+#ifdef ENABLE_PROXY_CONFIG
     void reloadSettings();
-    #endif
+#endif
     QList<QNetworkProxy> queryProxy(const QNetworkProxyQuery& query) override;
 
-private:
+   private:
     NetworkProxyFactory();
 
-private:
-    #ifdef ENABLE_PROXY_CONFIG
+   private:
+#ifdef ENABLE_PROXY_CONFIG
     QMutex mutex;
     Mode mode;
     QNetworkProxy::ProxyType type;
@@ -60,7 +55,7 @@ private:
     int port;
     QString username;
     QString password;
-    #endif
+#endif
 };
 
-#endif // NETWORKPROXYFACTORY_H
+#endif  // NETWORKPROXYFACTORY_H

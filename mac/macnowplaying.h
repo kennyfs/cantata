@@ -28,25 +28,24 @@
 #include "mpd-interface/song.h"
 #include "mpd-interface/mpdstatus.h"
 
-class MacNowPlaying : public QObject
-{
+class MacNowPlaying : public QObject {
     Q_OBJECT
 
-public:
-    MacNowPlaying(QObject *p);
+   public:
+    MacNowPlaying(QObject* p);
     ~MacNowPlaying() override;
 
-public:
-    void updateCurrentSong(const Song &song);
-    void updateStatus(MPDStatus *const status);
+   public:
+    void updateCurrentSong(const Song& song);
+    void updateStatus(MPDStatus* const status);
 
-public Q_SLOTS:
-    void updateCurrentCover(const QString &fileName);
+   public Q_SLOTS:
+    void updateCurrentCover(const QString& fileName);
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void setSeekId(qint32 songId, quint32 time);
 
-private:
+   private:
     struct impl;
     std::unique_ptr<impl> pimpl;
 };

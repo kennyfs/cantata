@@ -32,143 +32,129 @@
 
 #define RG_REFERENCE_LEVEL -18.0
 
-double TrackScanner::clamp(double v)
-{
-    return v < -51.0 ? -51.0
-                      : v > 51.0
-                        ? 51.0
-                        : v;
+double TrackScanner::clamp(double v) {
+    return v < -51.0 ? -51.0 : v > 51.0 ? 51.0 : v;
 }
 
-double TrackScanner::reference(double v)
-{
-    return clamp(RG_REFERENCE_LEVEL-v);
+double TrackScanner::reference(double v) {
+    return clamp(RG_REFERENCE_LEVEL - v);
 }
 
-TrackScanner::Data TrackScanner::global(const QList<TrackScanner *> &scanners)
-{
+TrackScanner::Data TrackScanner::global(const QList<TrackScanner*>& scanners) {
     Data d;
-    if (scanners.count()<1) {
+    if (scanners.count() < 1) {
         return d;
-    } else if(scanners.count()==1) {
+    } else if (scanners.count() == 1) {
         return scanners.first()->results();
     } else {
-        ebur128_state **states = new ebur128_state * [scanners.count()];
-        for (int i=0; i<scanners.count(); ++i) {
-            TrackScanner *s=scanners.at(i);
-            states[i]=s->state;
-            if (s->results().peak>d.peak) {
-                d.peak=s->results().peak;
+        ebur128_state** states = new ebur128_state*[scanners.count()];
+        for (int i = 0; i < scanners.count(); ++i) {
+            TrackScanner* s = scanners.at(i);
+            states[i] = s->state;
+            if (s->results().peak > d.peak) {
+                d.peak = s->results().peak;
             }
-            if (s->results().truePeak>d.truePeak) {
-                d.truePeak=s->results().truePeak;
+            if (s->results().truePeak > d.truePeak) {
+                d.truePeak = s->results().truePeak;
             }
         }
 
-        double l=0.0;
-        int rv=ebur128_loudness_global_multiple(states, scanners.count(), &l);
-        delete [] states;
-        d.loudness=0==rv ? l : 0.0;
+        double l = 0.0;
+        int rv = ebur128_loudness_global_multiple(states, scanners.count(), &l);
+        delete[] states;
+        d.loudness = 0 == rv ? l : 0.0;
         return d;
     }
 }
 
-void TrackScanner::init()
-{
-    static bool doneInit=false;
+void TrackScanner::init() {
+    static bool doneInit = false;
     if (doneInit) {
         return;
     }
-    doneInit=true;
-    #ifdef MPG123_FOUND
+    doneInit = true;
+#ifdef MPG123_FOUND
     Mpg123Input::init();
-    #endif
-    #ifdef FFMPEG_FOUND
+#endif
+#ifdef FFMPEG_FOUND
     FfmpegInput::init();
-    #endif
+#endif
 }
 
-TrackScanner::TrackScanner(int i)
-    : idx(i)
-    , state(0)
-    , input(0)
-{
-}
+TrackScanner::TrackScanner(int i) : idx(i), state(0), input(0) {}
 
-TrackScanner::~TrackScanner()
-{
+TrackScanner::~TrackScanner() {
     delete input;
     if (state) {
         ebur128_destroy(&state);
-        state=0;
+        state = 0;
     }
 }
 
-void TrackScanner::setFile(const QString &fileName)
-{
-    file=fileName;
-}
+void TrackScanner::setFile(const QString& fileName) { file = fileName; }
 
-void TrackScanner::run()
-{
-    bool ffmpegIsFloat=false;
-    #ifdef FFMPEG_FOUND
-    FfmpegInput *ffmpeg=new FfmpegInput(file);
+void TrackScanner::run() {
+    bool ffmpegIsFloat = false;
+#ifdef FFMPEG_FOUND
+    FfmpegInput* ffmpeg = new FfmpegInput(file);
     if (*ffmpeg) {
-        input=ffmpeg;
-        ffmpegIsFloat=ffmpeg->isFloatCodec();
+        input = ffmpeg;
+        ffmpegIsFloat = ffmpeg->isFloatCodec();
     } else {
         delete ffmpeg;
-        ffmpeg=0;
+        ffmpeg = 0;
     }
-    #endif
+#endif
 
-    #if MPG123_FOUND
-    if (file.endsWith(".mp3", Qt::CaseInsensitive) && (!input || !ffmpegIsFloat)) {
-        Mpg123Input *mpg123=new Mpg123Input(file);
+#if MPG123_FOUND
+    if (file.endsWith(".mp3", Qt::CaseInsensitive) &&
+        (!input || !ffmpegIsFloat)) {
+        Mpg123Input* mpg123 = new Mpg123Input(file);
         if (*mpg123) {
-            input=mpg123;
-            #ifdef FFMPEG_FOUND
+            input = mpg123;
+#ifdef FFMPEG_FOUND
             if (ffmpeg) {
                 delete ffmpeg;
             }
-            #endif
+#endif
         } else {
             delete mpg123;
         }
     }
-    #endif
+#endif
 
     if (!input) {
         setFinishedStatus(false);
         return;
     }
 
-    state=ebur128_init(input->channels(), input->sampleRate(), EBUR128_MODE_M|EBUR128_MODE_I|EBUR128_MODE_SAMPLE_PEAK);
+    state = ebur128_init(
+        input->channels(), input->sampleRate(),
+        EBUR128_MODE_M | EBUR128_MODE_I | EBUR128_MODE_SAMPLE_PEAK);
 
-    int *channelMap=new int [state->channels];
+    int* channelMap = new int[state->channels];
     if (input->setChannelMap(channelMap)) {
         for (unsigned int i = 0; i < state->channels; ++i) {
             ebur128_set_channel(state, i, channelMap[i]);
         }
     }
 
-    delete [] channelMap;
+    delete[] channelMap;
 
-    //if (1==state->channels && opts->force_dual_mono) {
-    //    ebur128_set_channel(state, 0, EBUR128_DUAL_MONO);
-    //}
+    // if (1==state->channels && opts->force_dual_mono) {
+    //     ebur128_set_channel(state, 0, EBUR128_DUAL_MONO);
+    // }
 
-    size_t numFramesRead=0;
-    size_t totalRead=0;
+    size_t numFramesRead = 0;
+    size_t totalRead = 0;
     input->allocateBuffer();
     while ((numFramesRead = input->readFrames())) {
         if (abortRequested) {
             setFinishedStatus(false);
             return;
         }
-        totalRead+=numFramesRead;
-        emit progress((int)((totalRead*100.0/input->totalFrames())+0.5));
+        totalRead += numFramesRead;
+        emit progress((int)((totalRead * 100.0 / input->totalFrames()) + 0.5));
         if (ebur128_add_frames_float(state, input->buffer(), numFramesRead)) {
             setFinishedStatus(false);
             return;
@@ -181,12 +167,12 @@ void TrackScanner::run()
     }
 
     ebur128_loudness_global(state, &data.loudness);
-//     if (opts->lra) {
-//         result = ebur128_loudness_range(ebur, &lra);
-//         if (result) abort();
-//     }
+    //     if (opts->lra) {
+    //         result = ebur128_loudness_range(ebur, &lra);
+    //         if (result) abort();
+    //     }
 
-    if (EBUR128_MODE_SAMPLE_PEAK==(state->mode & EBUR128_MODE_SAMPLE_PEAK)) {
+    if (EBUR128_MODE_SAMPLE_PEAK == (state->mode & EBUR128_MODE_SAMPLE_PEAK)) {
         for (unsigned i = 0; i < state->channels; ++i) {
             double sp;
             ebur128_sample_peak(state, i, &sp);
@@ -195,7 +181,7 @@ void TrackScanner::run()
             }
         }
     }
-    if (EBUR128_MODE_TRUE_PEAK==(state->mode & EBUR128_MODE_TRUE_PEAK)) {
+    if (EBUR128_MODE_TRUE_PEAK == (state->mode & EBUR128_MODE_TRUE_PEAK)) {
         for (unsigned i = 0; i < state->channels; ++i) {
             double tp;
             ebur128_true_peak(state, i, &tp);
@@ -207,10 +193,9 @@ void TrackScanner::run()
     setFinishedStatus(true);
 }
 
-void TrackScanner::setFinishedStatus(bool f)
-{
+void TrackScanner::setFinishedStatus(bool f) {
     delete input;
-    input=0;
+    input = 0;
     setFinished(f);
 }
 

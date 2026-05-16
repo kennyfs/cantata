@@ -27,107 +27,104 @@
 #include <QObject>
 #include <QStringList>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace Hal
-{
-class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
-{
+namespace Solid {
+namespace Backends {
+namespace Hal {
+class DeviceInterface : public QObject,
+                        virtual public Solid::Ifaces::DeviceInterface {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::DeviceInterface)
-public:
-    DeviceInterface(HalDevice *device);
+   public:
+    DeviceInterface(HalDevice* device);
     ~DeviceInterface() override;
 
-protected:
-    HalDevice *m_device;
+   protected:
+    HalDevice* m_device;
 
-public:
-    inline static QStringList toStringList(Solid::DeviceInterface::Type type)
-    {
+   public:
+    inline static QStringList toStringList(Solid::DeviceInterface::Type type) {
         QStringList list;
 
-        switch(type)
-        {
-        case Solid::DeviceInterface::GenericInterface:
-            // Doesn't exist with HAL
-            break;
-        //case Solid::DeviceInterface::Processor:
-        //    list << "processor";
-        //    break;
-        case Solid::DeviceInterface::Block:
-            list << "block";
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-            // Doesn't exist with HAL, but let's assume volume always cover this type
-            list << "volume";
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            list << "storage";
-            break;
-        case Solid::DeviceInterface::OpticalDrive:
-            list << "storage.cdrom";
-            break;
-        case Solid::DeviceInterface::StorageVolume:
-            list << "volume";
-            break;
-        case Solid::DeviceInterface::OpticalDisc:
-            list << "volume.disc";
-            break;
-        //case Solid::DeviceInterface::Camera:
-        //    list << "camera";
-        //    break;
-        case Solid::DeviceInterface::PortableMediaPlayer:
-            list << "portable_audio_player";
-            break;
-        /*case Solid::DeviceInterface::NetworkInterface:
-            list << "net";
-            break;
-        case Solid::DeviceInterface::AcAdapter:
-            list << "ac_adapter";
-            break;
-        case Solid::DeviceInterface::Battery:
-            list << "battery";
-            break;
-        case Solid::DeviceInterface::Button:
-            list << "button";
-            break;
-        case Solid::DeviceInterface::AudioInterface:
-            list << "alsa" << "oss";
-            break;
-        case Solid::DeviceInterface::DvbInterface:
-            list << "dvb";
-            break;
-        case Solid::DeviceInterface::Video:
-            list << "video4linux";
-            break;
-        case Solid::DeviceInterface::SerialInterface:
-            list << "serial";
-            break;
-        case Solid::DeviceInterface::SmartCardReader:
-            list << "smart_card_reader";
-        case Solid::DeviceInterface::InternetGateway:
-            list << "internet_gateway";
-        case Solid::DeviceInterface::NetworkShare:
-            list << "networkshare";
-            break;
-        */
-        case Solid::DeviceInterface::Unknown:
-            break;
-        case Solid::DeviceInterface::Last:
-            break;
+        switch (type) {
+            case Solid::DeviceInterface::GenericInterface:
+                // Doesn't exist with HAL
+                break;
+            // case Solid::DeviceInterface::Processor:
+            //     list << "processor";
+            //     break;
+            case Solid::DeviceInterface::Block:
+                list << "block";
+                break;
+            case Solid::DeviceInterface::StorageAccess:
+                // Doesn't exist with HAL, but let's assume volume always cover
+                // this type
+                list << "volume";
+                break;
+            case Solid::DeviceInterface::StorageDrive:
+                list << "storage";
+                break;
+            case Solid::DeviceInterface::OpticalDrive:
+                list << "storage.cdrom";
+                break;
+            case Solid::DeviceInterface::StorageVolume:
+                list << "volume";
+                break;
+            case Solid::DeviceInterface::OpticalDisc:
+                list << "volume.disc";
+                break;
+            // case Solid::DeviceInterface::Camera:
+            //     list << "camera";
+            //     break;
+            case Solid::DeviceInterface::PortableMediaPlayer:
+                list << "portable_audio_player";
+                break;
+            /*case Solid::DeviceInterface::NetworkInterface:
+                list << "net";
+                break;
+            case Solid::DeviceInterface::AcAdapter:
+                list << "ac_adapter";
+                break;
+            case Solid::DeviceInterface::Battery:
+                list << "battery";
+                break;
+            case Solid::DeviceInterface::Button:
+                list << "button";
+                break;
+            case Solid::DeviceInterface::AudioInterface:
+                list << "alsa" << "oss";
+                break;
+            case Solid::DeviceInterface::DvbInterface:
+                list << "dvb";
+                break;
+            case Solid::DeviceInterface::Video:
+                list << "video4linux";
+                break;
+            case Solid::DeviceInterface::SerialInterface:
+                list << "serial";
+                break;
+            case Solid::DeviceInterface::SmartCardReader:
+                list << "smart_card_reader";
+            case Solid::DeviceInterface::InternetGateway:
+                list << "internet_gateway";
+            case Solid::DeviceInterface::NetworkShare:
+                list << "networkshare";
+                break;
+            */
+            case Solid::DeviceInterface::Unknown:
+                break;
+            case Solid::DeviceInterface::Last:
+                break;
         }
 
         return list;
     }
 
-    inline static Solid::DeviceInterface::Type fromString(const QString &capability)
-    {
+    inline static Solid::DeviceInterface::Type fromString(
+        const QString& capability) {
         /*if (capability == "processor")
             return Solid::DeviceInterface::Processor;
-        else */if (capability == "block")
+        else */
+        if (capability == "block")
             return Solid::DeviceInterface::Block;
         else if (capability == "storage")
             return Solid::DeviceInterface::StorageDrive;
@@ -165,8 +162,8 @@ public:
             return Solid::DeviceInterface::Unknown;
     }
 };
-}
-}
-}
+}  // namespace Hal
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // SOLID_BACKENDS_HAL_DEVICEINTERFACE_H
+#endif  // SOLID_BACKENDS_HAL_DEVICEINTERFACE_H

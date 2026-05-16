@@ -12,28 +12,27 @@
 
 #include "input.h"
 
-class Mpg123Input : public Input
-{
+class Mpg123Input : public Input {
     struct Handle;
 
-public:
+   public:
     static void init();
 
-    Mpg123Input(const QString &fileName);
+    Mpg123Input(const QString& fileName);
     ~Mpg123Input();
 
-    operator bool() const { return 0!=handle; }
+    operator bool() const { return 0 != handle; }
 
     size_t totalFrames() const;
     unsigned int channels() const;
     unsigned long sampleRate() const;
     bool allocateBuffer();
-    float * buffer() const;
-    bool setChannelMap(int *st) const;
+    float* buffer() const;
+    bool setChannelMap(int* st) const;
     size_t readFrames();
 
-private:
-    Handle *handle;
+   private:
+    Handle* handle;
 };
 
 #endif

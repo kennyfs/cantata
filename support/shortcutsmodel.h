@@ -28,13 +28,14 @@ class Action;
 class ActionCollection;
 
 //! Model that exposes the actions from one or more ActionCollections
-/** This model takes one or more ActionCollections and exposes their actions as model items.
- *  Note that the ShortcutsModel will not react to changes in the ActionCollection (e.g. adding,
- *  removing actions), because it is supposed to be used after all actions being defined.
+/** This model takes one or more ActionCollections and exposes their actions as
+ * model items. Note that the ShortcutsModel will not react to changes in the
+ * ActionCollection (e.g. adding, removing actions), because it is supposed to
+ * be used after all actions being defined.
  */
 class ShortcutsModel : public QAbstractItemModel {
     Q_OBJECT
-public:
+   public:
     enum Role {
         ActionRole = Qt::UserRole,
         DefaultShortcutRole,
@@ -42,30 +43,37 @@ public:
         IsConfigurableRole
     };
 
-    ShortcutsModel(const QHash<QString, ActionCollection *> &actionCollections, QObject *parent = nullptr);
+    ShortcutsModel(const QHash<QString, ActionCollection*>& actionCollections,
+                   QObject* parent = nullptr);
     ~ShortcutsModel() override;
 
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &child) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    bool setData(const QModelIndex &index, const QVariant &value, int role = ActiveShortcutRole) override;
+    QModelIndex index(int row, int column,
+                      const QModelIndex& parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex& child) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex& index,
+                  int role = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role = ActiveShortcutRole) override;
 
-public slots:
+   public slots:
     //! Load shortcuts from the ActionCollections
-    /** Note that this will not rebuild the internal structure of the model, as we assume the
-   *  ActionCollections to be static during the lifetime of the settingspage. This will merely
-   *  re-read the shortcuts currently set in Quassel.
-   */
+    /** Note that this will not rebuild the internal structure of the model, as
+     * we assume the ActionCollections to be static during the lifetime of the
+     * settingspage. This will merely re-read the shortcuts currently set in
+     * Quassel.
+     */
     void load();
 
     //! Load default shortcuts from the ActionCollections
-    /** Note that this will not rebuild the internal structure of the model, as we assume the
-   *  ActionCollections to be static during the lifetime of the settingspage. This will update
-   *  the model's state from the ActionCollections' defaults.
-   */
+    /** Note that this will not rebuild the internal structure of the model, as
+     * we assume the ActionCollections to be static during the lifetime of the
+     * settingspage. This will update the model's state from the
+     * ActionCollections' defaults.
+     */
     void defaults();
 
     //! Commit the model changes to the ActionCollections
@@ -73,25 +81,30 @@ public slots:
 
     inline bool hasChanged() const { return _changedCount; }
 
-signals:
-    //! Reflects the difference between model contents and the ActionCollections we loaded this from
+   signals:
+    //! Reflects the difference between model contents and the ActionCollections
+    //! we loaded this from
     void hasChanged(bool changed);
 
-private:
+   private:
     struct Item {
-        inline Item() : row(-1), parentItem(nullptr), collection(nullptr), action(nullptr) { }
+        inline Item()
+            : row(-1),
+              parentItem(nullptr),
+              collection(nullptr),
+              action(nullptr) {}
         inline ~Item() { qDeleteAll(actionItems); }
         int row;
-        Item *parentItem;
-        ActionCollection *collection;
-        Action *action;
+        Item* parentItem;
+        ActionCollection* collection;
+        Action* action;
         QKeySequence shortcut;
-        QList<Item *> actionItems;
+        QList<Item*> actionItems;
     };
 
-    QList<Item *> _categoryItems;
+    QList<Item*> _categoryItems;
     int _changedCount;
     bool _showIcons;
 };
 
-#endif // SHORTCUTSMODEL_H
+#endif  // SHORTCUTSMODEL_H

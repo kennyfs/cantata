@@ -29,23 +29,20 @@
 #include <QDBusInterface>
 #include <QSet>
 
-namespace Solid
-{
-namespace Backends
-{
-namespace UDisks
-{
+namespace Solid {
+namespace Backends {
+namespace UDisks {
 
-class UDisksDevice : public Solid::Ifaces::Device
-{
+class UDisksDevice : public Solid::Ifaces::Device {
     Q_OBJECT
-public:
-    UDisksDevice(const QString &udi);
+   public:
+    UDisksDevice(const QString& udi);
     virtual ~UDisksDevice();
 
-
-    virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
-    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
+    virtual QObject* createDeviceInterface(
+        const Solid::DeviceInterface::Type& type);
+    virtual bool queryDeviceInterface(
+        const Solid::DeviceInterface::Type& type) const;
     virtual QString description() const;
     virtual QStringList emblems() const;
     virtual QString icon() const;
@@ -54,33 +51,33 @@ public:
     virtual QString udi() const;
     virtual QString parentUdi() const;
 
-    QVariant prop(const QString &key) const;
-    bool propertyExists(const QString &key) const;
+    QVariant prop(const QString& key) const;
+    bool propertyExists(const QString& key) const;
     QMap<QString, QVariant> allProperties() const;
 
     bool isDeviceBlacklisted() const;
 
-    QString errorToString(const QString & error) const;
-    Solid::ErrorType errorToSolidError(const QString & error) const;
+    QString errorToString(const QString& error) const;
+    Solid::ErrorType errorToSolidError(const QString& error) const;
 
-Q_SIGNALS:
+   Q_SIGNALS:
     void changed();
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void slotChanged();
 
-private:
+   private:
     QString storageDescription() const;
     QString volumeDescription() const;
-    mutable QDBusInterface *m_device;
+    mutable QDBusInterface* m_device;
     QString m_udi;
     mutable QVariantMap m_cache;
 
-    void checkCache(const QString &key) const;
+    void checkCache(const QString& key) const;
 };
 
-}
-}
-}
+}  // namespace UDisks
+}  // namespace Backends
+}  // namespace Solid
 
-#endif // UDISKSDEVICE_H
+#endif  // UDISKSDEVICE_H

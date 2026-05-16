@@ -27,15 +27,15 @@
 #include <QComboBox>
 #include <QTreeWidget>
 
-CddbSelectionDialog::CddbSelectionDialog(QWidget *parent)
-    : Dialog(parent, "CddbSelectionDialog")
-{
-    QWidget *wid = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(wid);
+CddbSelectionDialog::CddbSelectionDialog(QWidget* parent)
+    : Dialog(parent, "CddbSelectionDialog") {
+    QWidget* wid = new QWidget(this);
+    QVBoxLayout* layout = new QVBoxLayout(wid);
 
-    combo=new QComboBox(wid);
-    QLabel *label=new QLabel(tr("Multiple matches were found. "
-                                  "Please choose the relevant one from below:"), wid);
+    combo = new QComboBox(wid);
+    QLabel* label = new QLabel(tr("Multiple matches were found. "
+                                  "Please choose the relevant one from below:"),
+                               wid);
 
     tracks = new QTreeWidget(wid);
     tracks->setAlternatingRowColors(true);
@@ -44,7 +44,8 @@ CddbSelectionDialog::CddbSelectionDialog(QWidget *parent)
     tracks->setItemsExpandable(false);
     tracks->setAllColumnsShowFocus(true);
     tracks->setHeaderLabels(QStringList() << tr("Artist") << tr("Title"));
-    tracks->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    tracks->setSizePolicy(QSizePolicy::MinimumExpanding,
+                          QSizePolicy::MinimumExpanding);
 
     label->setWordWrap(true);
     layout->addWidget(label);
@@ -57,15 +58,22 @@ CddbSelectionDialog::CddbSelectionDialog(QWidget *parent)
     connect(combo, SIGNAL(currentIndexChanged(int)), SLOT(updateTracks()));
 }
 
-int CddbSelectionDialog::select(const QList<CdAlbum> &albums)
-{
+int CddbSelectionDialog::select(const QList<CdAlbum>& albums) {
     combo->clear();
-    albumDetails=albums;
-    for (const CdAlbum &a: albums) {
-        if (a.disc>0) {
-            combo->addItem(tr("%1 - %2 Disc %3 (%4)", "artist - album Disc disc (year)").arg(a.artist).arg(a.name).arg(a.disc).arg(a.year));
+    albumDetails = albums;
+    for (const CdAlbum& a : albums) {
+        if (a.disc > 0) {
+            combo->addItem(
+                tr("%1 - %2 Disc %3 (%4)", "artist - album Disc disc (year)")
+                    .arg(a.artist)
+                    .arg(a.name)
+                    .arg(a.disc)
+                    .arg(a.year));
         } else {
-            combo->addItem(tr("%1 - %2 (%3)", "artist - album (year)").arg(a.artist).arg(a.name).arg(a.year));
+            combo->addItem(tr("%1 - %2 (%3)", "artist - album (year)")
+                               .arg(a.artist)
+                               .arg(a.name)
+                               .arg(a.year));
         }
     }
 
@@ -74,15 +82,14 @@ int CddbSelectionDialog::select(const QList<CdAlbum> &albums)
     return combo->currentIndex();
 }
 
-void CddbSelectionDialog::updateTracks()
-{
+void CddbSelectionDialog::updateTracks() {
     tracks->clear();
-    bool sameArtist=true;
-    const CdAlbum &a=albumDetails.at(combo->currentIndex());
-    for (const Song &s: a.tracks) {
+    bool sameArtist = true;
+    const CdAlbum& a = albumDetails.at(combo->currentIndex());
+    for (const Song& s : a.tracks) {
         new QTreeWidgetItem(tracks, QStringList() << s.artist << s.title);
-        if (s.artist!=a.artist) {
-            sameArtist=false;
+        if (s.artist != a.artist) {
+            sameArtist = false;
         }
     }
     tracks->setColumnHidden(0, sameArtist);

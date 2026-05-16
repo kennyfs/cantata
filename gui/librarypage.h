@@ -29,56 +29,56 @@
 class Action;
 class GenreCombo;
 
-class LibraryPage : public SinglePageWidget
-{
+class LibraryPage : public SinglePageWidget {
     Q_OBJECT
 
-public:
-    LibraryPage(QWidget *p);
+   public:
+    LibraryPage(QWidget* p);
     ~LibraryPage() override;
 
     void clear();
-    QStringList selectedFiles(bool allowPlaylists=false) const override;
-    QList<Song> selectedSongs(bool allowPlaylists=false) const override;
+    QStringList selectedFiles(bool allowPlaylists = false) const override;
+    QList<Song> selectedSongs(bool allowPlaylists = false) const override;
     Song coverRequest() const override;
-    #ifdef ENABLE_DEVICES_SUPPORT
-    void addSelectionToDevice(const QString &udi) override;
+#ifdef ENABLE_DEVICES_SUPPORT
+    void addSelectionToDevice(const QString& udi) override;
     void deleteSongs() override;
-    #endif
-    void showSongs(const QList<Song> &songs);
-    void showArtist(const QString &artist);
-    void showAlbum(const QString &artist, const QString &album);
+#endif
+    void showSongs(const QList<Song>& songs);
+    void showArtist(const QString& artist);
+    void showAlbum(const QString& artist, const QString& album);
 
-private:
+   private:
     void setItemSize(int v);
 
-Q_SIGNALS:
-    void addToDevice(const QString &from, const QString &to, const QList<Song> &songs);
-    void deleteSongs(const QString &from, const QList<Song> &songs);
+   Q_SIGNALS:
+    void addToDevice(const QString& from, const QString& to,
+                     const QList<Song>& songs);
+    void deleteSongs(const QString& from, const QList<Song>& songs);
 
-public Q_SLOTS:
-    void itemDoubleClicked(const QModelIndex &);
+   public Q_SLOTS:
+    void itemDoubleClicked(const QModelIndex&);
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void modelReset();
     void groupByChanged();
     void libraryAlbumSortChanged();
     void albumAlbumSortChanged();
     void showArtistImagesChanged(bool u);
-    void updateToPlayQueue(const QModelIndex &idx, bool replace);
+    void updateToPlayQueue(const QModelIndex& idx, bool replace);
     void addRandomAlbum();
 
-private:
+   private:
     void setView(int v) override;
     void doSearch() override;
     void controlActions() override;
 
-private:
-    GenreCombo *genreCombo;
-    QAction *viewAction;
-    QAction *showArtistImagesAction;
-    QAction *libraryAlbumSortAction;
-    QAction *albumAlbumSortAction;
+   private:
+    GenreCombo* genreCombo;
+    QAction* viewAction;
+    QAction* showArtistImagesAction;
+    QAction* libraryAlbumSortAction;
+    QAction* albumAlbumSortAction;
 };
 
 #endif
